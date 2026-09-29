@@ -12,7 +12,8 @@ Este é o vault de desenvolvimento do monorepo `obsidian-plugins`. Ele existe pa
 - Projetos fictícios: `Projects/Garden App/`, `Projects/Recipe Book/` e `Work/Horta Digital/Projects/Irrigação Inteligente/`
 - Pessoas e atas fictícias: `Work/Horta Digital/` e `Work/Pomar Coletivo/` (empresas inventadas)
 - Casos de teste do Shortcuts: [[Shortcuts/index|Shortcuts]], com a nota [[Shortcuts/playground|playground]] para digitar
-- Templates: `_Templates/` (card, pessoa, projeto e daily)
+- Catálogo fictício de filmes, séries, jogos e livros: `1 - Knowledge/Entertainment/DB/`. Casos de teste do [[1 - Knowledge/Entertainment/index|Media Catalog]]
+- Templates: `_Templates/` (card, pessoa, projeto, daily e media)
 - `.obsidian/plugins/` é gerada pelos scripts de build e fica fora do git.
 
 ## Como testar

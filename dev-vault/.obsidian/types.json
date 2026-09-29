@@ -3,6 +3,14 @@
 		"created": "date",
 		"due": "date",
 		"completed": "date",
-		"projects": "multitext"
+		"projects": "multitext",
+		"started": "date",
+		"finished": "date",
+		"year": "number",
+		"rating": "number",
+		"season": "number",
+		"episodes": "number",
+		"pages": "number",
+		"hours": "number"
 	}
 }

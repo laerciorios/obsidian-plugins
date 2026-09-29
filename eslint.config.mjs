@@ -6,7 +6,20 @@ import globals from 'globals';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
 // Proper names that UI strings may keep capitalized (plugin names, core plugins, view names).
-const BRANDS = ['Bases Board', 'Bases', 'Board', 'Obsidian'];
+const BRANDS = [
+	'Bases Board',
+	'Bases',
+	'Board',
+	'Obsidian',
+	'Media Catalog',
+	'IMDb',
+	'TVmaze',
+	'IGDB',
+	'Google Books',
+	'Google Cloud',
+	'Open Library',
+	'Twitch',
+];
 
 export default defineConfig(
 	globalIgnores([

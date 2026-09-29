@@ -1,0 +1,163 @@
+import type { Translation } from '@obsidian-plugins/i18n';
+import type { en } from './en';
+
+export const ptBR: Translation<typeof en> = {
+	// ---- commands ----------------------------------------------------------
+	'command.add': 'Adicionar ao catálogo',
+	'command.changeCover': 'Trocar capa',
+	'command.markFinished': 'Terminei',
+
+	// ---- kinds and statuses -------------------------------------------------
+	'kind.movie': 'Filme',
+	'kind.series': 'Série',
+	'kind.game': 'Jogo',
+	'kind.book': 'Livro',
+	'status.backlog': 'Na fila',
+	'status.in-progress': 'Em andamento',
+	'status.done': 'Concluído',
+	'status.dropped': 'Abandonado',
+
+	// ---- modal: shared ------------------------------------------------------
+	'modal.add.title': 'Adicionar ao catálogo',
+	'modal.cover.title': 'Trocar capa',
+	'modal.season.title': 'Escolha a temporada',
+	'modal.confirm.title': 'Confira os dados',
+	'modal.back': 'Voltar',
+	'modal.instructions.navigate': 'para navegar',
+	'modal.instructions.choose': 'para escolher',
+	'modal.instructions.close': 'para fechar',
+	'modal.instructions.submit': 'para salvar',
+
+	// ---- search step --------------------------------------------------------
+	'search.kind': 'Tipo',
+	'search.source': 'Fonte',
+	'search.placeholder': 'Buscar pelo título…',
+	'search.hint': 'Digite pelo menos {min} caracteres e escolha um resultado. Nada é salvo antes de você confirmar.',
+	'search.loading': 'Buscando em {source}…',
+	'search.empty': 'Nada encontrado para "{query}" em {source}.',
+	'search.retry': 'Tentar de novo',
+	'search.noCover': 'Sem capa',
+
+	// ---- season step --------------------------------------------------------
+	'season.loading': 'Carregando temporadas…',
+	'season.empty': 'Esta série não tem temporadas cadastradas.',
+	'season.label': 'Temporada {number}',
+	'season.episodes': '{count} episódios',
+	'season.episodesOne': '1 episódio',
+	'season.episodesUnknown': 'Número de episódios desconhecido',
+
+	// ---- confirm step -------------------------------------------------------
+	'field.title.name': 'Título',
+	'field.title.desc': 'Título original ou em inglês, como no resto do catálogo.',
+	'field.title.descBook': 'Título da edição que você leu.',
+	'field.year.name': 'Ano',
+	'field.year.desc': 'Ano de lançamento.',
+	'field.year.descSeries': 'Ano de estreia da temporada.',
+	'field.year.descBook': 'Ano da primeira publicação.',
+	'field.year.descBookEdition': 'Ano desta edição. O catálogo usa o ano da primeira publicação: ajuste se souber.',
+	'field.status.name': 'Status',
+	'field.started.name': 'Início',
+	'field.finished.name': 'Fim',
+	'field.date.desc': 'AAAA-MM-DD. Vazio: sem data.',
+	'field.rating.name': 'Nota',
+	'field.rating.desc': 'De 1 a 10. Vazio: sem nota.',
+	'field.platform.name': 'Onde',
+	'field.platform.desc': 'Onde assistiu: cinema, um streaming… Pode ficar vazio.',
+	'field.platform.descGame': 'Console, PC ou celular.',
+	'field.platform.descBook': 'Formato: físico, eBook, audiobook…',
+	'field.season.name': 'Temporada',
+	'field.episodes.name': 'Episódios',
+	'field.episodes.desc': 'Episódios da temporada.',
+	'field.hours.name': 'Horas',
+	'field.hours.desc': 'Tempo total de jogo. Vazio: sem registro.',
+	'field.author.name': 'Autor',
+	'field.pages.name': 'Páginas',
+	'field.technical.name': 'Livro técnico',
+	'field.technical.desc': 'Cria também uma nota de referência na área escolhida e liga as duas notas.',
+	'field.technical.none': 'Nenhuma pasta com _References/Books no vault.',
+	'field.area.name': 'Área',
+	'field.cover.name': 'Capa',
+	'field.cover.desc': 'Manter o link da imagem ou salvar uma cópia na pasta de anexos.',
+	'field.cover.url': 'Manter o link',
+	'field.cover.download': 'Baixar para os anexos',
+	'field.cover.none': 'Nenhuma capa encontrada. A nota é criada sem capa.',
+	'confirm.duplicate': 'Já está no catálogo: {name}.',
+	'confirm.open': 'Abrir nota',
+	'confirm.create': 'Criar nota',
+	'confirm.updateCover': 'Atualizar capa',
+	'confirm.saving': 'Salvando…',
+	'cover.current': 'Atual',
+	'cover.new': 'Nova',
+	'cover.same': 'A nota já usa esta capa.',
+	'cover.season': 'Pôster da temporada',
+	'cover.series': 'Pôster da série',
+
+	// ---- rating modal -------------------------------------------------------
+	'rating.title': 'Nota',
+	'rating.desc': 'Que nota você dá para "{title}"? O status vira concluído e hoje entra como data de fim.',
+	'rating.skip': 'Terminar sem nota',
+	'rating.cancel': 'Cancelar',
+
+	// ---- validation ---------------------------------------------------------
+	'validation.title': 'O título não pode ficar vazio.',
+	'validation.year': 'Use um ano com quatro dígitos.',
+	'validation.rating': 'Use um número inteiro de 1 a 10.',
+	'validation.date': 'Use o formato AAAA-MM-DD.',
+	'validation.number': 'Use um número, zero ou maior.',
+
+	// ---- errors (search, download) -----------------------------------------
+	'error.http': '{host} respondeu com erro {status}.',
+	'error.network': 'Sem resposta de {host}. Confira a conexão.',
+	'error.denied': '{source} recusou a requisição. Confira a chave de API nas configurações do plugin.',
+	'error.rateLimit': '{source} está limitando as requisições. Espere um pouco e tente de novo, ou confira a chave de API.',
+	'error.credentials': '{source} precisa de uma chave de API. Configure nas opções do plugin.',
+	'error.blocked': 'Requisição para {host} bloqueada: o endereço não está na lista permitida.',
+	'error.unexpected': 'Resposta inesperada de {source}.',
+	'error.unknown': 'Algo deu errado com {source}.',
+
+	// ---- notices ------------------------------------------------------------
+	'notice.created': 'Media Catalog: "{name}" criada.',
+	'notice.createFailed': 'Media Catalog: não foi possível criar a nota.',
+	'notice.duplicate': 'Media Catalog: "{name}" já está no catálogo.',
+	'notice.coverUpdated': 'Media Catalog: capa de "{name}" atualizada.',
+	'notice.coverFailed': 'Media Catalog: não foi possível atualizar a capa de "{name}".',
+	'notice.downloadFailed': 'Media Catalog: não foi possível baixar a capa; a nota fica com o link.',
+	'notice.finished': 'Media Catalog: "{name}" marcada como concluída.',
+	'notice.finishFailed': 'Media Catalog: não foi possível atualizar "{name}".',
+	'notice.referenceCreated': 'Media Catalog: nota de referência "{name}" criada.',
+	'notice.referenceExists': 'Media Catalog: a nota de referência "{name}" já existia e foi ligada.',
+	'notice.referenceFailed': 'Media Catalog: a nota foi criada, mas a nota de referência não.',
+	'notice.folderIsFile': 'Media Catalog: "{path}" é um arquivo, não uma pasta. Confira a pasta do catálogo nas configurações.',
+
+	// ---- settings -----------------------------------------------------------
+	'settings.notes.heading': 'Notas',
+	'settings.folder.name': 'Pasta do catálogo',
+	'settings.folder.desc': 'As notas novas são criadas aqui, e as duplicatas são procuradas aqui.',
+	'settings.templateFile.name': 'Template',
+	'settings.templateFile.desc':
+		'O corpo (tudo depois das propriedades) entra em cada nota nova. Vazio: media.md na pasta de templates do Obsidian.',
+	'settings.addSourceLink.name': 'Link para a fonte',
+	'settings.addSourceLink.desc': 'Adiciona uma linha como "- IMDb: <link>" no fim da nota.',
+	'settings.defaultStatus.name': 'Status padrão',
+	'settings.defaultStatus.desc': 'Status sugerido no formulário. O início recebe a data de hoje, exceto na fila.',
+	'settings.covers.heading': 'Capas',
+	'settings.downloadCovers.name': 'Baixar capas por padrão',
+	'settings.downloadCovers.desc':
+		'Deixa "Baixar para os anexos" marcado no formulário. O arquivo é salvo como <nota>-cover.<ext> na pasta de anexos.',
+	'settings.sources.heading': 'Fontes',
+	'settings.bookSource.name': 'Fonte de livros',
+	'settings.bookSource.desc':
+		'Fonte escolhida primeiro na busca de livros. O Open Library não precisa de chave e traz o ano da primeira publicação; o Google Books acha mais edições em português, mas precisa de chave.',
+	'settings.keys.heading': 'Chaves de API',
+	'settings.keys.desc':
+		'As chaves ficam no chaveiro do Obsidian (configurações, chaveiro). O plugin só guarda qual segredo usar.',
+	'settings.igdbClientId.name': 'Client id do IGDB',
+	'settings.igdbClientId.desc': 'Busca de jogos. Registre um app em dev.twitch.tv e escolha o segredo com o client id dele.',
+	'settings.igdbClientSecret.name': 'Client secret do IGDB',
+	'settings.igdbClientSecret.desc': 'Escolha o segredo com o client secret do mesmo app da Twitch.',
+	'settings.googleBooksKey.name': 'Chave do Google Books',
+	'settings.googleBooksKey.desc': 'Só para a fonte Google Books. Gratuita: ative a Books API no console do Google Cloud.',
+
+	// ---- added by UI ----
+	'search.results': 'Resultados',
+};

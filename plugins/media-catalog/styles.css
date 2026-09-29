@@ -1,0 +1,345 @@
+/*
+ * Media Catalog — the catalog modal (search, season, confirm) and the rating modal.
+ * Only Obsidian CSS variables: works in light and dark themes and follows the
+ * user's theme. Classes are prefixed with `mc-`.
+ */
+
+/* ---- modal -------------------------------------------------------------- */
+
+.mc-modal {
+	--mc-thumb-width: 64px;
+	--mc-tile-width: 110px;
+	--mc-preview-width: 140px;
+}
+
+/* Phones keep Obsidian's full-screen modal. */
+body:not(.is-phone) .mc-modal {
+	width: min(760px, 92vw);
+	max-width: 92vw;
+}
+
+.mc-modal .modal-content {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-3);
+}
+
+.mc-modal .prompt-instructions {
+	padding: var(--size-4-2) 0 0;
+	border-top: 1px solid var(--background-modifier-border);
+}
+
+.mc-hint {
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+/* ---- search toolbar ----------------------------------------------------- */
+
+.mc-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--size-4-2);
+}
+
+.mc-search {
+	flex: 1 1 240px;
+	min-width: 0;
+}
+
+.mc-search .search-input-container,
+.mc-search input {
+	width: 100%;
+}
+
+/* ---- results (search) and seasons -------------------------------------- */
+
+.mc-results {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-2);
+	max-height: 60vh;
+	overflow-y: auto;
+	padding: var(--size-2-2);
+	margin: 0 calc(-1 * var(--size-2-2));
+}
+
+.mc-results:focus {
+	/* The highlighted option shows where the keyboard is. */
+	outline: none;
+}
+
+.mc-result {
+	display: grid;
+	grid-template-columns: var(--mc-thumb-width) minmax(0, 1fr);
+	align-items: start;
+	gap: var(--size-4-3);
+	padding: var(--size-4-2);
+	border-radius: var(--radius-m);
+	cursor: var(--cursor);
+}
+
+.mc-result.is-selected {
+	background-color: var(--background-modifier-hover);
+}
+
+.mc-cover,
+.mc-preview-cover {
+	width: 100%;
+	flex: none;
+	aspect-ratio: 2 / 3;
+	overflow: hidden;
+	border-radius: var(--radius-s);
+	background-color: var(--background-secondary);
+}
+
+.mc-cover-img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	aspect-ratio: 2 / 3;
+	object-fit: cover;
+	border-radius: var(--radius-s);
+	background-color: var(--background-secondary);
+}
+
+.mc-cover-empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	aspect-ratio: 2 / 3;
+	border-radius: var(--radius-s);
+	background-color: var(--background-secondary);
+	color: var(--text-faint);
+}
+
+.mc-result-body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-2);
+	min-width: 0;
+}
+
+.mc-result-title {
+	color: var(--text-normal);
+	font-size: var(--font-ui-medium);
+	font-weight: var(--font-semibold);
+	line-height: var(--line-height-tight);
+	overflow-wrap: anywhere;
+}
+
+/* Cast, network, authors…: two lines at most. */
+.mc-result-meta {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+/* The year, on the title line. */
+.mc-result-title .mc-result-meta {
+	display: inline;
+	margin-inline-start: var(--size-4-2);
+	font-weight: var(--font-normal);
+}
+
+.mc-result-source {
+	display: inline-block;
+	padding: 0 var(--size-4-1);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+/* Seasons: a responsive grid of poster tiles. */
+.mc-results[data-layout="grid"] {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--mc-tile-width), 1fr));
+	gap: var(--size-4-2);
+}
+
+.mc-results[data-layout="grid"] .mc-result {
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--size-4-2);
+	text-align: center;
+}
+
+.mc-results[data-layout="grid"] .mc-result-body {
+	gap: var(--size-2-1);
+}
+
+/* ---- states (hint, loading, empty, error) ------------------------------ */
+
+.mc-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--size-4-2);
+	min-height: 160px;
+	padding: var(--size-4-6) var(--size-4-4);
+	color: var(--text-muted);
+	text-align: center;
+}
+
+.mc-state-error {
+	color: var(--text-error);
+}
+
+.mc-spinner {
+	width: var(--size-4-5);
+	height: var(--size-4-5);
+	border: 2px solid var(--background-modifier-border);
+	border-top-color: var(--interactive-accent);
+	border-radius: 50%;
+	animation: mc-spin 0.8s linear infinite;
+}
+
+@keyframes mc-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.mc-spinner {
+		animation-duration: 2.4s;
+	}
+}
+
+/* ---- confirm: preview, duplicate banner, form -------------------------- */
+
+.mc-preview {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	align-items: start;
+	gap: var(--size-4-4);
+}
+
+/* One large cover, or the current and the new one side by side (cover mode). */
+.mc-preview-covers {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--size-4-3);
+}
+
+.mc-preview-cover {
+	width: var(--mc-preview-width);
+	box-shadow: var(--shadow-s);
+}
+
+.mc-figure {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--size-2-3);
+	margin: 0;
+}
+
+.mc-caption {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+/* Season poster or series poster: toggle buttons under the details. */
+.mc-posters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--size-4-2);
+	margin-top: var(--size-4-1);
+}
+
+.mc-poster {
+	--mc-poster-width: 56px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--size-2-2);
+	width: calc(var(--mc-poster-width) + 2 * var(--size-4-3));
+	height: auto;
+	padding: var(--size-2-3);
+	border: 2px solid transparent;
+	border-radius: var(--radius-m);
+	font-size: var(--font-ui-smaller);
+	line-height: var(--line-height-tight);
+	white-space: normal;
+	text-align: center;
+}
+
+.mc-poster .mc-cover {
+	width: var(--mc-poster-width);
+}
+
+.mc-poster[aria-pressed="true"] {
+	border-color: var(--interactive-accent);
+	color: var(--text-normal);
+}
+
+.mc-preview .mc-result-title {
+	font-size: var(--font-ui-large);
+}
+
+.mc-duplicate {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--size-4-2) var(--size-4-3);
+	padding: var(--size-4-2) var(--size-4-3);
+	border: 1px solid var(--background-modifier-error);
+	border-radius: var(--radius-m);
+	background-color: rgba(var(--color-red-rgb), 0.1);
+	color: var(--text-error);
+}
+
+.mc-form .setting-item:first-child {
+	border-top: none;
+}
+
+.mc-actions {
+	margin-top: 0;
+}
+
+/* ---- rating modal ------------------------------------------------------- */
+
+/* Takes the focus when the modal opens (see rating-modal.ts); Tab moves to the buttons. */
+.mc-rating-buttons:focus {
+	outline: none;
+}
+
+.mc-rating-buttons {
+	display: grid;
+	grid-template-columns: repeat(10, minmax(0, 1fr));
+	gap: var(--size-4-2);
+	margin-bottom: var(--size-4-3);
+}
+
+.mc-rating-buttons button {
+	padding-inline: 0;
+	font-variant-numeric: tabular-nums;
+}
+
+/* ---- narrow screens ----------------------------------------------------- */
+
+@media (max-width: 500px) {
+	.mc-preview {
+		grid-template-columns: minmax(0, 1fr);
+		justify-items: center;
+		text-align: center;
+	}
+
+	.mc-preview-covers,
+	.mc-posters {
+		justify-content: center;
+	}
+
+	.mc-rating-buttons {
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+	}
+}

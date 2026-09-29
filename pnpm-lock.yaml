@@ -47,6 +47,12 @@ importers:
         specifier: workspace:*
         version: link:../../packages/i18n
 
+  plugins/media-catalog:
+    dependencies:
+      '@obsidian-plugins/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
+
   plugins/shortcuts:
     dependencies:
       '@obsidian-plugins/i18n':

@@ -1,5 +1,6 @@
 [
-	"hot-reload",
-	"bases-board",
-	"shortcuts"
+  "hot-reload",
+  "bases-board",
+  "shortcuts",
+  "media-catalog"
 ]

@@ -1,0 +1,41 @@
+filters:
+  and:
+    - file.inFolder("1 - Knowledge/Entertainment/DB")
+properties:
+  note.title:
+    displayName: Título
+  note.kind:
+    displayName: Tipo
+  note.season:
+    displayName: Temporada
+  note.year:
+    displayName: Ano
+  note.status:
+    displayName: Status
+  note.rating:
+    displayName: Nota
+  note.finished:
+    displayName: Concluído
+  note.platform:
+    displayName: Plataforma
+views:
+  - type: table
+    name: Todos
+    order:
+      - file.name
+      - kind
+      - season
+      - year
+      - status
+      - rating
+      - finished
+      - platform
+  - type: cards
+    name: Galeria
+    order:
+      - file.name
+      - title
+      - kind
+      - year
+      - rating
+    image: note.cover
