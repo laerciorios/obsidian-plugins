@@ -1,0 +1,70 @@
+filters:
+  or:
+    - file.inFolder("Boards/DB")
+    - type == "project"
+formulas:
+  coluna: if(type == "project", "5 · Projetos ativos", if(status == "doing", "2 · Doing", if(status == "review", "3 · To Review", if(status == "done", "4 · Done", "1 · To Do"))))
+properties:
+  note.title:
+    displayName: Título
+  note.type:
+    displayName: Tipo
+  note.status:
+    displayName: Status
+  note.project:
+    displayName: Projeto
+  note.executor:
+    displayName: Quem
+  note.due:
+    displayName: Prazo
+  note.completed:
+    displayName: Concluído
+  formula.coluna:
+    displayName: Coluna
+views:
+  - type: bases-board
+    name: Board (plugin)
+    filters:
+      and:
+        - or:
+            - type != "project"
+            - status == "active"
+        - or:
+            - status != "done"
+            - completed >= today() - "14 days"
+    order:
+      - title
+      - type
+      - project
+      - executor
+      - due
+  - type: cards
+    name: Board (cards)
+    filters:
+      and:
+        - or:
+            - type != "project"
+            - status == "active"
+        - or:
+            - status != "done"
+            - completed >= today() - "14 days"
+    groupBy:
+      property: formula.coluna
+      direction: ASC
+    order:
+      - title
+      - type
+      - project
+      - executor
+      - due
+  - type: table
+    name: Todas
+    order:
+      - title
+      - type
+      - status
+      - project
+      - executor
+      - created
+      - due
+      - completed

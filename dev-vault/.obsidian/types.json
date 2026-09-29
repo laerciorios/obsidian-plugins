@@ -1,0 +1,8 @@
+{
+	"types": {
+		"created": "date",
+		"due": "date",
+		"completed": "date",
+		"projects": "multitext"
+	}
+}

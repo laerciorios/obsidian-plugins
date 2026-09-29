@@ -1,0 +1,24 @@
+# dependencies
+node_modules/
+
+# build output (release artifacts go to GitHub releases / the vault, never to git)
+dist/
+plugins/*/main.js
+*.map
+
+# local machine config
+.dev-targets.json
+.env
+.env.local
+
+# dev vault: everything under plugins/ is generated (hot-reload download + build copies)
+dev-vault/.obsidian/plugins/
+dev-vault/.obsidian/workspace*.json
+dev-vault/.obsidian/cache
+dev-vault/.trash/
+
+# editors / OS
+.vscode/
+.idea/
+*.iml
+.DS_Store

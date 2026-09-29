@@ -1,0 +1,33 @@
+{
+	"name": "obsidian-plugins",
+	"private": true,
+	"version": "0.0.0",
+	"description": "Plugins pessoais para o Obsidian (monorepo).",
+	"type": "module",
+	"packageManager": "pnpm@11.20.0",
+	"engines": {
+		"node": ">=22"
+	},
+	"scripts": {
+		"build": "pnpm -r build",
+		"typecheck": "pnpm -r typecheck",
+		"lint": "pnpm -r lint",
+		"check": "pnpm typecheck && pnpm lint",
+		"new-plugin": "node scripts/new-plugin.mjs",
+		"link-plugin": "node scripts/link-plugin.mjs",
+		"bump": "node scripts/bump-version.mjs",
+		"setup:dev-vault": "node scripts/setup-dev-vault.mjs"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.39.1",
+		"@types/node": "^22.20.4",
+		"esbuild": "^0.28.2",
+		"eslint": "^9.39.1",
+		"eslint-plugin-obsidianmd": "^0.4.2",
+		"globals": "^17.12.0",
+		"obsidian": "^1.13.1",
+		"tslib": "^2.8.1",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.71.0"
+	}
+}
