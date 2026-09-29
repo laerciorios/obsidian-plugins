@@ -4,7 +4,7 @@
 //   pnpm link-plugin --list                       -> show all targets
 import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { assertPlugin, expandHome, fail, pluginDir, readTargets, targetsFor, writeTargets } from './lib.mjs';
+import { assertPlugin, expandHome, fail, pluginDir, readJson, readTargets, targetsFor, writeTargets } from './lib.mjs';
 
 const args = process.argv.slice(2);
 
@@ -38,6 +38,16 @@ if (remove) {
 	console.log(`✔ ${id} não será mais copiado para ${target}`);
 	console.log('  Os arquivos já copiados continuam lá; desative o plugin no Obsidian se quiser.');
 	process.exit(0);
+}
+
+// Never overwrite a plugin we did not build (e.g. a community plugin with the same id).
+const ownManifest = readJson(join(pluginDir(id), 'manifest.json'));
+const existing = readJson(join(target, 'manifest.json'), null);
+if (existing && !list.has(target) && existing.author !== ownManifest.author) {
+	fail(
+		`${target} já tem o plugin "${existing.name}" de ${existing.author || 'outro autor'}.\n` +
+			'  Desinstale-o no Obsidian primeiro (ou escolha outro id) para não sobrescrever código de terceiros.',
+	);
 }
 
 list.add(target);

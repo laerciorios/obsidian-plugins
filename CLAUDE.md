@@ -21,6 +21,7 @@ Monorepo of personal Obsidian plugins by Laercio Rios. Planning and specs live i
 - **Never develop against the real vault.** Test in `dev-vault/` first. The real vault only receives builds after an explicit `pnpm link-plugin`. Never install Hot Reload in the real vault (it can enable plugins on its own).
 - Plugin ids, Bases view ids and command ids are stable API: never rename after first use (`.base` files store the view id in `type:`).
 - New plugins only via `pnpm new-plugin`. Ids are kebab-case and must not contain "obsidian".
+- A plugin that replaces an installed community plugin (e.g. Colored Text) must either use a different id or the community plugin must be uninstalled first. `link-plugin` refuses to copy over a folder whose `manifest.json` has another author.
 - `main.ts` stays minimal (lifecycle + registrations). Feature logic in modules; split files over ~300 lines.
 - No runtime dependencies unless clearly justified; everything is bundled into `main.js`.
 - Clean up through `this.register*` helpers (`registerEvent`, `registerDomEvent`, `registerInterval`) so unload/hot reload never leaks.
