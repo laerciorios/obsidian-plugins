@@ -9,5 +9,8 @@
 		"build": "tsc --noEmit && node ../../scripts/esbuild.mjs --production",
 		"typecheck": "tsc --noEmit",
 		"lint": "eslint src"
+	},
+	"dependencies": {
+		"@obsidian-plugins/i18n": "workspace:*"
 	}
 }

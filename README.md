@@ -16,11 +16,15 @@ Planejamento e specs ficam no vault, em `1 - Knowledge/Projects/Obsidian Plugins
 
 ```
 plugins/<id>/        um plugin por pasta (src/, manifest.json, styles.css, versions.json)
-packages/            código compartilhado entre plugins (criado quando houver dois consumidores)
+packages/i18n/       tradução da interface, usada por todos os plugins
 scripts/             build compartilhado (esbuild) e utilitários do repo
 templates/plugin/    esqueleto usado por `pnpm new-plugin`
 dev-vault/           vault de testes versionado, com dados fictícios
 ```
+
+## Idiomas
+
+Todos os plugins são multi-idioma. A interface segue o idioma do Obsidian (**Settings → General → Language**): inglês e português do Brasil estão disponíveis, e qualquer outro idioma cai para inglês. Os textos de cada plugin ficam em `plugins/<id>/src/i18n/`; o inglês é a fonte, e o typecheck falha se uma tradução esquecer alguma chave. Veja [packages/i18n](packages/i18n).
 
 ## Pré-requisitos
 

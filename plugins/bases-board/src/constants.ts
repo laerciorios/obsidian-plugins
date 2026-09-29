@@ -27,10 +27,13 @@ export const OPTION = {
 	dueProperty: 'dueProperty',
 } as const;
 
+/**
+ * Defaults applied in code. Column values are data (they are written to notes)
+ * and never translated; labels are UI and follow the app language.
+ */
 export const DEFAULTS = {
 	columnProperty: 'note.status' as BasesPropertyId,
-	columns: ['todo|To Do', 'doing|Doing', 'review|To Review', 'done|Done'],
-	otherLabel: 'Outros',
+	columnValues: ['todo', 'doing', 'review', 'done'] as const,
 	hideEmptyOther: true,
 	doneValue: 'done',
 	completedProperty: 'note.completed' as BasesPropertyId,

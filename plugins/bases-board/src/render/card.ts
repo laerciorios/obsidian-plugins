@@ -1,5 +1,6 @@
 import { CLS } from '../constants';
 import { todayIso } from '../data/values';
+import { t } from '../i18n';
 import type { CardModel } from '../types';
 
 const TYPE_CLASS_SAFE = /[^a-z0-9-]/g;
@@ -31,19 +32,19 @@ export function createCardEl(parent: HTMLElement, card: CardModel): HTMLElement 
 		const chip = meta.createSpan({ cls: [CLS.chip, CLS.chipProject], text: card.project.label });
 		if (card.project.linkpath) {
 			chip.dataset.linkpath = card.project.linkpath;
-			chip.setAttr('aria-label', `Abrir ${card.project.label}`);
+			chip.setAttr('aria-label', t('card.openProject', { name: card.project.label }));
 		}
 	}
 
 	if (card.isAi) {
-		meta.createSpan({ cls: [CLS.chip, CLS.chipAi], text: 'AI' });
+		meta.createSpan({ cls: [CLS.chip, CLS.chipAi], text: t('card.ai') });
 	}
 
 	if (card.due) {
 		const dueEl = meta.createSpan({ cls: CLS.due, text: card.due });
 		dueEl.dataset.due = card.due;
 		dueEl.toggleClass(CLS.dueOverdue, card.isOverdue);
-		dueEl.setAttr('aria-label', card.isOverdue ? `Prazo vencido: ${card.due}` : `Prazo: ${card.due}`);
+		dueEl.setAttr('aria-label', t(card.isOverdue ? 'card.overdue' : 'card.due', { date: card.due }));
 	}
 
 	if (meta.childElementCount === 0) meta.remove();

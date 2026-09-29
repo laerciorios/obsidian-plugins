@@ -2,21 +2,27 @@ import { parsePropertyId } from 'obsidian';
 import type { BasesAllOptions, BasesPropertyId, BasesViewConfig } from 'obsidian';
 import { DEFAULTS, OPTION } from '../constants';
 import { parseColumnSpecs } from '../data/columns';
+import { t } from '../i18n';
 import type { BoardConfig } from '../types';
 
 const noteOnly = (prop: BasesPropertyId): boolean => parsePropertyId(prop).type === 'note';
+
+/** Default columns as "value|Label", with labels in the app language. */
+export function defaultColumns(): string[] {
+	return DEFAULTS.columnValues.map((value) => `${value}|${t(`column.${value}`)}`);
+}
 
 /** Options shown in the Bases view menu. Values are saved in the .base file by Bases itself. */
 export function getViewOptions(): BasesAllOptions[] {
 	return [
 		{
 			type: 'group',
-			displayName: 'Colunas',
+			displayName: t('option.group.columns'),
 			items: [
 				{
 					type: 'property',
 					key: OPTION.columnProperty,
-					displayName: 'Propriedade da coluna',
+					displayName: t('option.columnProperty'),
 					default: DEFAULTS.columnProperty,
 					placeholder: 'status',
 					filter: noteOnly,
@@ -24,37 +30,37 @@ export function getViewOptions(): BasesAllOptions[] {
 				{
 					type: 'multitext',
 					key: OPTION.columns,
-					displayName: 'Colunas (valor|rótulo)',
-					default: DEFAULTS.columns,
+					displayName: t('option.columns'),
+					default: defaultColumns(),
 				},
 				{
 					type: 'text',
 					key: OPTION.otherLabel,
-					displayName: 'Rótulo para outros valores',
-					default: DEFAULTS.otherLabel,
+					displayName: t('option.otherLabel'),
+					default: t('column.other'),
 				},
 				{
 					type: 'toggle',
 					key: OPTION.hideEmptyOther,
-					displayName: 'Esconder a coluna de outros quando vazia',
+					displayName: t('option.hideEmptyOther'),
 					default: DEFAULTS.hideEmptyOther,
 				},
 				{
 					type: 'text',
 					key: OPTION.doneValue,
-					displayName: 'Valor de concluído',
+					displayName: t('option.doneValue'),
 					default: DEFAULTS.doneValue,
 				},
 				{
 					type: 'toggle',
 					key: OPTION.setCompleted,
-					displayName: 'Gravar data de conclusão',
+					displayName: t('option.setCompleted'),
 					default: DEFAULTS.setCompleted,
 				},
 				{
 					type: 'property',
 					key: OPTION.completedProperty,
-					displayName: 'Propriedade da data de conclusão',
+					displayName: t('option.completedProperty'),
 					default: DEFAULTS.completedProperty,
 					placeholder: 'completed',
 					filter: noteOnly,
@@ -63,43 +69,43 @@ export function getViewOptions(): BasesAllOptions[] {
 		},
 		{
 			type: 'group',
-			displayName: 'Card',
+			displayName: t('option.group.card'),
 			items: [
 				{
 					type: 'property',
 					key: OPTION.titleProperty,
-					displayName: 'Título',
+					displayName: t('option.title'),
 					default: DEFAULTS.titleProperty,
-					placeholder: 'Nome do arquivo',
+					placeholder: t('option.titlePlaceholder'),
 				},
 				{
 					type: 'property',
 					key: OPTION.typeProperty,
-					displayName: 'Tipo',
+					displayName: t('option.type'),
 					default: DEFAULTS.typeProperty,
 				},
 				{
 					type: 'property',
 					key: OPTION.projectProperty,
-					displayName: 'Projeto',
+					displayName: t('option.project'),
 					default: DEFAULTS.projectProperty,
 				},
 				{
 					type: 'property',
 					key: OPTION.executorProperty,
-					displayName: 'Executor',
+					displayName: t('option.executor'),
 					default: DEFAULTS.executorProperty,
 				},
 				{
 					type: 'text',
 					key: OPTION.aiValue,
-					displayName: 'Valor do executor que indica IA',
+					displayName: t('option.aiValue'),
 					default: DEFAULTS.aiValue,
 				},
 				{
 					type: 'property',
 					key: OPTION.dueProperty,
-					displayName: 'Prazo',
+					displayName: t('option.due'),
 					default: DEFAULTS.dueProperty,
 				},
 			],
@@ -136,8 +142,8 @@ export function readBoardConfig(config: BasesViewConfig): BoardConfig {
 	return {
 		columnProperty,
 		columnWritable: noteOnly(columnProperty),
-		columns: columns.length > 0 ? columns : parseColumnSpecs(DEFAULTS.columns),
-		otherLabel: readString(config, OPTION.otherLabel, DEFAULTS.otherLabel),
+		columns: columns.length > 0 ? columns : parseColumnSpecs(defaultColumns()),
+		otherLabel: readString(config, OPTION.otherLabel, t('column.other')),
 		hideEmptyOther: readBoolean(config, OPTION.hideEmptyOther, DEFAULTS.hideEmptyOther),
 		doneValue: readString(config, OPTION.doneValue, DEFAULTS.doneValue),
 		completedProperty: noteOnly(completed) ? completed : null,

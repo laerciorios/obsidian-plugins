@@ -6,7 +6,7 @@ Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/
 
 ## Como usar
 
-1. Num arquivo `.base`, abra o menu de views e troque o layout para **Board**, ou adicione uma view com `type: bases-board`.
+1. Num arquivo `.base`, abra o menu de views e troque o layout para **Board** (**Quadro** com o Obsidian em português), ou adicione uma view com `type: bases-board`.
 2. Configure as opções da view no mesmo menu. Os valores ficam salvos no próprio `.base`.
 3. Arraste os cards entre colunas. Clique abre a nota, Cmd+clique abre em nova aba, e passar o mouse mostra o preview.
 
@@ -15,8 +15,8 @@ Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/
 | Opção | Padrão | O que faz |
 |---|---|---|
 | Propriedade da coluna | `status` | Propriedade da nota que define a coluna. Fórmulas não aparecem, porque não podem ser gravadas. |
-| Colunas (valor\|rótulo) | `todo\|To Do`, `doing\|Doing`, `review\|To Review`, `done\|Done` | Ordem e rótulo das colunas. O rótulo é opcional. |
-| Rótulo para outros valores | `Outros` | Coluna para valores fora da lista. Ela não aceita drop. |
+| Colunas (valor\|rótulo) | `todo`, `doing`, `review`, `done` | Ordem e rótulo das colunas. O rótulo é opcional. Sem configuração, os rótulos seguem o idioma: *To do, Doing, To review, Done* ou *A fazer, Fazendo, Em revisão, Concluído*. |
+| Rótulo para outros valores | `Other` / `Outros` | Coluna para valores fora da lista. Ela não aceita drop. |
 | Esconder a coluna de outros quando vazia | ligado | |
 | Valor de concluído | `done` | Coluna que grava a data de conclusão. |
 | Gravar data de conclusão | ligado | Soltar em `done` grava a data de hoje (`YYYY-MM-DD`). Sair de `done` limpa o campo. |
@@ -31,11 +31,16 @@ Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/
 - **Prazo**: fica vermelho quando está vencido, exceto na coluna de concluído.
 - **Notas `type: project`**: aparecem, mas não podem ser arrastadas.
 
+## Idiomas
+
+A interface segue o idioma do Obsidian: inglês e português do Brasil, com inglês para qualquer outro. Os textos ficam em `src/i18n/en.ts` (fonte) e `src/i18n/pt-br.ts`. Os valores gravados nas notas (`todo`, `done`…) nunca são traduzidos. Rótulos escritos nas opções da view ficam como você escreveu.
+
 ## Como funciona por dentro
 
 | Arquivo | Papel |
 |---|---|
 | `src/main.ts` | Registra a view (`registerBasesView`) e a fonte de hover. |
+| `src/i18n/` | Catálogos de texto da interface (inglês e português). |
 | `src/view/board-view.ts` | `BoardView extends BasesView`: render, drop otimista, clique e hover. |
 | `src/view/options.ts` | Declara as opções e lê a config com defaults. Nunca chama `config.set`. |
 | `src/data/columns.ts` | Parse das colunas e agrupamento das entradas. |

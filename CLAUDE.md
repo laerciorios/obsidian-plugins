@@ -4,8 +4,9 @@ Monorepo of personal Obsidian plugins by Laercio Rios. Planning and specs live i
 
 ## Layout
 
-- `plugins/<id>/` — one plugin per folder, official sample-plugin shape: `src/main.ts`, `manifest.json`, `styles.css`, `versions.json`, `package.json` (scripts only, no dependencies), `tsconfig.json` extending `../../tsconfig.base.json`.
+- `plugins/<id>/` — one plugin per folder, official sample-plugin shape: `src/main.ts`, `manifest.json`, `styles.css`, `versions.json`, `package.json` (scripts + workspace dependencies only), `tsconfig.json` extending `../../tsconfig.base.json`, `src/i18n/` with the plugin's message catalogs.
 - `packages/<name>/` — shared code. Create only when a second plugin needs the same code; consume with `"workspace:*"` (esbuild bundles it).
+  - `packages/i18n/` (`@obsidian-plugins/i18n`) — translation helper used by every plugin: `createI18n({ en, 'pt-BR': ptBR })` returns `t(key, params)`, following the Obsidian app language (`getLanguage()`) and falling back to English.
 - `scripts/esbuild.mjs` — the shared build. Output `plugins/<id>/dist/{main.js,manifest.json,styles.css}`, then copied to `dev-vault/.obsidian/plugins/<id>/` and to every vault listed in `.dev-targets.json` (git-ignored, managed by `pnpm link-plugin`). Dev mode writes `.hotreload` in the targets.
 - `templates/plugin/` — scaffold used by `pnpm new-plugin`. Placeholders: `__ID__`, `__NAME__`, `__CLASS__`, `__DESCRIPTION__`.
 - `dev-vault/` — committed test vault with fake data. Its `.obsidian/plugins/` is generated and git-ignored.
@@ -28,7 +29,9 @@ Monorepo of personal Obsidian plugins by Laercio Rios. Planning and specs live i
 - Clean up through `this.register*` helpers (`registerEvent`, `registerDomEvent`, `registerInterval`) so unload/hot reload never leaks.
 - Write to notes only through `app.fileManager.processFrontMatter` (or `app.vault.process`), never by rewriting the whole file from a cached copy.
 - Styles: only Obsidian CSS variables (`--background-*`, `--text-*`, `--color-*`, `--size-*`, `--radius-*`), no hard-coded colors. Prefix classes per plugin (`bb-` for Bases Board).
-- Code, identifiers and comments in English. User-facing strings (UI, notices) and READMEs in Brazilian Portuguese. UI copy in sentence case.
+- **Every plugin is multi-language.** All user-facing text (view and command names, settings, options, placeholders, notices, aria-labels, empty states) goes through `t()` from `src/i18n/`; no UI literals elsewhere. `en.ts` is the source (`satisfies Messages`) and the fallback; `pt-br.ts` is typed `Translation<typeof en>`, so a missing key fails the typecheck. Keep `{param}` placeholders identical in every locale. A new language is a new file plus one entry in `createI18n`.
+- Values written to notes or matched in content (frontmatter values like `todo`/`done`, trigger keywords) are data, not UI: never translate them. Defaults persisted to `data.json` are translated once, when created.
+- Code, identifiers and comments in English. `manifest.json` descriptions in English (they cannot be localized). READMEs in Brazilian Portuguese. UI copy in sentence case in every language.
 - Never commit `main.js`, `dist/`, `node_modules/`, `.dev-targets.json`.
 - Run `pnpm check` before committing. Release = `pnpm bump <id> <x.y.z>` + `pnpm --filter <id> build` + tag `<id>-<x.y.z>`.
 - Keep `minAppVersion` accurate when using newer APIs (Bases view API: 1.10.0; `file`/`folder`/`formula` options and `createFileForView`: 1.10.2; declarative settings via `getSettingDefinitions`: 1.13.0).

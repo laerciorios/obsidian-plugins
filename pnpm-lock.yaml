@@ -39,9 +39,19 @@ importers:
         specifier: ^8.71.0
         version: 8.71.0(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
 
-  plugins/bases-board: {}
+  packages/i18n: {}
 
-  plugins/shortcuts: {}
+  plugins/bases-board:
+    dependencies:
+      '@obsidian-plugins/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
+
+  plugins/shortcuts:
+    dependencies:
+      '@obsidian-plugins/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
 
 packages:
 

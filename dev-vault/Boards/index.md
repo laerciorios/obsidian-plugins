@@ -4,7 +4,7 @@ As colunas do board vêm da propriedade `status` de cada card em `Boards/DB/`:
 
 `todo` → `doing` → `review` → `done`
 
-Um valor fora dessa lista vai para a coluna **Outros** na view `Board (plugin)`. Na view `Board (cards)`, a fórmula `coluna` joga esse mesmo card em "1 · To Do".
+Um valor fora dessa lista vai para a coluna **Outros** (*Other* com o Obsidian em inglês) na view `Board (plugin)`. Os rótulos das colunas e das opções seguem o idioma do Obsidian; os valores gravados nas notas (`todo`, `done`…) não mudam. Na view `Board (cards)`, a fórmula `coluna` joga esse mesmo card em "1 · To Do".
 
 Filtros da view do plugin:
 

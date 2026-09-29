@@ -2,6 +2,7 @@ import { BasesView, Keymap, Notice, parsePropertyId } from 'obsidian';
 import type { BasesEntry, HoverParent, HoverPopover, QueryController } from 'obsidian';
 import { CLS, HOVER_SOURCE, OTHER_KEY, PENDING_SWEEP_MS, PENDING_TTL_MS, VIEW_TYPE } from '../constants';
 import { toCardModel } from '../data/card-model';
+import { t } from '../i18n';
 import { groupIntoColumns } from '../data/columns';
 import { completedActionFor, moveEntry } from '../data/frontmatter';
 import { valueText } from '../data/values';
@@ -91,16 +92,16 @@ export class BoardView extends BasesView implements HoverParent {
 	private renderNotes(cfg: BoardConfig, entryCount: number): void {
 		const notes: string[] = [];
 		if (!cfg.columnWritable) {
-			notes.push(`"${cfg.columnProperty}" é calculada e não pode ser gravada: arrastar está desativado. Escolha uma propriedade da nota.`);
+			notes.push(t('hint.notWritable', { property: cfg.columnProperty }));
 		}
 		if (cfg.setCompleted && cfg.completedProperty && !cfg.columns.some((c) => c.value === cfg.doneValue)) {
-			notes.push(`Nenhuma coluna tem o valor "${cfg.doneValue}": a data de conclusão não será gravada.`);
+			notes.push(t('hint.noDoneColumn', { value: cfg.doneValue }));
 		}
 		if (this.data.groupedData.some((group) => group.hasKey())) {
-			notes.push('O agrupamento do Bases é ignorado nesta view: as colunas vêm da propriedade da coluna.');
+			notes.push(t('hint.groupByIgnored'));
 		}
 		if (entryCount === 0) {
-			notes.push('Nenhuma nota corresponde aos filtros desta view.');
+			notes.push(t('hint.empty'));
 		}
 		if (notes.length === 0) return;
 
@@ -143,7 +144,7 @@ export class BoardView extends BasesView implements HoverParent {
 
 		const file = this.app.vault.getFileByPath(path);
 		if (!file) {
-			new Notice('Bases Board: arquivo não encontrado.');
+			new Notice(t('notice.fileNotFound'));
 			return;
 		}
 
@@ -170,7 +171,7 @@ export class BoardView extends BasesView implements HoverParent {
 		} catch (error) {
 			console.error('Bases Board: failed to move card', error);
 			this.pending.delete(path);
-			new Notice(`Bases Board: não foi possível mover "${file.basename}".`);
+			new Notice(t('notice.moveFailed', { name: file.basename }));
 			this.onDataUpdated();
 		}
 	}
