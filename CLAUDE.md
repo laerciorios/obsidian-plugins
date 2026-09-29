@@ -19,6 +19,7 @@ Monorepo of personal Obsidian plugins by Laercio Rios. Planning and specs live i
 ## Rules
 
 - **Never develop against the real vault.** Test in `dev-vault/` first. The real vault only receives builds after an explicit `pnpm link-plugin`. Never install Hot Reload in the real vault (it can enable plugins on its own).
+- **Test data is fictional.** `dev-vault/` notes, test checklists, READMEs and code comments use invented people, companies and projects only, never names from the user's vault. Real examples stay in the vault's spec. Plugin defaults may encode conventions (folder names, frontmatter keys) but never note names.
 - Plugin ids, Bases view ids and command ids are stable API: never rename after first use (`.base` files store the view id in `type:`).
 - New plugins only via `pnpm new-plugin`. Ids are kebab-case and must not contain "obsidian".
 - A plugin that replaces an installed community plugin (e.g. Colored Text) must either use a different id or the community plugin must be uninstalled first. `link-plugin` refuses to copy over a folder whose `manifest.json` has another author.
@@ -30,7 +31,7 @@ Monorepo of personal Obsidian plugins by Laercio Rios. Planning and specs live i
 - Code, identifiers and comments in English. User-facing strings (UI, notices) and READMEs in Brazilian Portuguese. UI copy in sentence case.
 - Never commit `main.js`, `dist/`, `node_modules/`, `.dev-targets.json`.
 - Run `pnpm check` before committing. Release = `pnpm bump <id> <x.y.z>` + `pnpm --filter <id> build` + tag `<id>-<x.y.z>`.
-- Keep `minAppVersion` accurate when using newer APIs (Bases view API: 1.10.0; `file`/`folder`/`formula` options and `createFileForView`: 1.10.2).
+- Keep `minAppVersion` accurate when using newer APIs (Bases view API: 1.10.0; `file`/`folder`/`formula` options and `createFileForView`: 1.10.2; declarative settings via `getSettingDefinitions`: 1.13.0).
 
 ## References
 

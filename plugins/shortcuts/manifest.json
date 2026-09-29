@@ -1,0 +1,10 @@
+{
+	"id": "shortcuts",
+	"name": "Shortcuts",
+	"version": "0.1.0",
+	"minAppVersion": "1.13.0",
+	"description": "Atalhos com @ no editor: datas e notas configuráveis viram links.",
+	"author": "Laercio Rios",
+	"authorUrl": "https://laerciorios.com",
+	"isDesktopOnly": false
+}

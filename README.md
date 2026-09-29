@@ -9,6 +9,7 @@ Planejamento e specs ficam no vault, em `1 - Knowledge/Projects/Obsidian Plugins
 | Plugin | Id | Status | O que faz |
 |---|---|---|---|
 | [Bases Board](plugins/bases-board) | `bases-board` | em desenvolvimento | Visualização kanban para o Bases: colunas por `status`, cards arrastáveis que gravam o status na nota. |
+| [Shortcuts](plugins/shortcuts) | `shortcuts` | em desenvolvimento | Atalhos com `@` no editor: datas e notas de fontes configuráveis viram links. |
 <!-- plugins:end -->
 
 ## Estrutura
@@ -24,7 +25,7 @@ dev-vault/           vault de testes versionado, com dados fictícios
 ## Pré-requisitos
 
 - Node 22+ e pnpm 11 (`corepack enable` ou `brew install pnpm`)
-- Obsidian 1.10.2+ (os plugins usam a API de views do Bases)
+- Obsidian 1.13+ (o Bases Board precisa de 1.10.2, pela API de views do Bases; o Shortcuts usa as configurações declarativas do 1.13)
 
 ## Começando
 

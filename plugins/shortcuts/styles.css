@@ -1,0 +1,5 @@
+/* Shortcuts — use only Obsidian CSS variables so light and dark themes work. */
+
+.sc-suggestion .sc-flair {
+	color: var(--text-muted);
+}

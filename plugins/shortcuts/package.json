@@ -1,0 +1,13 @@
+{
+	"name": "shortcuts",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Atalhos com @ no editor: datas e notas configuráveis viram links.",
+	"main": "dist/main.js",
+	"scripts": {
+		"dev": "node ../../scripts/esbuild.mjs",
+		"build": "tsc --noEmit && node ../../scripts/esbuild.mjs --production",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint src"
+	}
+}

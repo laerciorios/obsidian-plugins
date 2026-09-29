@@ -41,6 +41,8 @@ importers:
 
   plugins/bases-board: {}
 
+  plugins/shortcuts: {}
+
 packages:
 
   '@codemirror/state@6.5.0':
