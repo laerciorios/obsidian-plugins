@@ -52,7 +52,7 @@ export class ShortcutsSettingTab extends PluginSettingTab implements DefinitionC
 	setControlValue(controlKey: string, value: unknown): void {
 		writeSetting(this.plugin.settings, controlKey, value);
 		this.plugin.settingsChanged();
-		// "Valor da propriedade" is only visible while a property is set.
+		// "Property value" is only visible while a property is set.
 		this.refreshDomState();
 		if (controlKey.startsWith('source.')) this.refreshPreviews();
 	}

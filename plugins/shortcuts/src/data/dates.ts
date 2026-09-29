@@ -1,12 +1,15 @@
 import { moment } from 'obsidian';
 import { DATES_ICON, DATES_ORDER } from '../constants';
+import { t } from '../i18n';
+import type { MessageKey } from '../i18n';
 import type { DateKeywords, DatesConfig, Suggestion } from '../types';
 import { searchField } from './text';
 
-const DAYS: { key: keyof DateKeywords; title: string; offset: number }[] = [
-	{ key: 'today', title: 'Hoje', offset: 0 },
-	{ key: 'yesterday', title: 'Ontem', offset: -1 },
-	{ key: 'tomorrow', title: 'Amanhã', offset: 1 },
+/** Titles are message keys, translated when the suggestions are built. */
+const DAYS: { key: keyof DateKeywords; title: MessageKey; offset: number }[] = [
+	{ key: 'today', title: 'day.today', offset: 0 },
+	{ key: 'yesterday', title: 'day.yesterday', offset: -1 },
+	{ key: 'tomorrow', title: 'day.tomorrow', offset: 1 },
 ];
 
 export function formatDay(format: string, offset: number): string {
@@ -21,10 +24,10 @@ export function dateSuggestions(config: DatesConfig, format: string): Suggestion
 		const date = formatDay(format, day.offset);
 		return [
 			{
-				sourceName: 'Datas',
+				sourceName: t('suggest.datesSource'),
 				order: DATES_ORDER,
 				icon: DATES_ICON,
-				title: day.title,
+				title: t(day.title),
 				note: date,
 				haystack: keywords.map(searchField),
 				insert: `[[${date}]]`,

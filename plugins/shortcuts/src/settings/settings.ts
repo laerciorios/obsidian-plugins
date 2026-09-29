@@ -1,11 +1,13 @@
 import { DEFAULT_TRIGGER, FALLBACK_ICON, MAX_TRIGGER_LENGTH } from '../constants';
 import { isRecord, toStrings } from '../data/text';
+import { t } from '../i18n';
 import type { DateKeywords, DatesConfig, LinkTarget, NotesMatch, NotesSourceConfig, ShortcutsSettings } from '../types';
 
 /**
  * Starting point written on first use. Only conventions (folder names and
  * frontmatter keys), never note names: everything here is editable in the
- * settings tab.
+ * settings tab. Source names are translated here, once, and then saved as
+ * user data; the date keywords keep both languages on purpose.
  */
 export function defaultSettings(): ShortcutsSettings {
 	return {
@@ -21,7 +23,7 @@ export function defaultSettings(): ShortcutsSettings {
 				id: 'people',
 				kind: 'notes',
 				enabled: true,
-				name: 'Pessoas',
+				name: t('defaults.people'),
 				icon: 'user',
 				match: { folder: '_People', property: '', value: '', tag: '' },
 				exclude: ['_Templates'],
@@ -34,7 +36,7 @@ export function defaultSettings(): ShortcutsSettings {
 				id: 'projects',
 				kind: 'notes',
 				enabled: true,
-				name: 'Projetos',
+				name: t('defaults.projects'),
 				icon: 'briefcase',
 				match: { folder: '', property: 'type', value: 'project', tag: '' },
 				exclude: ['_Templates'],
@@ -60,7 +62,7 @@ export function createNotesSource(id: string): NotesSourceConfig {
 		id,
 		kind: 'notes',
 		enabled: true,
-		name: 'Nova fonte',
+		name: t('defaults.newSource'),
 		icon: FALLBACK_ICON,
 		match: { folder: '', property: '', value: '', tag: '' },
 		exclude: [],
@@ -72,9 +74,9 @@ export function createNotesSource(id: string): NotesSourceConfig {
 }
 
 export function triggerError(value: string): string | null {
-	if (!value) return 'Informe pelo menos um caractere.';
-	if (/\s/.test(value)) return 'O gatilho não pode ter espaços.';
-	if (value.length > MAX_TRIGGER_LENGTH) return `Use no máximo ${MAX_TRIGGER_LENGTH} caracteres.`;
+	if (!value) return t('validation.triggerEmpty');
+	if (/\s/.test(value)) return t('validation.triggerSpaces');
+	if (value.length > MAX_TRIGGER_LENGTH) return t('validation.triggerLength', { max: MAX_TRIGGER_LENGTH });
 	return null;
 }
 

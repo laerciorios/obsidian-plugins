@@ -55,6 +55,14 @@ Os critérios se somam: uma fonte com pasta e tag só sugere notas que estão na
 
 Os links são sempre wikilinks, montados pelo plugin. Eles seguem o destino configurado na fonte, e não a opção de formato de link novo do vault.
 
+## Idiomas
+
+A interface segue o idioma do Obsidian (**Settings → General → Language**). Há inglês e português (Brasil). Outros idiomas usam inglês.
+
+Os nomes das fontes padrão (Pessoas, Projetos) e de uma fonte nova são criados no idioma da interface e depois ficam salvos como qualquer nome editado: trocar o idioma não os renomeia. As palavras das datas vêm nos dois idiomas (`today, hoje`) em qualquer idioma.
+
+Um idioma novo é um arquivo novo em `src/i18n/`, com todas as chaves de `src/i18n/en.ts`, mais uma entrada em `src/i18n/index.ts`.
+
 ## Como funciona por dentro
 
 | Arquivo | Papel |

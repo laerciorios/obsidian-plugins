@@ -2,6 +2,7 @@ import { EditorSuggest, setIcon } from 'obsidian';
 import type { App, Editor, EditorPosition, EditorSuggestContext, EditorSuggestTriggerInfo, TFile } from 'obsidian';
 import { CLS, MAX_SUGGESTIONS } from '../constants';
 import type { ShortcutEngine } from '../engine';
+import { t } from '../i18n';
 import type { Suggestion } from '../types';
 import { findTrigger } from './trigger';
 
@@ -13,9 +14,9 @@ export class ShortcutSuggest extends EditorSuggest<Suggestion> {
 		super(app);
 		this.limit = MAX_SUGGESTIONS;
 		this.setInstructions([
-			{ command: '↑↓', purpose: 'navegar' },
-			{ command: '↵', purpose: 'inserir link' },
-			{ command: 'esc', purpose: 'fechar' },
+			{ command: '↑↓', purpose: t('suggest.navigate') },
+			{ command: '↵', purpose: t('suggest.insertLink') },
+			{ command: 'esc', purpose: t('suggest.close') },
 		]);
 	}
 
