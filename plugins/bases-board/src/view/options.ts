@@ -3,18 +3,47 @@ import type { BasesAllOptions, BasesPropertyId, BasesViewConfig } from 'obsidian
 import { DEFAULTS, OPTION } from '../constants';
 import { parseColumnSpecs } from '../data/columns';
 import { t } from '../i18n';
+import { findProfile } from '../settings/model';
+import type { BoardProfile, BoardSettings } from '../settings/model';
 import type { BoardConfig } from '../types';
 
 const noteOnly = (prop: BasesPropertyId): boolean => parsePropertyId(prop).type === 'note';
+
+const noteProp = (name: string): BasesPropertyId | null => (name ? (`note.${name}` as BasesPropertyId) : null);
 
 /** Default columns as "value|Label", with labels in the app language. */
 export function defaultColumns(): string[] {
 	return DEFAULTS.columnValues.map((value) => `${value}|${t(`column.${value}`)}`);
 }
 
-/** Options shown in the Bases view menu. Values are saved in the .base file by Bases itself. */
-export function getViewOptions(): BasesAllOptions[] {
+export interface OptionsHost {
+	settings: BoardSettings;
+}
+
+/**
+ * Options shown in the Bases view menu; values are saved in the .base file by
+ * Bases itself. Defaults shown in the menu follow the selected profile.
+ */
+export function getViewOptions(host: OptionsHost, config: BasesViewConfig): BasesAllOptions[] {
+	const profile = findProfile(host.settings, config.get(OPTION.profile));
+	const profiles: Record<string, string> = {};
+	for (const item of host.settings.profiles) profiles[item.id] = item.name;
+	const first = host.settings.profiles[0]?.id ?? '';
+
 	return [
+		{
+			type: 'dropdown',
+			key: OPTION.profile,
+			displayName: t('option.profile'),
+			default: first,
+			options: profiles,
+		},
+		{
+			type: 'toggle',
+			key: OPTION.hideArchived,
+			displayName: t('option.hideArchived'),
+			default: DEFAULTS.hideArchived,
+		},
 		{
 			type: 'group',
 			displayName: t('option.group.columns'),
@@ -23,8 +52,8 @@ export function getViewOptions(): BasesAllOptions[] {
 					type: 'property',
 					key: OPTION.columnProperty,
 					displayName: t('option.columnProperty'),
-					default: DEFAULTS.columnProperty,
-					placeholder: 'status',
+					default: noteProp(profile.statusProperty) ?? undefined,
+					placeholder: profile.statusProperty,
 					filter: noteOnly,
 				},
 				{
@@ -49,7 +78,7 @@ export function getViewOptions(): BasesAllOptions[] {
 					type: 'text',
 					key: OPTION.doneValue,
 					displayName: t('option.doneValue'),
-					default: DEFAULTS.doneValue,
+					default: profile.doneValue,
 				},
 				{
 					type: 'toggle',
@@ -61,8 +90,8 @@ export function getViewOptions(): BasesAllOptions[] {
 					type: 'property',
 					key: OPTION.completedProperty,
 					displayName: t('option.completedProperty'),
-					default: DEFAULTS.completedProperty,
-					placeholder: 'completed',
+					default: noteProp(profile.completedProperty) ?? undefined,
+					placeholder: profile.completedProperty,
 					filter: noteOnly,
 				},
 			],
@@ -88,7 +117,7 @@ export function getViewOptions(): BasesAllOptions[] {
 					type: 'property',
 					key: OPTION.projectProperty,
 					displayName: t('option.project'),
-					default: DEFAULTS.projectProperty,
+					default: noteProp(profile.projectProperty) ?? undefined,
 				},
 				{
 					type: 'property',
@@ -123,34 +152,41 @@ function readBoolean(config: BasesViewConfig, key: string, fallback: boolean): b
 	return typeof value === 'boolean' ? value : fallback;
 }
 
-function readProperty(config: BasesViewConfig, key: string, fallback: BasesPropertyId): BasesPropertyId {
+function readProperty(config: BasesViewConfig, key: string, fallback: BasesPropertyId | null): BasesPropertyId | null {
 	return config.getAsPropertyId(key) ?? fallback;
 }
 
 /**
- * Read the view options, applying defaults in code (the option `default` only
- * affects the menu UI). Never writes to the config: calling config.set() would
- * trigger onDataUpdated() again.
+ * Read the view options. Precedence: an option filled in the view, then the
+ * board profile, then the plugin default — so existing .base files keep their
+ * behavior. Never writes to the config: config.set() would trigger
+ * onDataUpdated() again.
  */
-export function readBoardConfig(config: BasesViewConfig): BoardConfig {
-	const columnProperty = readProperty(config, OPTION.columnProperty, DEFAULTS.columnProperty);
-	const rawColumns = config.get(OPTION.columns);
-	const columns = parseColumnSpecs(rawColumns);
+export function readBoardConfig(config: BasesViewConfig, settings: BoardSettings): BoardConfig {
+	const requested = config.get(OPTION.profile);
+	const profile: BoardProfile = findProfile(settings, requested);
+	const profileFound = typeof requested !== 'string' || requested === '' || profile.id === requested;
 
-	const completed = readProperty(config, OPTION.completedProperty, DEFAULTS.completedProperty);
+	const statusDefault = noteProp(profile.statusProperty) ?? 'note.status';
+	const columnProperty = readProperty(config, OPTION.columnProperty, statusDefault) ?? statusDefault;
+	const columns = parseColumnSpecs(config.get(OPTION.columns));
+	const completed = readProperty(config, OPTION.completedProperty, noteProp(profile.completedProperty));
 
 	return {
+		profile,
+		profileFound,
+		hideArchived: readBoolean(config, OPTION.hideArchived, DEFAULTS.hideArchived),
 		columnProperty,
 		columnWritable: noteOnly(columnProperty),
 		columns: columns.length > 0 ? columns : parseColumnSpecs(defaultColumns()),
 		otherLabel: readString(config, OPTION.otherLabel, t('column.other')),
 		hideEmptyOther: readBoolean(config, OPTION.hideEmptyOther, DEFAULTS.hideEmptyOther),
-		doneValue: readString(config, OPTION.doneValue, DEFAULTS.doneValue),
-		completedProperty: noteOnly(completed) ? completed : null,
+		doneValue: readString(config, OPTION.doneValue, profile.doneValue),
+		completedProperty: completed && noteOnly(completed) ? completed : null,
 		setCompleted: readBoolean(config, OPTION.setCompleted, DEFAULTS.setCompleted),
 		titleProperty: readProperty(config, OPTION.titleProperty, DEFAULTS.titleProperty),
 		typeProperty: readProperty(config, OPTION.typeProperty, DEFAULTS.typeProperty),
-		projectProperty: readProperty(config, OPTION.projectProperty, DEFAULTS.projectProperty),
+		projectProperty: readProperty(config, OPTION.projectProperty, noteProp(profile.projectProperty)),
 		executorProperty: readProperty(config, OPTION.executorProperty, DEFAULTS.executorProperty),
 		aiValue: readString(config, OPTION.aiValue, DEFAULTS.aiValue),
 		dueProperty: readProperty(config, OPTION.dueProperty, DEFAULTS.dueProperty),

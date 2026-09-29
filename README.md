@@ -8,7 +8,7 @@ Planejamento e specs ficam no vault, em `1 - Knowledge/Projects/Obsidian Plugins
 
 | Plugin | Id | Status | O que faz |
 |---|---|---|---|
-| [Bases Board](plugins/bases-board) | `bases-board` | em desenvolvimento | Visualização kanban para o Bases: colunas por `status`, cards arrastáveis que gravam o status na nota. |
+| [Bases Board](plugins/bases-board) | `bases-board` | em desenvolvimento | Visualização kanban para o Bases: colunas por `status`, cards arrastáveis, "+ Adicionar card" e arquivamento automático por perfis de quadro. |
 | [Shortcuts](plugins/shortcuts) | `shortcuts` | em desenvolvimento | Atalhos com `@` no editor: datas e notas de fontes configuráveis viram links. |
 | [Media Catalog](plugins/media-catalog) | `media-catalog` | em desenvolvimento | Busca filmes, séries, jogos e livros na internet e cria notas do catálogo com dados e capa. |
 | [Colored Text](plugins/colored-text) | `colored-text` | em desenvolvimento | Cores sobre o realce nativo: `=={vermelho}texto==`, com paleta em hexadecimal, seletor e atalhos. Substitui o Colored Text da comunidade. |

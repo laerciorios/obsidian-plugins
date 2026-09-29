@@ -1,5 +1,4 @@
 import type { App, TFile } from 'obsidian';
-import { todayIso } from './values';
 
 export type CompletedAction = 'set' | 'clear' | 'keep';
 
@@ -7,7 +6,8 @@ export interface MoveRequest {
 	/** Frontmatter key of the column property (e.g. "status"). */
 	property: string;
 	value: string;
-	completed?: { property: string; action: CompletedAction };
+	/** `stamp` is the completion value written on 'set' (profile format). */
+	completed?: { property: string; action: CompletedAction; stamp: string };
 }
 
 /** Decide what happens to the completion date when a card moves between columns. */
@@ -27,7 +27,7 @@ export async function moveEntry(app: App, file: TFile, request: MoveRequest): Pr
 
 		const completed = request.completed;
 		if (!completed) return;
-		if (completed.action === 'set') frontmatter[completed.property] = todayIso();
+		if (completed.action === 'set') frontmatter[completed.property] = completed.stamp;
 		// null keeps the empty key ("completed:"), matching the card template.
 		if (completed.action === 'clear') frontmatter[completed.property] = null;
 	});

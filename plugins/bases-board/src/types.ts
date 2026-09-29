@@ -1,4 +1,5 @@
 import type { BasesEntry, BasesPropertyId } from 'obsidian';
+import type { BoardProfile } from './settings/model';
 
 export interface ColumnSpec {
 	value: string;
@@ -6,6 +7,11 @@ export interface ColumnSpec {
 }
 
 export interface BoardConfig {
+	/** Profile of the view (option "profile", else the first profile). */
+	profile: BoardProfile;
+	/** False when the view's `profile` option names a profile that no longer exists. */
+	profileFound: boolean;
+	hideArchived: boolean;
 	columnProperty: BasesPropertyId;
 	/** False when the column property is a formula/file property (cannot be written). */
 	columnWritable: boolean;

@@ -230,3 +230,94 @@
 .bb-column-done .bb-card-title {
 	color: var(--text-muted);
 }
+
+/* ---- "+ Add card" ------------------------------------------------------- */
+
+.bb-column-footer {
+	padding: 0 var(--size-4-2) var(--size-4-2);
+}
+
+.bb-add-card {
+	display: flex;
+	width: 100%;
+	justify-content: flex-start;
+	padding: var(--size-2-2) var(--size-4-2);
+	background: transparent;
+	box-shadow: none;
+	border: none;
+	border-radius: var(--radius-s);
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+	cursor: pointer;
+}
+
+.bb-add-card:hover {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+
+.bb-is-dragging .bb-add-card {
+	visibility: hidden;
+}
+
+/* ---- new card modal ----------------------------------------------------- */
+
+.bb-new-card-preview {
+	padding: var(--size-4-2) 0;
+	color: var(--text-muted);
+	font-family: var(--font-monospace);
+	font-size: var(--font-ui-smaller);
+	overflow-wrap: anywhere;
+}
+
+.bb-new-card-preview.bb-new-card-preview-error {
+	color: var(--text-error);
+}
+
+/* ---- archive preview modal ---------------------------------------------- */
+
+.bb-archive-preview {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-3);
+	max-height: 60vh;
+	overflow-y: auto;
+}
+
+.bb-archive-profile h3 {
+	margin: 0 0 var(--size-2-3);
+	font-size: var(--font-ui-medium);
+}
+
+.bb-archive-list {
+	margin: var(--size-2-2) 0 var(--size-4-2);
+	padding-left: var(--size-4-5);
+}
+
+.bb-archive-item {
+	margin-bottom: var(--size-2-3);
+}
+
+.bb-archive-path {
+	font-family: var(--font-monospace);
+	font-size: var(--font-ui-smaller);
+	overflow-wrap: anywhere;
+}
+
+.bb-archive-reason,
+.bb-archive-empty {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+.bb-archive-error {
+	color: var(--text-error);
+	font-size: var(--font-ui-small);
+}
+
+.bb-archive-buttons {
+	display: flex;
+	justify-content: flex-end;
+	gap: var(--size-4-2);
+	margin-top: var(--size-4-3);
+}

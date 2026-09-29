@@ -1,5 +1,11 @@
 import { BasesView, Keymap, Notice, parsePropertyId } from 'obsidian';
-import type { BasesEntry, HoverParent, HoverPopover, QueryController } from 'obsidian';
+import type { BasesEntry, BasesPropertyId, HoverParent, HoverPopover, QueryController } from 'obsidian';
+import { collectProjects } from '../cards/new-card';
+import { NewCardModal } from '../cards/new-card-modal';
+import { formatCompleted } from '../data/dates';
+import { folderOf } from '../patterns/pattern';
+import { archiveMatcherOf, projectOf } from '../profiles/matcher';
+import type { BoardSettings } from '../settings/model';
 import { CLS, HOVER_SOURCE, OTHER_KEY, PENDING_SWEEP_MS, PENDING_TTL_MS, VIEW_TYPE } from '../constants';
 import { toCardModel } from '../data/card-model';
 import { t } from '../i18n';
@@ -9,16 +15,34 @@ import { valueText } from '../data/values';
 import type { DropEvent } from '../dnd/drag-controller';
 import { DragController } from '../dnd/drag-controller';
 import { createCardEl, refreshOverdue } from '../render/card';
-import { createColumnEl, refreshCount } from '../render/column';
+import { addCardButton, createColumnEl, refreshCount } from '../render/column';
 import type { BoardConfig, PendingMove } from '../types';
 import { readBoardConfig } from './options';
+
+export interface RefreshableView {
+	refresh(): void;
+}
+
+/** What the view needs from the plugin. */
+export interface BoardHost {
+	settings: BoardSettings;
+	/** Open views, re-rendered when the plugin settings change. */
+	views: Set<RefreshableView>;
+}
+
+/** Frontmatter key of a note property, null for formula/file properties. */
+function noteKey(prop: BasesPropertyId | null): string | null {
+	if (!prop) return null;
+	const { type, name } = parsePropertyId(prop);
+	return type === 'note' ? name : null;
+}
 
 /**
  * Kanban view for Bases. Columns come from a note property; dragging a card to
  * another column writes that property. The view only renders the query result:
  * filters, sort and limit are the Bases view's own.
  */
-export class BoardView extends BasesView implements HoverParent {
+export class BoardView extends BasesView implements HoverParent, RefreshableView {
 	readonly type = VIEW_TYPE;
 	hoverPopover: HoverPopover | null = null;
 
@@ -29,7 +53,11 @@ export class BoardView extends BasesView implements HoverParent {
 	private cfg: BoardConfig | null = null;
 	private renderDeferred = false;
 
-	constructor(controller: QueryController, containerEl: HTMLElement) {
+	constructor(
+		controller: QueryController,
+		containerEl: HTMLElement,
+		private readonly host: BoardHost,
+	) {
 		super(controller);
 		this.rootEl = containerEl.createDiv({ cls: CLS.root });
 		this.drag = new DragController(this.rootEl, {
@@ -41,6 +69,17 @@ export class BoardView extends BasesView implements HoverParent {
 		this.registerDomEvent(this.rootEl, 'auxclick', (evt) => this.handleClick(evt));
 		this.registerDomEvent(this.rootEl, 'mouseover', (evt) => this.handleHover(evt));
 		this.registerInterval(window.setInterval(() => this.sweepPending(), PENDING_SWEEP_MS));
+		host.views.add(this);
+		this.register(() => host.views.delete(this));
+	}
+
+	/** Re-render with the current plugin settings (profiles may have changed). */
+	refresh(): void {
+		if (!this.rootEl.isConnected) {
+			this.host.views.delete(this);
+			return;
+		}
+		if (this.data) this.onDataUpdated();
 	}
 
 	onDataUpdated(): void {
@@ -61,9 +100,10 @@ export class BoardView extends BasesView implements HoverParent {
 	// ---- rendering -------------------------------------------------------
 
 	private render(): void {
-		const cfg = readBoardConfig(this.config);
+		const cfg = readBoardConfig(this.config, this.host.settings);
 		this.cfg = cfg;
-		const entries = this.data.data;
+		const archived = cfg.hideArchived ? archiveMatcherOf(cfg.profile) : null;
+		const entries = archived ? this.data.data.filter((entry) => !archived.test(folderOf(entry.file.path))) : this.data.data;
 		const columns = groupIntoColumns(entries, cfg, (entry) => this.columnKeyFor(entry, cfg));
 
 		const previousBoard = this.rootEl.querySelector<HTMLElement>(`.${CLS.board}`);
@@ -80,17 +120,24 @@ export class BoardView extends BasesView implements HoverParent {
 		const boardEl = this.rootEl.createDiv({ cls: CLS.board });
 		for (const column of columns) {
 			if (column.isOther && cfg.hideEmptyOther && column.entries.length === 0) continue;
-			const { bodyEl } = createColumnEl(boardEl, column);
+			const { columnEl, bodyEl } = createColumnEl(boardEl, column);
 			for (const entry of column.entries) {
 				createCardEl(bodyEl, toCardModel(this.app, entry, cfg, column));
 			}
 			bodyEl.scrollTop = scrollTops.get(column.key) ?? 0;
+			if (!column.isOther && cfg.columnWritable) addCardButton(columnEl, t('column.addCard'));
 		}
 		boardEl.scrollLeft = scrollLeft;
 	}
 
 	private renderNotes(cfg: BoardConfig, entryCount: number): void {
 		const notes: string[] = [];
+		if (!cfg.profileFound) {
+			notes.push(t('hint.profileMissing', { profile: String(this.config.get('profile')), fallback: cfg.profile.name }));
+		}
+		if (cfg.hideArchived && !archiveMatcherOf(cfg.profile)) {
+			notes.push(t('hint.archivePatternInvalid', { profile: cfg.profile.name }));
+		}
 		if (!cfg.columnWritable) {
 			notes.push(t('hint.notWritable', { property: cfg.columnProperty }));
 		}
@@ -165,7 +212,11 @@ export class BoardView extends BasesView implements HoverParent {
 				value: toKey,
 				completed:
 					cfg.setCompleted && cfg.completedProperty
-						? { property: parsePropertyId(cfg.completedProperty).name, action: completedActionFor(fromIsDone, toIsDone) }
+						? {
+								property: parsePropertyId(cfg.completedProperty).name,
+								action: completedActionFor(fromIsDone, toIsDone),
+								stamp: formatCompleted(new Date(), cfg.profile.completedFormat),
+							}
 						: undefined,
 			});
 		} catch (error) {
@@ -176,11 +227,54 @@ export class BoardView extends BasesView implements HoverParent {
 		}
 	}
 
+	// ---- new card ---------------------------------------------------------
+
+	private openNewCard(columnKey: string): void {
+		const cfg = this.cfg;
+		if (!cfg || !cfg.columnWritable || columnKey === OTHER_KEY) return;
+		const { profile } = cfg;
+		const projectKey = noteKey(cfg.projectProperty);
+		const keys = {
+			status: parsePropertyId(cfg.columnProperty).name,
+			title: noteKey(cfg.titleProperty),
+			type: noteKey(cfg.typeProperty),
+			project: projectKey,
+			completed: cfg.setCompleted ? noteKey(cfg.completedProperty) : null,
+		};
+
+		const projectProfile = { ...profile, projectProperty: projectKey ?? '' };
+		const projects = projectKey ? collectProjects(this.app, projectProfile) : [];
+		// Preselect the project when every card on the board shares it.
+		const onBoard = new Set<string>();
+		if (projectKey) {
+			for (const entry of this.data.data) {
+				const project = projectOf(this.app, entry.file, projectProfile);
+				if (project) onBoard.add(project.path);
+			}
+		}
+		const [only] = onBoard.size === 1 ? [...onBoard] : [];
+
+		new NewCardModal(this.app, {
+			base: { profile, keys, status: columnKey, isDone: columnKey === cfg.doneValue && keys.completed !== null },
+			columnLabel: cfg.columns.find((column) => column.value === columnKey)?.label ?? columnKey,
+			projects,
+			preselected: projects.find((project) => project.path === only) ?? null,
+			onCreated: (file) => void this.app.workspace.getLeaf('tab').openFile(file),
+		}).open();
+	}
+
 	// ---- click and hover -------------------------------------------------
 
 	private handleClick(evt: MouseEvent): void {
 		if (evt.button !== 0 && evt.button !== 1) return;
 		const target = evt.target as HTMLElement | null;
+		const addEl = target?.closest<HTMLElement>(`.${CLS.addCard}`);
+		if (addEl) {
+			evt.preventDefault();
+			const key = addEl.closest<HTMLElement>(`.${CLS.column}`)?.dataset.key;
+			if (key !== undefined && evt.button === 0) this.openNewCard(key);
+			return;
+		}
 		const cardEl = target?.closest<HTMLElement>(`.${CLS.card}`);
 		const path = cardEl?.dataset.path;
 		if (!cardEl || !path) return;

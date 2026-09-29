@@ -6,6 +6,12 @@ export interface ColumnEls {
 	bodyEl: HTMLElement;
 }
 
+/** "+ Add card" button at the foot of a column; clicks are handled by the board root. */
+export function addCardButton(columnEl: HTMLElement, label: string): void {
+	const footer = columnEl.createDiv({ cls: CLS.columnFooter });
+	footer.createEl('button', { cls: CLS.addCard, text: label, attr: { type: 'button' } });
+}
+
 /** Column shell: header (label + count) and a body that receives cards. */
 export function createColumnEl(parent: HTMLElement, column: Column): ColumnEls {
 	const columnEl = parent.createDiv({ cls: CLS.column });

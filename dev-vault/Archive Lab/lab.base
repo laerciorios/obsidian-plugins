@@ -1,0 +1,47 @@
+filters:
+  and:
+    - file.inFolder("Archive Lab")
+    - or:
+        - file.hasTag("card")
+        - file.hasTag("lab-card")
+        - file.hasTag("broken-card")
+properties:
+  note.title:
+    displayName: Título
+  note.status:
+    displayName: Status
+  note.completed:
+    displayName: Concluído
+  note.archived_from:
+    displayName: Arquivado de
+views:
+  - type: bases-board
+    name: Padrão
+    profile: default
+    filters:
+      and:
+        - file.hasTag("card")
+  - type: bases-board
+    name: Padrão (com arquivados)
+    profile: default
+    hideArchived: false
+    filters:
+      and:
+        - file.hasTag("card")
+  - type: bases-board
+    name: Central
+    profile: central
+    filters:
+      and:
+        - file.hasTag("lab-card")
+  - type: table
+    name: Todos
+    order:
+      - file.path
+      - title
+      - status
+      - completed
+      - archived_from
+    sort:
+      - property: file.path
+        direction: ASC

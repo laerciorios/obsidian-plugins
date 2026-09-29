@@ -1,6 +1,6 @@
 {
 	"name": "bases-board",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"private": true,
 	"description": "Kanban view for Bases: columns from a note property, drag cards to update it.",
 	"main": "dist/main.js",
@@ -8,7 +8,8 @@
 		"dev": "node ../../scripts/esbuild.mjs",
 		"build": "tsc --noEmit && node ../../scripts/esbuild.mjs --production",
 		"typecheck": "tsc --noEmit",
-		"lint": "eslint src"
+		"lint": "eslint src",
+		"fixtures": "node scripts/fixtures.mjs"
 	},
 	"dependencies": {
 		"@obsidian-plugins/i18n": "workspace:*"

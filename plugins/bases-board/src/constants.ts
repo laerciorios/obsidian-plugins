@@ -12,6 +12,8 @@ export const PENDING_TTL_MS = 4000;
 export const PENDING_SWEEP_MS = 1000;
 
 export const OPTION = {
+	profile: 'profile',
+	hideArchived: 'hideArchived',
 	columnProperty: 'columnProperty',
 	columns: 'columns',
 	otherLabel: 'otherLabel',
@@ -29,18 +31,16 @@ export const OPTION = {
 
 /**
  * Defaults applied in code. Column values are data (they are written to notes)
- * and never translated; labels are UI and follow the app language.
+ * and never translated; labels are UI and follow the app language. Status,
+ * done value, completion and project properties come from the board profile.
  */
 export const DEFAULTS = {
-	columnProperty: 'note.status' as BasesPropertyId,
 	columnValues: ['todo', 'doing', 'review', 'done'] as const,
 	hideEmptyOther: true,
-	doneValue: 'done',
-	completedProperty: 'note.completed' as BasesPropertyId,
+	hideArchived: true,
 	setCompleted: true,
 	titleProperty: 'note.title' as BasesPropertyId,
 	typeProperty: 'note.type' as BasesPropertyId,
-	projectProperty: 'note.project' as BasesPropertyId,
 	executorProperty: 'note.executor' as BasesPropertyId,
 	aiValue: 'ai',
 	dueProperty: 'note.due' as BasesPropertyId,
@@ -61,6 +61,8 @@ export const CLS = {
 	columnTitle: 'bb-column-title',
 	count: 'bb-count',
 	columnBody: 'bb-column-body',
+	columnFooter: 'bb-column-footer',
+	addCard: 'bb-add-card',
 	dropTarget: 'bb-drop-target',
 	card: 'bb-card',
 	cardLocked: 'bb-card-locked',
