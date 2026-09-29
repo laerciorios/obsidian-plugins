@@ -46,6 +46,27 @@ export default defineConfig(
 	},
 	...obsidianmd.configs.recommended,
 	{
+		// Provided by Obsidian at runtime, never bundled (the externals in scripts/esbuild.mjs).
+		// Their types come from the root devDependencies.
+		settings: {
+			'import/core-modules': [
+				'obsidian',
+				'electron',
+				'@codemirror/autocomplete',
+				'@codemirror/collab',
+				'@codemirror/commands',
+				'@codemirror/language',
+				'@codemirror/lint',
+				'@codemirror/search',
+				'@codemirror/state',
+				'@codemirror/view',
+				'@lezer/common',
+				'@lezer/highlight',
+				'@lezer/lr',
+			],
+		},
+	},
+	{
 		rules: {
 			'obsidianmd/ui/sentence-case': ['warn', { brands: BRANDS }],
 		},

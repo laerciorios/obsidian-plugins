@@ -39,5 +39,6 @@ Monorepo of personal Obsidian plugins by Laercio Rios. Planning and specs live i
 ## References
 
 - API typings: `node_modules/obsidian/obsidian.d.ts` (search `BasesView`, `BasesViewConfig`, `registerBasesView`).
+- Editor extensions import `@codemirror/state`, `/view` and `/language`: Obsidian provides them at runtime (esbuild externals, `import/core-modules` in `eslint.config.mjs`), and the root devDependencies carry only their types, pinned by `overrides` in `pnpm-workspace.yaml` to the versions Obsidian declares as peers.
 - Bases view guide: https://docs.obsidian.md/plugins/guides/bases-view
 - Plugin guidelines: https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines
