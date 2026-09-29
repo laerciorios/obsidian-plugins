@@ -1,0 +1,10 @@
+{
+	"id": "bases-board",
+	"name": "Bases Board",
+	"version": "0.1.0",
+	"minAppVersion": "1.10.2",
+	"description": "Visualização kanban para o Bases: colunas por status, cards arrastáveis que gravam o status na nota.",
+	"author": "Laercio Rios",
+	"authorUrl": "https://laerciorios.com",
+	"isDesktopOnly": false
+}

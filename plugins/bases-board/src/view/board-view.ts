@@ -1,0 +1,216 @@
+import { BasesView, Keymap, Notice, parsePropertyId } from 'obsidian';
+import type { BasesEntry, HoverParent, HoverPopover, QueryController } from 'obsidian';
+import { CLS, HOVER_SOURCE, OTHER_KEY, PENDING_SWEEP_MS, PENDING_TTL_MS, VIEW_TYPE } from '../constants';
+import { toCardModel } from '../data/card-model';
+import { groupIntoColumns } from '../data/columns';
+import { completedActionFor, moveEntry } from '../data/frontmatter';
+import { valueText } from '../data/values';
+import type { DropEvent } from '../dnd/drag-controller';
+import { DragController } from '../dnd/drag-controller';
+import { createCardEl, refreshOverdue } from '../render/card';
+import { createColumnEl, refreshCount } from '../render/column';
+import type { BoardConfig, PendingMove } from '../types';
+import { readBoardConfig } from './options';
+
+/**
+ * Kanban view for Bases. Columns come from a note property; dragging a card to
+ * another column writes that property. The view only renders the query result:
+ * filters, sort and limit are the Bases view's own.
+ */
+export class BoardView extends BasesView implements HoverParent {
+	readonly type = VIEW_TYPE;
+	hoverPopover: HoverPopover | null = null;
+
+	private readonly rootEl: HTMLElement;
+	private readonly drag: DragController;
+	/** Optimistic moves waiting for the query to catch up, keyed by file path. */
+	private readonly pending = new Map<string, PendingMove>();
+	private cfg: BoardConfig | null = null;
+	private renderDeferred = false;
+
+	constructor(controller: QueryController, containerEl: HTMLElement) {
+		super(controller);
+		this.rootEl = containerEl.createDiv({ cls: CLS.root });
+		this.drag = new DragController(this.rootEl, {
+			onDrop: (event) => void this.handleDrop(event),
+			onDragEnd: () => this.flushDeferredRender(),
+		});
+		this.drag.register(this);
+		this.registerDomEvent(this.rootEl, 'click', (evt) => this.handleClick(evt));
+		this.registerDomEvent(this.rootEl, 'auxclick', (evt) => this.handleClick(evt));
+		this.registerDomEvent(this.rootEl, 'mouseover', (evt) => this.handleHover(evt));
+		this.registerInterval(window.setInterval(() => this.sweepPending(), PENDING_SWEEP_MS));
+	}
+
+	onDataUpdated(): void {
+		// Rebuilding the DOM mid-drag would destroy the dragged element.
+		if (this.drag.isDragging) {
+			this.renderDeferred = true;
+			return;
+		}
+		this.render();
+	}
+
+	private flushDeferredRender(): void {
+		if (!this.renderDeferred) return;
+		this.renderDeferred = false;
+		this.render();
+	}
+
+	// ---- rendering -------------------------------------------------------
+
+	private render(): void {
+		const cfg = readBoardConfig(this.config);
+		this.cfg = cfg;
+		const entries = this.data.data;
+		const columns = groupIntoColumns(entries, cfg, (entry) => this.columnKeyFor(entry, cfg));
+
+		const previousBoard = this.rootEl.querySelector<HTMLElement>(`.${CLS.board}`);
+		const scrollLeft = previousBoard?.scrollLeft ?? 0;
+		const scrollTops = new Map<string, number>();
+		previousBoard?.querySelectorAll<HTMLElement>(`.${CLS.column}`).forEach((col) => {
+			const body = col.querySelector<HTMLElement>(`.${CLS.columnBody}`);
+			if (col.dataset.key !== undefined && body) scrollTops.set(col.dataset.key, body.scrollTop);
+		});
+
+		this.rootEl.empty();
+		this.renderNotes(cfg, entries.length);
+
+		const boardEl = this.rootEl.createDiv({ cls: CLS.board });
+		for (const column of columns) {
+			if (column.isOther && cfg.hideEmptyOther && column.entries.length === 0) continue;
+			const { bodyEl } = createColumnEl(boardEl, column);
+			for (const entry of column.entries) {
+				createCardEl(bodyEl, toCardModel(this.app, entry, cfg, column));
+			}
+			bodyEl.scrollTop = scrollTops.get(column.key) ?? 0;
+		}
+		boardEl.scrollLeft = scrollLeft;
+	}
+
+	private renderNotes(cfg: BoardConfig, entryCount: number): void {
+		const notes: string[] = [];
+		if (!cfg.columnWritable) {
+			notes.push(`"${cfg.columnProperty}" é calculada e não pode ser gravada: arrastar está desativado. Escolha uma propriedade da nota.`);
+		}
+		if (cfg.setCompleted && cfg.completedProperty && !cfg.columns.some((c) => c.value === cfg.doneValue)) {
+			notes.push(`Nenhuma coluna tem o valor "${cfg.doneValue}": a data de conclusão não será gravada.`);
+		}
+		if (this.data.groupedData.some((group) => group.hasKey())) {
+			notes.push('O agrupamento do Bases é ignorado nesta view: as colunas vêm da propriedade da coluna.');
+		}
+		if (entryCount === 0) {
+			notes.push('Nenhuma nota corresponde aos filtros desta view.');
+		}
+		if (notes.length === 0) return;
+
+		const notesEl = this.rootEl.createDiv({ cls: CLS.notes });
+		for (const text of notes) notesEl.createDiv({ cls: CLS.note, text });
+	}
+
+	/** Column value of an entry, honouring optimistic moves until the query confirms them. */
+	private columnKeyFor(entry: BasesEntry, cfg: BoardConfig): string {
+		const live = valueText(entry.getValue(cfg.columnProperty));
+		const path = entry.file.path;
+		const move = this.pending.get(path);
+		if (!move) return live;
+		if (live === move.toKey || Date.now() > move.expires) {
+			this.pending.delete(path);
+			return live;
+		}
+		return move.toKey;
+	}
+
+	private sweepPending(): void {
+		if (this.pending.size === 0) return;
+		const now = Date.now();
+		let expired = false;
+		for (const [path, move] of this.pending) {
+			if (now > move.expires) {
+				this.pending.delete(path);
+				expired = true;
+			}
+		}
+		// A move that never got confirmed: show what the query actually says.
+		if (expired) this.onDataUpdated();
+	}
+
+	// ---- drag and drop ---------------------------------------------------
+
+	private async handleDrop({ path, cardEl, fromKey, toKey, toColumnEl }: DropEvent): Promise<void> {
+		const cfg = this.cfg;
+		if (!cfg || !cfg.columnWritable || toKey === OTHER_KEY) return;
+
+		const file = this.app.vault.getFileByPath(path);
+		if (!file) {
+			new Notice('Bases Board: arquivo não encontrado.');
+			return;
+		}
+
+		const fromColumnEl = cardEl.closest<HTMLElement>(`.${CLS.column}`);
+		const fromIsDone = fromKey === cfg.doneValue;
+		const toIsDone = toKey === cfg.doneValue;
+
+		// Optimistic move: the query re-runs only after the metadata cache updates.
+		toColumnEl.querySelector(`.${CLS.columnBody}`)?.appendChild(cardEl);
+		refreshOverdue(cardEl, toIsDone);
+		if (fromColumnEl) refreshCount(fromColumnEl);
+		refreshCount(toColumnEl);
+		this.pending.set(path, { toKey, expires: Date.now() + PENDING_TTL_MS });
+
+		try {
+			await moveEntry(this.app, file, {
+				property: parsePropertyId(cfg.columnProperty).name,
+				value: toKey,
+				completed:
+					cfg.setCompleted && cfg.completedProperty
+						? { property: parsePropertyId(cfg.completedProperty).name, action: completedActionFor(fromIsDone, toIsDone) }
+						: undefined,
+			});
+		} catch (error) {
+			console.error('Bases Board: failed to move card', error);
+			this.pending.delete(path);
+			new Notice(`Bases Board: não foi possível mover "${file.basename}".`);
+			this.onDataUpdated();
+		}
+	}
+
+	// ---- click and hover -------------------------------------------------
+
+	private handleClick(evt: MouseEvent): void {
+		if (evt.button !== 0 && evt.button !== 1) return;
+		const target = evt.target as HTMLElement | null;
+		const cardEl = target?.closest<HTMLElement>(`.${CLS.card}`);
+		const path = cardEl?.dataset.path;
+		if (!cardEl || !path) return;
+
+		evt.preventDefault();
+		const newTab = evt.button === 1 || Keymap.isModEvent(evt);
+		const projectEl = target?.closest<HTMLElement>(`.${CLS.chipProject}`);
+		const linkpath = projectEl?.dataset.linkpath;
+		if (linkpath) {
+			void this.app.workspace.openLinkText(linkpath, path, newTab);
+			return;
+		}
+		void this.app.workspace.openLinkText(path, '', newTab);
+	}
+
+	private handleHover(evt: MouseEvent): void {
+		const cardEl = (evt.target as HTMLElement | null)?.closest<HTMLElement>(`.${CLS.card}`);
+		const path = cardEl?.dataset.path;
+		if (!cardEl || !path || this.drag.isDragging) return;
+		// mouseover bubbles from children: only react when entering the card.
+		const from = evt.relatedTarget as Node | null;
+		if (from && cardEl.contains(from)) return;
+
+		this.app.workspace.trigger('hover-link', {
+			event: evt,
+			source: HOVER_SOURCE,
+			hoverParent: this,
+			targetEl: cardEl,
+			linktext: path,
+			sourcePath: '',
+		});
+	}
+}
+

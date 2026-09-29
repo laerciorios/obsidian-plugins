@@ -1,0 +1,232 @@
+/*
+ * Bases Board — kanban view for Bases.
+ * Only Obsidian CSS variables: works in light and dark themes and follows the
+ * user's theme. Classes are prefixed with `bb-`.
+ */
+
+.bb-root {
+	--bb-column-width: 280px;
+	--bb-type-color: var(--text-faint);
+	--bb-type-rgb: var(--mono-rgb-100);
+
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-height: 0;
+}
+
+/* ---- notes (configuration hints, empty state) -------------------------- */
+
+.bb-notes {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-2);
+	padding: var(--size-4-2) var(--size-4-3) 0;
+}
+
+.bb-note {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+}
+
+/* ---- board and columns -------------------------------------------------- */
+
+.bb-board {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--size-4-3);
+	flex: 1;
+	min-height: 0;
+	overflow-x: auto;
+	padding: var(--size-4-3);
+}
+
+.bb-column {
+	display: flex;
+	flex-direction: column;
+	flex: 0 0 var(--bb-column-width);
+	width: var(--bb-column-width);
+	max-height: 100%;
+	background-color: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.bb-column-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--size-4-2);
+	padding: var(--size-4-2) var(--size-4-3);
+	font-size: var(--font-ui-small);
+	font-weight: var(--font-semibold);
+	color: var(--text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.bb-count {
+	min-width: 1.6em;
+	padding: 0 var(--size-2-2);
+	border-radius: var(--radius-s);
+	background-color: var(--background-modifier-hover);
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+}
+
+.bb-column-body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-2);
+	min-height: 64px;
+	overflow-y: auto;
+	padding: 0 var(--size-4-2) var(--size-4-2);
+}
+
+.bb-column-other .bb-column-header {
+	font-style: italic;
+}
+
+.bb-is-dragging .bb-column[data-accepts="true"] {
+	border-style: dashed;
+}
+
+.bb-column.bb-drop-target {
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 1px var(--interactive-accent);
+}
+
+/* ---- cards -------------------------------------------------------------- */
+
+.bb-card {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-3);
+	padding: var(--size-4-2) var(--size-4-3);
+	background-color: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-left: 3px solid var(--bb-type-color);
+	border-radius: var(--radius-s);
+	box-shadow: var(--shadow-s);
+	cursor: grab;
+}
+
+.bb-card:hover {
+	border-color: var(--background-modifier-border-hover);
+	border-left-color: var(--bb-type-color);
+}
+
+.bb-card-locked {
+	cursor: pointer;
+}
+
+.bb-card-dragging {
+	opacity: 0.5;
+	cursor: grabbing;
+}
+
+.bb-card-title {
+	font-size: var(--font-ui-small);
+	font-weight: var(--font-medium);
+	color: var(--text-normal);
+	line-height: var(--line-height-tight);
+	overflow-wrap: anywhere;
+}
+
+.bb-card-meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--size-2-2);
+}
+
+/* ---- badges and chips --------------------------------------------------- */
+
+.bb-badge,
+.bb-chip,
+.bb-due {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-2-1);
+	padding: 1px var(--size-2-3);
+	border-radius: var(--radius-s);
+	font-size: var(--font-ui-smaller);
+	line-height: 1.5;
+	white-space: nowrap;
+}
+
+.bb-badge {
+	background-color: rgba(var(--bb-type-rgb), 0.15);
+	color: var(--bb-type-color);
+	font-weight: var(--font-semibold);
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.bb-chip {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-muted);
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.bb-chip-project::before {
+	content: "";
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background-color: var(--color-green);
+	flex: none;
+}
+
+.bb-chip-project[data-linkpath]:hover {
+	color: var(--text-normal);
+	cursor: pointer;
+}
+
+.bb-chip-ai {
+	background-color: rgba(var(--color-cyan-rgb), 0.15);
+	color: var(--color-cyan);
+	font-weight: var(--font-semibold);
+}
+
+.bb-due {
+	color: var(--text-muted);
+	font-variant-numeric: tabular-nums;
+}
+
+.bb-due.bb-due-overdue {
+	background-color: rgba(var(--color-red-rgb), 0.15);
+	color: var(--text-error);
+	font-weight: var(--font-semibold);
+}
+
+/* ---- type colors (card border + badge) ---------------------------------- */
+
+.bb-card.bb-type-task,
+.bb-badge.bb-type-task {
+	--bb-type-color: var(--color-orange);
+	--bb-type-rgb: var(--color-orange-rgb);
+}
+
+.bb-card.bb-type-spec,
+.bb-badge.bb-type-spec {
+	--bb-type-color: var(--color-purple);
+	--bb-type-rgb: var(--color-purple-rgb);
+}
+
+.bb-card.bb-type-project,
+.bb-badge.bb-type-project {
+	--bb-type-color: var(--color-blue);
+	--bb-type-rgb: var(--color-blue-rgb);
+}
+
+/* ---- done column: finished cards recede --------------------------------- */
+
+.bb-column-done .bb-card-title {
+	color: var(--text-muted);
+}
