@@ -1,0 +1,10 @@
+{
+	"id": "colored-text",
+	"name": "Colored Text",
+	"version": "0.1.0",
+	"minAppVersion": "1.13.0",
+	"description": "Color text with the highlight syntax (=={red}text==) and a palette of hex colors.",
+	"author": "Laercio Rios",
+	"authorUrl": "https://laerciorios.com",
+	"isDesktopOnly": false
+}

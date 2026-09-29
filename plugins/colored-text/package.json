@@ -1,0 +1,16 @@
+{
+	"name": "colored-text",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Color text with the highlight syntax (=={red}text==) and a palette of hex colors.",
+	"main": "dist/main.js",
+	"scripts": {
+		"dev": "node ../../scripts/esbuild.mjs",
+		"build": "tsc --noEmit && node ../../scripts/esbuild.mjs --production",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint src"
+	},
+	"dependencies": {
+		"@obsidian-plugins/i18n": "workspace:*"
+	}
+}

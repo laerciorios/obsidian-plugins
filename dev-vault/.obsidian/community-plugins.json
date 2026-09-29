@@ -2,5 +2,6 @@
   "hot-reload",
   "bases-board",
   "shortcuts",
-  "media-catalog"
+  "media-catalog",
+  "colored-text"
 ]

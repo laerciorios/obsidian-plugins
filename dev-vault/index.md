@@ -12,6 +12,7 @@ Este é o vault de desenvolvimento do monorepo `obsidian-plugins`. Ele existe pa
 - Projetos fictícios: `Projects/Garden App/`, `Projects/Recipe Book/` e `Work/Horta Digital/Projects/Irrigação Inteligente/`
 - Pessoas e atas fictícias: `Work/Horta Digital/` e `Work/Pomar Coletivo/` (empresas inventadas)
 - Casos de teste do Shortcuts: [[Shortcuts/index|Shortcuts]], com a nota [[Shortcuts/playground|playground]] para digitar
+- Casos de teste do Colored Text: [[Colored Text/index|Colored Text]], com a nota [[Colored Text/playground|playground]] para colorir
 - Catálogo fictício de filmes, séries, jogos e livros: `1 - Knowledge/Entertainment/DB/`. Casos de teste do [[1 - Knowledge/Entertainment/index|Media Catalog]]
 - Templates: `_Templates/` (card, pessoa, projeto, daily e media)
 - `.obsidian/plugins/` é gerada pelos scripts de build e fica fora do git.
@@ -20,7 +21,7 @@ Este é o vault de desenvolvimento do monorepo `obsidian-plugins`. Ele existe pa
 
 1. No Obsidian, abra esta pasta (`dev-vault/`) como vault ("Abrir pasta como cofre").
 2. Em Configurações → Plugins da comunidade, ative os plugins da comunidade.
-3. Na raiz do repo, rode `pnpm --filter <id> dev` (por exemplo `bases-board` ou `shortcuts`).
+3. Na raiz do repo, rode `pnpm --filter <id> dev` (por exemplo `bases-board`, `shortcuts` ou `colored-text`).
 4. Confira se o plugin e o **Hot Reload** estão ativos na lista de plugins.
 5. Siga os casos de teste do plugin. Com o Hot Reload ativo, o plugin recarrega a cada build. Para o Bases Board, abra `Boards/kanban.base` ou use o embed abaixo.
 
