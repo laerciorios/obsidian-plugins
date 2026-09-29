@@ -6,7 +6,7 @@ import { ALLOWED_TOKENS, parsePattern } from '../patterns/pattern';
 import type { PatternKind } from '../patterns/pattern';
 import { key } from './bindings';
 import type { ProfileField } from './bindings';
-import { MAX_AFTER_DAYS, MAX_INTERVAL_HOURS, MAX_STARTUP_DELAY_SECONDS } from './model';
+import { MAX_AFTER_DAYS, MAX_COLLAPSE_ABOVE, MAX_INTERVAL_HOURS, MAX_STARTUP_DELAY_SECONDS } from './model';
 import type { BoardProfile, BoardSettings } from './model';
 
 /** What the definitions need from the settings tab. */
@@ -121,6 +121,37 @@ function profilePage(context: DefinitionContext, profile: BoardProfile): Setting
 						},
 					},
 					text(id, 'projectProperty', t('settings.profile.projectProperty.name'), t('settings.profile.projectProperty.desc'), 'project'),
+				],
+			},
+			{
+				type: 'group',
+				heading: t('settings.profile.hierarchy.heading'),
+				items: [
+					{
+						name: t('settings.profile.hierarchyEnabled.name'),
+						desc: t('settings.profile.hierarchyEnabled.desc'),
+						control: { type: 'toggle', key: key.profile(id, 'hierarchy.enabled') },
+					},
+					text(id, 'parentProperty', t('settings.profile.parentProperty.name'), t('settings.profile.parentProperty.desc'), 'parent'),
+					text(id, 'orderProperty', t('settings.profile.orderProperty.name'), t('settings.profile.orderProperty.desc'), 'order'),
+					text(id, 'blockedByProperty', t('settings.profile.blockedByProperty.name'), t('settings.profile.blockedByProperty.desc'), 'blocked_by'),
+					text(id, 'typeProperty', t('settings.profile.typeProperty.name'), t('settings.profile.typeProperty.desc'), 'type'),
+					text(id, 'hierarchy.specValue', t('settings.profile.specValue.name'), t('settings.profile.specValue.desc'), 'spec'),
+					{
+						name: t('settings.profile.countArchived.name'),
+						desc: t('settings.profile.countArchived.desc'),
+						control: { type: 'toggle', key: key.profile(id, 'hierarchy.countArchived') },
+					},
+					{
+						name: t('settings.profile.collapseAbove.name'),
+						desc: t('settings.profile.collapseAbove.desc'),
+						control: { type: 'number', key: key.profile(id, 'hierarchy.collapseAbove'), min: 0, max: MAX_COLLAPSE_ABOVE, step: 1 },
+					},
+					{
+						name: t('settings.profile.showOnProjects.name'),
+						desc: t('settings.profile.showOnProjects.desc'),
+						control: { type: 'toggle', key: key.profile(id, 'hierarchy.showOnProjects') },
+					},
 				],
 			},
 			{

@@ -27,6 +27,9 @@ export const OPTION = {
 	executorProperty: 'executorProperty',
 	aiValue: 'aiValue',
 	dueProperty: 'dueProperty',
+	showChildren: 'showChildren',
+	showProgress: 'showProgress',
+	showBlocked: 'showBlocked',
 } as const;
 
 /**
@@ -76,4 +79,23 @@ export const CLS = {
 	due: 'bb-due',
 	dueOverdue: 'bb-due-overdue',
 	dragging: 'bb-is-dragging',
+	chipParent: 'bb-chip-parent',
+	blocked: 'bb-blocked',
+	relations: 'bb-relations',
+	summary: 'bb-summary',
+	progress: 'bb-progress',
+	progressTrack: 'bb-progress-track',
+	progressFill: 'bb-progress-fill',
+	progressLabel: 'bb-progress-label',
+	progressComplete: 'bb-progress-complete',
+	childList: 'bb-child-list',
+	childListCollapsed: 'bb-child-list-collapsed',
+	childToggle: 'bb-child-toggle',
+	childRows: 'bb-child-rows',
+	child: 'bb-child',
+	childArchived: 'bb-child-archived',
+	childTitle: 'bb-child-title',
+	childProgress: 'bb-child-progress',
+	status: 'bb-status',
+	statusDone: 'bb-status-is-done',
 } as const;

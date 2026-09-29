@@ -1,0 +1,72 @@
+filters:
+  and:
+    - file.inFolder("Hierarchy Lab")
+    - or:
+        - file.hasTag("card")
+        - type == "project"
+properties:
+  note.title:
+    displayName: Título
+  note.type:
+    displayName: Tipo
+  note.status:
+    displayName: Status
+  note.order:
+    displayName: Ordem
+  note.parent:
+    displayName: Spec
+  note.blocked_by:
+    displayName: Bloqueado por
+views:
+  - type: bases-board
+    name: Hierarquia
+    profile: hierarchy
+    filters:
+      not:
+        - file.inFolder("Hierarchy Lab/Stress")
+    columns:
+      - "todo|A fazer"
+      - "doing|Fazendo"
+      - "review|Em revisão"
+      - "done|Concluído"
+      - "active|Projetos"
+  - type: bases-board
+    name: Hierarquia (desligada)
+    profile: hierarchy
+    showChildren: false
+    showProgress: false
+    showBlocked: false
+    filters:
+      not:
+        - file.inFolder("Hierarchy Lab/Stress")
+    columns:
+      - "todo|A fazer"
+      - "doing|Fazendo"
+      - "review|Em revisão"
+      - "done|Concluído"
+      - "active|Projetos"
+  - type: bases-board
+    name: Stress (520 cards)
+    profile: hierarchy
+    filters:
+      and:
+        - file.inFolder("Hierarchy Lab/Stress")
+    columns:
+      - "todo|A fazer"
+      - "doing|Fazendo"
+      - "review|Em revisão"
+      - "done|Concluído"
+      - "active|Projetos"
+  - type: table
+    name: Todos
+    order:
+      - file.path
+      - title
+      - type
+      - status
+      - order
+      - parent
+      - blocked_by
+    sort:
+      - property: file.path
+        direction: ASC

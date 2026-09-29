@@ -4,6 +4,8 @@ Visualização **Board** (kanban) para o Bases nativo do Obsidian. As colunas v�
 
 Desde a 0.2.0 o plugin também **arquiva automaticamente** os cards concluídos há mais de N dias e **cria cards** pelo botão "+ Adicionar card". As duas coisas seguem **perfis de quadro** configuráveis.
 
+A 0.3.0 mostra a **hierarquia projeto → spec → task** nos cards: progresso e tarefas da spec, chip do pai e cadeado de bloqueio na tarefa, resumo no projeto.
+
 Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/bases-board-spec.md`.
 
 Requer Obsidian **1.13.0** ou mais novo (ver [Por que 1.13](#por-que-1130)).
@@ -157,6 +159,11 @@ As opções preenchidas na view **têm prioridade** sobre o perfil, e o perfil t
 | Propriedade da data de conclusão | do perfil | |
 | Título, Tipo, Projeto, Executor, Prazo | `title`, `type`, do perfil, `executor`, `due` | Propriedades mostradas no card. Sem título, o card usa o nome do arquivo. |
 | Valor do executor que indica IA | `ai` | Mostra o chip **AI**. |
+| Mostrar listas de filhos e chip do pai | do perfil | Lista de tarefas nas specs, lista de specs nos projetos e o chip "↑ spec". |
+| Mostrar progresso | do perfil | Barras de progresso e o resumo "N specs · M tarefas". |
+| Mostrar indicador de bloqueio | do perfil | Cadeado nas tarefas bloqueadas. |
+
+As três opções de hierarquia usam "Mostrar hierarquia nos cards" do perfil quando não estão preenchidas na view.
 
 ## O card
 
@@ -164,6 +171,35 @@ As opções preenchidas na view **têm prioridade** sobre o perfil, e o perfil t
 - **Chip de projeto**: mostra o alias do link (`[[.../index|slug]]` vira `slug`). Clicar abre o projeto.
 - **Prazo**: fica vermelho quando está vencido, exceto na coluna de concluído.
 - **Notas `type: project`**: aparecem, mas não podem ser arrastadas.
+
+## Hierarquia projeto → spec → task
+
+O plugin lê as relações que já estão nas notas e as mostra nos cards. É só leitura: nada é gravado.
+
+| Propriedade | Padrão | O que é |
+|---|---|---|
+| Pai | `parent` | Link da tarefa para a spec. |
+| Ordem | `order` | Número que ordena as tarefas da spec. |
+| Bloqueio | `blocked_by` | Lista de links para os cards que bloqueiam este. |
+| Tipo | `type` | Separa specs de tarefas no resumo do projeto. |
+| Projeto | `project` | Link para a nota do projeto (a mesma do perfil). |
+
+- **Card de spec**: barra `concluídas/total` das tarefas filhas diretas, pelo valor de concluído do perfil, e a lista das tarefas. A lista segue `order`; tarefas sem ordem vêm por último, pelo título. Cada linha mostra o status como está na nota. Clicar na linha abre a tarefa, e Cmd com o mouse em cima mostra a prévia. A lista começa recolhida quando tem mais itens que o limite do perfil; clicar no cabeçalho abre ou fecha, e o quadro lembra a escolha enquanto está aberto.
+- **Card de tarefa**: chip "↑ <spec>" que abre a spec. Cadeado, com a lista no tooltip, enquanto algum card de `blocked_by` não está concluído. O cadeado só sinaliza: o card continua arrastável. Links que não existem são ignorados. Uma nota fora do perfil só bloqueia se tiver status.
+- **Card de projeto**: "N specs · M tarefas", barra das tarefas concluídas e a lista das specs com status e progresso de cada uma. Specs são os cards com o tipo de spec ou com filhos; o resto são tarefas. Uma tarefa sem `project` herda o projeto da spec.
+
+**De onde vêm os dados.** O índice usa **todos os cards do perfil no vault**, não só os que a view mostra, e inclui os arquivados. Assim o progresso de uma spec não cai quando uma tarefa concluída vai para o arquivo. Com "Contar arquivados" desligado, os arquivados saem da contagem e das listas. O índice fica em memória, lê só o cache de metadados do Obsidian e se atualiza sozinho, com um pequeno atraso, quando um card muda, é renomeado, movido ou apagado. Quando a view define outra propriedade de coluna, título, tipo ou projeto, o índice lê essas propriedades.
+
+### Configurações do perfil
+
+| Configuração | Padrão | O que faz |
+|---|---|---|
+| Mostrar hierarquia nos cards | ligado | Liga tudo acima. As opções da view podem sobrepor. |
+| Propriedade do pai, de ordem, de bloqueio, de tipo | `parent`, `order`, `blocked_by`, `type` | Onde ler as relações. |
+| Valor de tipo das specs | `spec` | |
+| Contar arquivados | ligado | Arquivados no progresso e nas listas. |
+| Recolher listas com mais de | `5` | Listas maiores começam recolhidas. |
+| Resumo nos cards de projeto | ligado | Contagem, progresso e lista de specs no projeto. |
 
 ## Idiomas
 
@@ -194,11 +230,12 @@ A aba clássica, com `PluginSettingTab.display()`, precisaria reimplementar tudo
 | `src/settings/` | Modelo com padrões e normalização do `data.json`, ligações dos controles, definições declarativas e a aba. |
 | `src/patterns/pattern.ts` | Parse, validação e resolução dos padrões com tokens, e a regex que reconhece pastas de arquivo. |
 | `src/profiles/matcher.ts` | Globs de pasta, tag, projeto linkado e leitura de frontmatter. |
+| `src/hierarchy/` | Grafo puro de relações (`graph.ts`), o que cada card mostra (`relations.ts`) e o índice em cache que escuta o vault (`index.ts`). |
 | `src/archive/` | Planejador puro, executor, serviço com agendamento, trava e confirmação, desarquivar e o modal de prévia. |
 | `src/cards/` | Planejamento e criação de cards novos, o modal e as sugestões de pasta. |
 | `src/vault/files.ts` | Criar pastas, achar nome livre e esperar o índice. |
 | `src/view/` | `BoardView extends BasesView` e as opções da view. |
-| `src/data/`, `src/render/`, `src/dnd/` | Colunas, valores, datas, render e drag and drop do quadro. |
+| `src/data/`, `src/render/`, `src/dnd/` | Colunas, valores, datas, render (inclusive `render/relations.ts`, da hierarquia) e drag and drop do quadro. |
 
 Todas as escritas em notas passam por `processFrontMatter`. Todos os movimentos passam por `renameFile`. Nada é apagado.
 
@@ -214,12 +251,19 @@ pnpm --filter bases-board dev
 
 O comando `fixtures` recria, dentro de `dev-vault/Archive Lab/`, os cards de teste com datas relativas a hoje. Ele também recria o `data.json` do plugin no dev-vault, com três perfis: Padrão, Central e Quebrado. O roteiro de testes está em `dev-vault/Archive Lab/index.md`. O quadro do MVP continua em `dev-vault/Boards/`.
 
+Para a hierarquia:
+
+```bash
+pnpm --filter bases-board fixtures:hierarchy
+```
+
+Ele recria `dev-vault/Hierarchy Lab/`, com o cenário principal e um conjunto de 520 cards para desempenho, e acrescenta o perfil "Hierarquia" ao `data.json` sem apagar os outros. O roteiro está em `dev-vault/Hierarchy Lab/index.md`.
+
 Cada build também é copiado para os vaults ligados com `pnpm link-plugin`.
 
 ## Limitações
 
 - Não reordena cards dentro da coluna.
-- Não mostra progresso de spec.
 - Não suporta arrastar por toque no mobile.
 - Ignora o `groupBy` do Bases.
 - Não tem limite de WIP nem swimlanes.

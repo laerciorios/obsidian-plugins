@@ -2,6 +2,7 @@ import { Notice, Plugin, debounce } from 'obsidian';
 import { ArchiveService } from './archive/service';
 import { registerCommands } from './commands';
 import { HOVER_SOURCE, VIEW_TYPE } from './constants';
+import { HierarchyIndex } from './hierarchy';
 import { t } from './i18n';
 import { defaultSettings, normalizeSettings } from './settings/model';
 import type { BoardSettings } from './settings/model';
@@ -15,6 +16,7 @@ export default class BasesBoardPlugin extends Plugin {
 	/** data.json exists but could not be read: never overwrite it, pause automatic archiving. */
 	settingsBroken = false;
 	archive!: ArchiveService;
+	hierarchy!: HierarchyIndex;
 	/** Open board views, re-rendered when the settings change. */
 	readonly views = new Set<RefreshableView>();
 	private readonly saveSoon = debounce(() => void this.saveSettings(), 500, true);
@@ -24,6 +26,8 @@ export default class BasesBoardPlugin extends Plugin {
 		// Flush an edit made in the last moments before unload or hot reload.
 		this.register(() => this.saveSoon.run());
 		this.archive = new ArchiveService(this);
+		this.hierarchy = new HierarchyIndex(this.app);
+		this.hierarchy.start(this, () => this.refreshViews());
 		this.addSettingTab(new BoardSettingTab(this.app, this));
 		registerCommands(this);
 		this.registerHoverLinkSource(HOVER_SOURCE, { display: 'Bases Board', defaultMod: true });
@@ -66,6 +70,7 @@ export default class BasesBoardPlugin extends Plugin {
 	/** Called by the settings tab after every edit. */
 	settingsChanged(): void {
 		this.saveSoon();
+		this.hierarchy.clear();
 		this.archive.reschedule();
 		this.refreshViews();
 	}
@@ -73,6 +78,7 @@ export default class BasesBoardPlugin extends Plugin {
 	/** data.json changed on disk (sync, or the dev-vault fixture script). */
 	async onExternalSettingsChange(): Promise<void> {
 		await this.loadSettings(false);
+		this.hierarchy.clear();
 		this.archive.reschedule();
 		this.refreshViews();
 	}

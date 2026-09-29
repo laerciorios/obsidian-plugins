@@ -5,6 +5,7 @@ import { parseColumnSpecs } from '../data/columns';
 import { t } from '../i18n';
 import { findProfile } from '../settings/model';
 import type { BoardProfile, BoardSettings } from '../settings/model';
+import type { GraphKeys } from '../hierarchy/graph';
 import type { BoardConfig } from '../types';
 
 const noteOnly = (prop: BasesPropertyId): boolean => parsePropertyId(prop).type === 'note';
@@ -98,6 +99,30 @@ export function getViewOptions(host: OptionsHost, config: BasesViewConfig): Base
 		},
 		{
 			type: 'group',
+			displayName: t('option.group.hierarchy'),
+			items: [
+				{
+					type: 'toggle',
+					key: OPTION.showChildren,
+					displayName: t('option.showChildren'),
+					default: profile.hierarchy.enabled,
+				},
+				{
+					type: 'toggle',
+					key: OPTION.showProgress,
+					displayName: t('option.showProgress'),
+					default: profile.hierarchy.enabled,
+				},
+				{
+					type: 'toggle',
+					key: OPTION.showBlocked,
+					displayName: t('option.showBlocked'),
+					default: profile.hierarchy.enabled,
+				},
+			],
+		},
+		{
+			type: 'group',
 			displayName: t('option.group.card'),
 			items: [
 				{
@@ -111,7 +136,7 @@ export function getViewOptions(host: OptionsHost, config: BasesViewConfig): Base
 					type: 'property',
 					key: OPTION.typeProperty,
 					displayName: t('option.type'),
-					default: DEFAULTS.typeProperty,
+					default: noteProp(profile.typeProperty) ?? DEFAULTS.typeProperty,
 				},
 				{
 					type: 'property',
@@ -171,6 +196,31 @@ export function readBoardConfig(config: BasesViewConfig, settings: BoardSettings
 	const columnProperty = readProperty(config, OPTION.columnProperty, statusDefault) ?? statusDefault;
 	const columns = parseColumnSpecs(config.get(OPTION.columns));
 	const completed = readProperty(config, OPTION.completedProperty, noteProp(profile.completedProperty));
+	const titleProperty = readProperty(config, OPTION.titleProperty, DEFAULTS.titleProperty);
+	const typeProperty = readProperty(config, OPTION.typeProperty, noteProp(profile.typeProperty) ?? DEFAULTS.typeProperty);
+	const projectProperty = readProperty(config, OPTION.projectProperty, noteProp(profile.projectProperty));
+	const doneValue = readString(config, OPTION.doneValue, profile.doneValue);
+
+	// Relations follow the view where it names note properties, else the profile.
+	const noteName = (prop: BasesPropertyId | null, fallback: string): string => {
+		if (!prop) return fallback;
+		const { type, name } = parsePropertyId(prop);
+		return type === 'note' ? name : fallback;
+	};
+	const hierarchy = profile.hierarchy;
+	const graphKeys: GraphKeys = {
+		title: noteName(titleProperty, 'title'),
+		status: noteName(columnProperty, profile.statusProperty),
+		doneValue,
+		type: noteName(typeProperty, profile.typeProperty),
+		specValue: hierarchy.specValue,
+		project: noteName(projectProperty, profile.projectProperty),
+		parent: profile.parentProperty,
+		order: profile.orderProperty,
+		blockedBy: profile.blockedByProperty,
+	};
+	const children = readBoolean(config, OPTION.showChildren, hierarchy.enabled);
+	const progress = readBoolean(config, OPTION.showProgress, hierarchy.enabled);
 
 	return {
 		profile,
@@ -181,14 +231,24 @@ export function readBoardConfig(config: BasesViewConfig, settings: BoardSettings
 		columns: columns.length > 0 ? columns : parseColumnSpecs(defaultColumns()),
 		otherLabel: readString(config, OPTION.otherLabel, t('column.other')),
 		hideEmptyOther: readBoolean(config, OPTION.hideEmptyOther, DEFAULTS.hideEmptyOther),
-		doneValue: readString(config, OPTION.doneValue, profile.doneValue),
+		doneValue,
 		completedProperty: completed && noteOnly(completed) ? completed : null,
 		setCompleted: readBoolean(config, OPTION.setCompleted, DEFAULTS.setCompleted),
-		titleProperty: readProperty(config, OPTION.titleProperty, DEFAULTS.titleProperty),
-		typeProperty: readProperty(config, OPTION.typeProperty, DEFAULTS.typeProperty),
-		projectProperty: readProperty(config, OPTION.projectProperty, noteProp(profile.projectProperty)),
+		titleProperty,
+		typeProperty,
+		projectProperty,
 		executorProperty: readProperty(config, OPTION.executorProperty, DEFAULTS.executorProperty),
 		aiValue: readString(config, OPTION.aiValue, DEFAULTS.aiValue),
 		dueProperty: readProperty(config, OPTION.dueProperty, DEFAULTS.dueProperty),
+		hierarchy: {
+			children,
+			progress,
+			blocked: readBoolean(config, OPTION.showBlocked, hierarchy.enabled),
+			projects: hierarchy.showOnProjects,
+			countArchived: hierarchy.countArchived,
+			collapseAbove: hierarchy.collapseAbove,
+			specValue: hierarchy.specValue,
+		},
+		graphKeys,
 	};
 }

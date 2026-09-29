@@ -1,4 +1,4 @@
-import { MAX_AFTER_DAYS, MAX_INTERVAL_HOURS, MAX_STARTUP_DELAY_SECONDS } from './model';
+import { MAX_AFTER_DAYS, MAX_COLLAPSE_ABOVE, MAX_INTERVAL_HOURS, MAX_STARTUP_DELAY_SECONDS } from './model';
 import type { ArchiveSettings, BoardProfile, BoardSettings } from './model';
 
 /**
@@ -23,6 +23,15 @@ const PROFILE_FIELDS = {
 	completedProperty: 'text',
 	completedFormat: 'completedFormat',
 	projectProperty: 'text',
+	parentProperty: 'text',
+	orderProperty: 'text',
+	blockedByProperty: 'text',
+	typeProperty: 'text',
+	'hierarchy.enabled': 'bool',
+	'hierarchy.countArchived': 'bool',
+	'hierarchy.collapseAbove': 'number',
+	'hierarchy.showOnProjects': 'bool',
+	'hierarchy.specValue': 'text',
 	'archive.enabled': 'bool',
 	'archive.afterDays': 'number',
 	'archive.folderPattern': 'text',
@@ -52,6 +61,7 @@ const MAX: Partial<Record<string, number>> = {
 	intervalHours: MAX_INTERVAL_HOURS,
 	startupDelaySeconds: MAX_STARTUP_DELAY_SECONDS,
 	'archive.afterDays': MAX_AFTER_DAYS,
+	'hierarchy.collapseAbove': MAX_COLLAPSE_ABOVE,
 };
 
 /** Fields whose change can alter which cards a profile archives: confirmation is asked again. */

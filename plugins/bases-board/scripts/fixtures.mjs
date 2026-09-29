@@ -6,7 +6,7 @@
 // Boards) and resets dev-vault/.obsidian/plugins/bases-board/data.json.
 // The committed files Archive Lab/index.md and Archive Lab/lab.base are never touched.
 // All data is fictional. Plain Node 22, no dependencies.
-import { existsSync, mkdirSync, readdirSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -422,6 +422,14 @@ for (const card of CARDS) {
 
 writeNote(`${projectFolder('estufa')}/retrospectiva.md`, retrospectiveNote(refs.estufa90, refs.estufa31));
 
+// Keep the profile owned by hierarchy-fixtures.mjs, so both labs can coexist.
+try {
+	const previous = JSON.parse(readFileSync(DATA_JSON, 'utf8'));
+	const profiles = Array.isArray(previous?.profiles) ? previous.profiles : [];
+	SETTINGS.profiles.push(...profiles.filter((profile) => profile?.id === 'hierarchy'));
+} catch {
+	// Missing or unparsable data.json: nothing to keep.
+}
 mkdirSync(dirname(DATA_JSON), { recursive: true });
 writeFileSync(DATA_JSON, JSON.stringify(SETTINGS, null, '\t') + '\n', 'utf8');
 

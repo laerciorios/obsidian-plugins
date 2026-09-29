@@ -14,7 +14,10 @@ import { completedActionFor, moveEntry } from '../data/frontmatter';
 import { valueText } from '../data/values';
 import type { DropEvent } from '../dnd/drag-controller';
 import { DragController } from '../dnd/drag-controller';
+import type { HierarchyIndex } from '../hierarchy';
 import { createCardEl, refreshOverdue } from '../render/card';
+import { toggleList } from '../render/relations';
+import type { ListKind } from '../render/relations';
 import { addCardButton, createColumnEl, refreshCount } from '../render/column';
 import type { BoardConfig, PendingMove } from '../types';
 import { readBoardConfig } from './options';
@@ -28,6 +31,8 @@ export interface BoardHost {
 	settings: BoardSettings;
 	/** Open views, re-rendered when the plugin settings change. */
 	views: Set<RefreshableView>;
+	/** Project → spec → task relations, shared by every board. */
+	hierarchy: HierarchyIndex;
 }
 
 /** Frontmatter key of a note property, null for formula/file properties. */
@@ -52,6 +57,8 @@ export class BoardView extends BasesView implements HoverParent, RefreshableView
 	private readonly pending = new Map<string, PendingMove>();
 	private cfg: BoardConfig | null = null;
 	private renderDeferred = false;
+	/** Lists the user opened or closed, by card path and kind: kept across re-renders. */
+	private readonly expanded = new Map<string, boolean>();
 
 	constructor(
 		controller: QueryController,
@@ -105,6 +112,9 @@ export class BoardView extends BasesView implements HoverParent, RefreshableView
 		const archived = cfg.hideArchived ? archiveMatcherOf(cfg.profile) : null;
 		const entries = archived ? this.data.data.filter((entry) => !archived.test(folderOf(entry.file.path))) : this.data.data;
 		const columns = groupIntoColumns(entries, cfg, (entry) => this.columnKeyFor(entry, cfg));
+		const { hierarchy } = cfg;
+		const graph = hierarchy.children || hierarchy.progress || hierarchy.blocked ? this.host.hierarchy.graph(cfg.profile, cfg.graphKeys) : null;
+		const expanded = (path: string, kind: ListKind): boolean | undefined => this.expanded.get(`${path}\u0000${kind}`);
 
 		const previousBoard = this.rootEl.querySelector<HTMLElement>(`.${CLS.board}`);
 		const scrollLeft = previousBoard?.scrollLeft ?? 0;
@@ -122,7 +132,7 @@ export class BoardView extends BasesView implements HoverParent, RefreshableView
 			if (column.isOther && cfg.hideEmptyOther && column.entries.length === 0) continue;
 			const { columnEl, bodyEl } = createColumnEl(boardEl, column);
 			for (const entry of column.entries) {
-				createCardEl(bodyEl, toCardModel(this.app, entry, cfg, column));
+				createCardEl(bodyEl, toCardModel(this.app, entry, cfg, column, graph), expanded);
 			}
 			bodyEl.scrollTop = scrollTops.get(column.key) ?? 0;
 			if (!column.isOther && cfg.columnWritable) addCardButton(columnEl, t('column.addCard'));
@@ -280,9 +290,16 @@ export class BoardView extends BasesView implements HoverParent, RefreshableView
 		if (!cardEl || !path) return;
 
 		evt.preventDefault();
+		const toggleEl = target?.closest<HTMLElement>(`.${CLS.childToggle}`);
+		const listEl = toggleEl?.closest<HTMLElement>(`.${CLS.childList}`);
+		if (toggleEl && listEl) {
+			if (evt.button === 0) this.expanded.set(`${path}\u0000${listEl.dataset.kind ?? ''}`, toggleList(listEl));
+			return;
+		}
 		const newTab = evt.button === 1 || Keymap.isModEvent(evt);
-		const projectEl = target?.closest<HTMLElement>(`.${CLS.chipProject}`);
-		const linkpath = projectEl?.dataset.linkpath;
+		// Project chip, "↑ parent" chip and child rows open the note they point to.
+		const linkEl = target?.closest<HTMLElement>('[data-linkpath]');
+		const linkpath = linkEl && cardEl.contains(linkEl) ? linkEl.dataset.linkpath : undefined;
 		if (linkpath) {
 			void this.app.workspace.openLinkText(linkpath, path, newTab);
 			return;
@@ -291,20 +308,25 @@ export class BoardView extends BasesView implements HoverParent, RefreshableView
 	}
 
 	private handleHover(evt: MouseEvent): void {
-		const cardEl = (evt.target as HTMLElement | null)?.closest<HTMLElement>(`.${CLS.card}`);
+		const target = evt.target as HTMLElement | null;
+		const cardEl = target?.closest<HTMLElement>(`.${CLS.card}`);
 		const path = cardEl?.dataset.path;
 		if (!cardEl || !path || this.drag.isDragging) return;
-		// mouseover bubbles from children: only react when entering the card.
+		// Child rows and the parent chip preview the note they point to.
+		const rowEl = target?.closest<HTMLElement>('[data-hover-path]');
+		const el = rowEl && cardEl.contains(rowEl) ? rowEl : cardEl;
+		const linktext = el === cardEl ? path : (el.dataset.hoverPath ?? path);
+		// mouseover bubbles from children: only react when entering the element.
 		const from = evt.relatedTarget as Node | null;
-		if (from && cardEl.contains(from)) return;
+		if (from && el.contains(from)) return;
 
 		this.app.workspace.trigger('hover-link', {
 			event: evt,
 			source: HOVER_SOURCE,
 			hoverParent: this,
-			targetEl: cardEl,
-			linktext: path,
-			sourcePath: '',
+			targetEl: el,
+			linktext,
+			sourcePath: el === cardEl ? '' : path,
 		});
 	}
 }

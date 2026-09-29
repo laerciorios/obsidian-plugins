@@ -237,12 +237,13 @@
 	padding: 0 var(--size-4-2) var(--size-4-2);
 }
 
-.bb-add-card {
+/* Two classes: Obsidian's `button:not(.clickable-icon)` would win over one. */
+.bb-column-footer .bb-add-card {
 	display: flex;
 	width: 100%;
 	justify-content: flex-start;
 	padding: var(--size-2-2) var(--size-4-2);
-	background: transparent;
+	background-color: transparent;
 	box-shadow: none;
 	border: none;
 	border-radius: var(--radius-s);
@@ -251,7 +252,7 @@
 	cursor: pointer;
 }
 
-.bb-add-card:hover {
+.bb-column-footer .bb-add-card:hover {
 	background-color: var(--background-modifier-hover);
 	color: var(--text-normal);
 }
@@ -320,4 +321,193 @@
 	justify-content: flex-end;
 	gap: var(--size-4-2);
 	margin-top: var(--size-4-3);
+}
+
+/* ---- hierarchy: parent chip and lock ------------------------------------ */
+
+.bb-chip-parent {
+	color: var(--text-muted);
+	cursor: pointer;
+}
+
+.bb-chip-parent:hover {
+	color: var(--text-normal);
+}
+
+.bb-blocked {
+	display: inline-flex;
+	align-items: center;
+	color: var(--text-warning);
+}
+
+.bb-blocked .svg-icon {
+	width: var(--icon-xs);
+	height: var(--icon-xs);
+}
+
+.bb-card.bb-card-blocked {
+	border-top-color: rgba(var(--color-orange-rgb), 0.5);
+}
+
+/* ---- hierarchy: progress, summary and child lists ------------------------ */
+
+.bb-relations {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-3);
+	padding-top: var(--size-2-2);
+	border-top: 1px solid var(--background-modifier-border);
+}
+
+.bb-summary {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+}
+
+.bb-progress {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+}
+
+.bb-progress-track {
+	flex: 1;
+	height: 4px;
+	border-radius: var(--radius-s);
+	background-color: var(--background-modifier-border);
+	overflow: hidden;
+}
+
+.bb-progress-fill {
+	width: var(--bb-progress, 0%);
+	height: 100%;
+	border-radius: inherit;
+	background-color: var(--interactive-accent);
+	transition: width 150ms ease;
+}
+
+.bb-progress-complete .bb-progress-fill {
+	background-color: var(--color-green);
+}
+
+.bb-progress-label,
+.bb-child-progress {
+	font-size: var(--font-ui-smaller);
+	font-variant-numeric: tabular-nums;
+	color: var(--text-muted);
+	white-space: nowrap;
+}
+
+.bb-relations .bb-child-toggle {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: var(--size-2-1);
+	width: 100%;
+	height: auto;
+	padding: var(--size-2-1) 0;
+	background-color: transparent;
+	box-shadow: none;
+	border: none;
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	cursor: pointer;
+}
+
+.bb-relations .bb-child-toggle:hover {
+	color: var(--text-normal);
+	background-color: transparent;
+}
+
+.bb-child-toggle-icon {
+	display: inline-flex;
+	transition: transform 120ms ease;
+	transform: rotate(90deg);
+}
+
+.bb-child-toggle-icon .svg-icon {
+	width: var(--icon-xs);
+	height: var(--icon-xs);
+}
+
+.bb-child-list-collapsed .bb-child-toggle-icon {
+	transform: rotate(0deg);
+}
+
+.bb-child-list-collapsed .bb-child-rows {
+	display: none;
+}
+
+.bb-child-rows {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.bb-child {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-3);
+	padding: 2px var(--size-2-2);
+	border-radius: var(--radius-s);
+	font-size: var(--font-ui-smaller);
+	cursor: pointer;
+}
+
+.bb-child:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.bb-child-title {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: var(--text-normal);
+}
+
+.bb-child-archived {
+	opacity: 0.6;
+}
+
+.bb-child-archived .bb-child-title {
+	font-style: italic;
+}
+
+/* ---- status badges (raw values from the notes) -------------------------- */
+
+.bb-status {
+	--bb-status-color: var(--text-muted);
+	--bb-status-rgb: var(--mono-rgb-100);
+	flex: none;
+	padding: 0 var(--size-2-2);
+	border-radius: var(--radius-s);
+	background-color: rgba(var(--bb-status-rgb), 0.12);
+	color: var(--bb-status-color);
+	font-size: var(--font-ui-smaller);
+	font-weight: var(--font-semibold);
+	line-height: 1.6;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.bb-status-doing {
+	--bb-status-color: var(--color-blue);
+	--bb-status-rgb: var(--color-blue-rgb);
+}
+
+.bb-status-review {
+	--bb-status-color: var(--color-yellow);
+	--bb-status-rgb: var(--color-yellow-rgb);
+}
+
+.bb-status-blocked {
+	--bb-status-color: var(--color-red);
+	--bb-status-rgb: var(--color-red-rgb);
+}
+
+.bb-status.bb-status-is-done {
+	--bb-status-color: var(--color-green);
+	--bb-status-rgb: var(--color-green-rgb);
 }

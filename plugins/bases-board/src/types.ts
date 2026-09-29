@@ -1,4 +1,6 @@
 import type { BasesEntry, BasesPropertyId } from 'obsidian';
+import type { GraphKeys } from './hierarchy/graph';
+import type { CardRelations, HierarchyDisplay } from './hierarchy/relations';
 import type { BoardProfile } from './settings/model';
 
 export interface ColumnSpec {
@@ -27,6 +29,10 @@ export interface BoardConfig {
 	executorProperty: BasesPropertyId | null;
 	aiValue: string;
 	dueProperty: BasesPropertyId | null;
+	/** What the cards show about project → spec → task relations. */
+	hierarchy: HierarchyDisplay;
+	/** Frontmatter keys the relation index reads for this view. */
+	graphKeys: GraphKeys;
 }
 
 export interface Column {
@@ -54,6 +60,7 @@ export interface CardModel {
 	due: string | null;
 	isOverdue: boolean;
 	draggable: boolean;
+	relations: CardRelations | null;
 }
 
 export interface PendingMove {

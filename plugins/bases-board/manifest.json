@@ -1,7 +1,7 @@
 {
 	"id": "bases-board",
 	"name": "Bases Board",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"minAppVersion": "1.13.0",
 	"description": "Kanban view for Bases: columns from a note property, drag cards to update it.",
 	"author": "Laercio Rios",

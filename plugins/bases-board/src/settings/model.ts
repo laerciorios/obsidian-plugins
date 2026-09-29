@@ -35,6 +35,19 @@ export interface ProfileNewCard {
 	defaultType: string;
 }
 
+/** Project → spec → task relations shown on cards (read-only). */
+export interface ProfileHierarchy {
+	enabled: boolean;
+	/** Count (and list) children that sit in an archive folder. */
+	countArchived: boolean;
+	/** Child lists longer than this start collapsed. */
+	collapseAbove: number;
+	/** Summary and spec list on project cards. */
+	showOnProjects: boolean;
+	/** Type value of specs; cards with children count as specs too. */
+	specValue: string;
+}
+
 /** How to recognize, write, archive and create the cards of one board. */
 export interface BoardProfile {
 	/** Stable id, referenced by views (`profile:` in the .base file). Never changes. */
@@ -49,6 +62,14 @@ export interface BoardProfile {
 	completedProperty: string;
 	completedFormat: CompletedFormat;
 	projectProperty: string;
+	/** Link to the parent card (task → spec). */
+	parentProperty: string;
+	/** Position of a child inside its parent. */
+	orderProperty: string;
+	/** List of links to cards that block this one. */
+	blockedByProperty: string;
+	typeProperty: string;
+	hierarchy: ProfileHierarchy;
 	archive: ProfileArchive;
 	newCard: ProfileNewCard;
 }
@@ -67,6 +88,7 @@ export const DEFAULT_PROFILE_ID = 'default';
 export const MAX_INTERVAL_HOURS = 576;
 export const MAX_STARTUP_DELAY_SECONDS = 3600;
 export const MAX_AFTER_DAYS = 36500;
+export const MAX_COLLAPSE_ABOVE = 999;
 
 export function defaultArchiveSettings(): ArchiveSettings {
 	return {
@@ -97,6 +119,17 @@ export function defaultProfile(id = DEFAULT_PROFILE_ID, name = t('defaults.profi
 		completedProperty: 'completed',
 		completedFormat: 'date',
 		projectProperty: 'project',
+		parentProperty: 'parent',
+		orderProperty: 'order',
+		blockedByProperty: 'blocked_by',
+		typeProperty: 'type',
+		hierarchy: {
+			enabled: true,
+			countArchived: true,
+			collapseAbove: 5,
+			showOnProjects: true,
+			specValue: 'spec',
+		},
 		archive: {
 			enabled: true,
 			afterDays: 30,
@@ -151,6 +184,7 @@ export function normalizeProfile(raw: unknown, fallbackId: string): BoardProfile
 	const p = isRecord(raw) ? raw : {};
 	const a = isRecord(p.archive) ? p.archive : {};
 	const n = isRecord(p.newCard) ? p.newCard : {};
+	const h = isRecord(p.hierarchy) ? p.hierarchy : {};
 	return {
 		id: str(p.id, '') || fallbackId,
 		name: str(p.name, '') || d.name,
@@ -162,6 +196,17 @@ export function normalizeProfile(raw: unknown, fallbackId: string): BoardProfile
 		completedProperty: str(p.completedProperty, d.completedProperty),
 		completedFormat: oneOf(p.completedFormat, ['date', 'datetime'] as const, d.completedFormat),
 		projectProperty: str(p.projectProperty, d.projectProperty),
+		parentProperty: str(p.parentProperty, d.parentProperty),
+		orderProperty: str(p.orderProperty, d.orderProperty),
+		blockedByProperty: str(p.blockedByProperty, d.blockedByProperty),
+		typeProperty: str(p.typeProperty, d.typeProperty),
+		hierarchy: {
+			enabled: bool(h.enabled, d.hierarchy.enabled),
+			countArchived: bool(h.countArchived, d.hierarchy.countArchived),
+			collapseAbove: num(h.collapseAbove, d.hierarchy.collapseAbove, 0, MAX_COLLAPSE_ABOVE),
+			showOnProjects: bool(h.showOnProjects, d.hierarchy.showOnProjects),
+			specValue: str(h.specValue, d.hierarchy.specValue),
+		},
 		archive: {
 			enabled: bool(a.enabled, d.archive.enabled),
 			afterDays: num(a.afterDays, d.archive.afterDays, 0, MAX_AFTER_DAYS),

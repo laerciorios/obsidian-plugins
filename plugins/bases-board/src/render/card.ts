@@ -2,6 +2,8 @@ import { CLS } from '../constants';
 import { todayIso } from '../data/values';
 import { t } from '../i18n';
 import type { CardModel } from '../types';
+import { blockedMark, parentChip, relationBlocks } from './relations';
+import type { ExpandedState } from './relations';
 
 const TYPE_CLASS_SAFE = /[^a-z0-9-]/g;
 
@@ -13,7 +15,7 @@ function typeClass(type: string): string {
  * Card element. Interaction (click, hover, drag) is handled by delegated
  * listeners on the board root, keyed by data attributes set here.
  */
-export function createCardEl(parent: HTMLElement, card: CardModel): HTMLElement {
+export function createCardEl(parent: HTMLElement, card: CardModel, expanded: ExpandedState = () => undefined): HTMLElement {
 	const cardEl = parent.createDiv({ cls: CLS.card });
 	cardEl.dataset.path = card.path;
 	cardEl.draggable = card.draggable;
@@ -26,6 +28,13 @@ export function createCardEl(parent: HTMLElement, card: CardModel): HTMLElement 
 
 	if (card.type) {
 		meta.createSpan({ cls: [CLS.badge, typeClass(card.type)], text: card.type });
+	}
+
+	const relations = card.relations;
+	if (relations?.parent) parentChip(meta, relations.parent);
+	if (relations && relations.blockers.length > 0) {
+		blockedMark(meta, relations.blockers);
+		cardEl.addClass('bb-card-blocked');
 	}
 
 	if (card.project) {
@@ -48,6 +57,7 @@ export function createCardEl(parent: HTMLElement, card: CardModel): HTMLElement 
 	}
 
 	if (meta.childElementCount === 0) meta.remove();
+	if (relations) relationBlocks(cardEl, card.path, relations, expanded);
 	return cardEl;
 }
 
