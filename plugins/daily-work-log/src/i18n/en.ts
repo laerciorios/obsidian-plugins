@@ -1,0 +1,83 @@
+import type { Messages } from '@obsidian-plugins/i18n';
+
+/** Source catalog. Every other locale must define all of these keys. */
+export const en = {
+	'command.logToday': "Log today's projects",
+	'command.insertButtons': 'Insert project buttons',
+	'command.insertSummary': 'Insert weekly summary',
+
+	'notice.dailyFailed': 'Could not open the daily note.',
+	'notice.dailyIsFolder': '{path} is a folder, not a daily note.',
+	'notice.templateMissing': 'Daily note template not found: {path}. The note was created empty.',
+	'notice.writeFailed': 'Could not update {path}.',
+
+	'modal.title': 'Projects of {date}',
+	'modal.search': 'Filter projects',
+	'modal.empty': 'No active projects. A project is a note with "type: project" and a status of {statuses}.',
+	'modal.noMatch': 'No project matches "{query}".',
+	'modal.suggestions': "In today's meeting notes",
+	'modal.markSuggested': 'Mark suggested ({count})',
+	'modal.inMeeting': 'in',
+	'modal.openDaily': 'Open daily note',
+	'modal.count.none': 'No projects logged yet.',
+	'modal.count.one': '1 project logged.',
+	'modal.count.other': '{count} projects logged.',
+
+	'project.noStatus': 'no status',
+
+	'block.empty': 'No active projects.',
+	'block.mark': 'Click to log',
+	'block.unmark': 'Click to remove',
+	'block.suggested': 'In the meeting notes: {meetings}',
+
+	'summary.days.one': '1 day',
+	'summary.days.other': '{count} days',
+	'summary.total': 'Logged on {days}.',
+	'summary.range': '{start} – {end}',
+	'summary.thisWeek': 'This week ({range})',
+	'summary.month': '{month} {year}',
+	'summary.thisMonth': 'This month ({month})',
+	'summary.previousWeek': 'Previous week',
+	'summary.nextWeek': 'Next week',
+	'summary.previousMonth': 'Previous month',
+	'summary.nextMonth': 'Next month',
+	'summary.reset': 'Back to the first period',
+	'summary.empty.week': 'No projects logged this week.',
+	'summary.empty.month': 'No projects logged this month.',
+	'summary.error.key': 'Unknown option "{key}". Options: period, date, project.',
+	'summary.error.period': 'Invalid period "{value}". Use week or month.',
+	'summary.error.date': 'Invalid date "{value}". Use YYYY-MM-DD.',
+	'summary.error.line': 'Expected "option: value", got "{line}".',
+	'summary.error.project': 'Project not found: {project}.',
+
+	'settings.daily.heading': 'Daily note',
+	'settings.dailySource.name': 'Daily notes',
+	'settings.dailySource.desc': 'Folder, format and template come from the Daily notes core plugin: {folder}, {format}, {template}.',
+	'settings.dailySource.noTemplate': 'no template',
+	'settings.property.name': 'Property',
+	'settings.property.desc': 'List property that holds the project links, in daily notes and meeting notes.',
+	'settings.openDaily.name': 'Open the daily note',
+	'settings.openDaily.desc': "Open today's daily note before showing the project window.",
+
+	'settings.projects.heading': 'Projects',
+	'settings.activeStatuses.name': 'Active statuses',
+	'settings.activeStatuses.desc': 'Notes with "type: project" and one of these statuses are listed, separated by commas. Empty lists every project.',
+	'settings.aliasKey.name': 'Link alias',
+	'settings.aliasKey.desc': 'Project property used as the link alias, as in [[path/index|slug]]. Empty or missing uses the project name.',
+	'settings.ignoreFolders.name': 'Ignored folders',
+	'settings.ignoreFolders.desc': 'Project notes in these folders are never listed. One per line.',
+
+	'settings.suggestions.heading': 'Suggestions',
+	'settings.suggestions.name': 'Suggest from meeting notes',
+	'settings.suggestions.desc': 'The projects of the meeting notes of the day come first, ready to mark.',
+	'settings.meetingsFolder.name': 'Meeting notes folder',
+	'settings.meetingsFolder.desc': 'Name of the folders with meeting notes, at any depth. A meeting belongs to the day of its "date" property or, without one, to the date its file name starts with.',
+
+	'settings.summary.heading': 'Summary',
+	'settings.weekStart.name': 'First day of the week',
+	'settings.weekStart.desc': 'Where the weeks of the summary start.',
+	'settings.weekStart.monday': 'Monday',
+	'settings.weekStart.sunday': 'Sunday',
+
+	'validation.name': 'Enter a name without "/".',
+} satisfies Messages;

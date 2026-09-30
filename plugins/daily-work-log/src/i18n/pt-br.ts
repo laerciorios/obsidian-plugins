@@ -1,0 +1,83 @@
+import type { Translation } from '@obsidian-plugins/i18n';
+import type { en } from './en';
+
+export const ptBR: Translation<typeof en> = {
+	'command.logToday': 'Registrar projetos de hoje',
+	'command.insertButtons': 'Inserir botões de projeto',
+	'command.insertSummary': 'Inserir resumo semanal',
+
+	'notice.dailyFailed': 'Não foi possível abrir a daily note.',
+	'notice.dailyIsFolder': '{path} é uma pasta, não uma daily note.',
+	'notice.templateMissing': 'Template da daily note não encontrado: {path}. A nota foi criada vazia.',
+	'notice.writeFailed': 'Não foi possível atualizar {path}.',
+
+	'modal.title': 'Projetos de {date}',
+	'modal.search': 'Filtrar projetos',
+	'modal.empty': 'Nenhum projeto ativo. Um projeto é uma nota com "type: project" e status {statuses}.',
+	'modal.noMatch': 'Nenhum projeto com "{query}".',
+	'modal.suggestions': 'Nas atas de hoje',
+	'modal.markSuggested': 'Marcar sugeridos ({count})',
+	'modal.inMeeting': 'na ata',
+	'modal.openDaily': 'Abrir a daily note',
+	'modal.count.none': 'Nenhum projeto registrado ainda.',
+	'modal.count.one': '1 projeto registrado.',
+	'modal.count.other': '{count} projetos registrados.',
+
+	'project.noStatus': 'sem status',
+
+	'block.empty': 'Nenhum projeto ativo.',
+	'block.mark': 'Clique para registrar',
+	'block.unmark': 'Clique para tirar',
+	'block.suggested': 'Nas atas: {meetings}',
+
+	'summary.days.one': '1 dia',
+	'summary.days.other': '{count} dias',
+	'summary.total': 'Registros em {days}.',
+	'summary.range': '{start} – {end}',
+	'summary.thisWeek': 'Esta semana ({range})',
+	'summary.month': '{month} de {year}',
+	'summary.thisMonth': 'Este mês ({month})',
+	'summary.previousWeek': 'Semana anterior',
+	'summary.nextWeek': 'Próxima semana',
+	'summary.previousMonth': 'Mês anterior',
+	'summary.nextMonth': 'Próximo mês',
+	'summary.reset': 'Voltar ao período inicial',
+	'summary.empty.week': 'Nenhum projeto registrado nesta semana.',
+	'summary.empty.month': 'Nenhum projeto registrado neste mês.',
+	'summary.error.key': 'Opção desconhecida "{key}". Opções: period, date, project.',
+	'summary.error.period': 'Período inválido "{value}". Use week ou month.',
+	'summary.error.date': 'Data inválida "{value}". Use AAAA-MM-DD.',
+	'summary.error.line': 'Esperava "opção: valor", veio "{line}".',
+	'summary.error.project': 'Projeto não encontrado: {project}.',
+
+	'settings.daily.heading': 'Daily note',
+	'settings.dailySource.name': 'Daily notes',
+	'settings.dailySource.desc': 'Pasta, formato e template vêm do plugin nativo Daily notes: {folder}, {format}, {template}.',
+	'settings.dailySource.noTemplate': 'sem template',
+	'settings.property.name': 'Propriedade',
+	'settings.property.desc': 'Propriedade de lista com os links dos projetos, nas daily notes e nas atas.',
+	'settings.openDaily.name': 'Abrir a daily note',
+	'settings.openDaily.desc': 'Abrir a daily note de hoje antes de mostrar a janela de projetos.',
+
+	'settings.projects.heading': 'Projetos',
+	'settings.activeStatuses.name': 'Status ativos',
+	'settings.activeStatuses.desc': 'Entram na lista as notas com "type: project" e um destes status, separados por vírgula. Vazio lista todos os projetos.',
+	'settings.aliasKey.name': 'Alias do link',
+	'settings.aliasKey.desc': 'Propriedade do projeto usada como alias do link, como em [[caminho/index|slug]]. Vazia ou ausente, vale o nome do projeto.',
+	'settings.ignoreFolders.name': 'Pastas ignoradas',
+	'settings.ignoreFolders.desc': 'Notas de projeto nestas pastas nunca entram na lista. Uma por linha.',
+
+	'settings.suggestions.heading': 'Sugestões',
+	'settings.suggestions.name': 'Sugerir pelas atas',
+	'settings.suggestions.desc': 'Os projetos das atas do dia aparecem primeiro, prontos para marcar.',
+	'settings.meetingsFolder.name': 'Pasta das atas',
+	'settings.meetingsFolder.desc': 'Nome das pastas com atas, em qualquer nível. Uma ata é do dia da propriedade "date" ou, sem ela, da data no começo do nome do arquivo.',
+
+	'settings.summary.heading': 'Resumo',
+	'settings.weekStart.name': 'Primeiro dia da semana',
+	'settings.weekStart.desc': 'Onde começam as semanas do resumo.',
+	'settings.weekStart.monday': 'Segunda-feira',
+	'settings.weekStart.sunday': 'Domingo',
+
+	'validation.name': 'Digite um nome sem "/".',
+};

@@ -1,0 +1,179 @@
+/* Daily Work Log: only Obsidian CSS variables, so light and dark themes keep working. */
+
+/* Window of "Log today's projects". */
+
+.dwl-modal .dwl-search {
+	margin: var(--size-4-3) 0;
+}
+
+.dwl-modal .dwl-search .search-input-container {
+	width: 100%;
+}
+
+.dwl-list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-1);
+	max-height: 50vh;
+	overflow-y: auto;
+}
+
+.dwl-row {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--size-4-2);
+	padding: var(--size-2-3) var(--size-4-2);
+	border-radius: var(--radius-s);
+	cursor: var(--cursor);
+}
+
+.dwl-row:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.dwl-row input[type='checkbox'] {
+	flex-shrink: 0;
+	margin-top: var(--size-2-1);
+}
+
+.dwl-row-name {
+	color: var(--text-normal);
+}
+
+.dwl-row-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--size-2-1) var(--size-4-2);
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+.dwl-badge {
+	padding: 0 var(--size-4-1);
+	border-radius: var(--radius-s);
+	background-color: var(--background-modifier-border);
+	color: var(--text-muted);
+}
+
+.dwl-suggested {
+	color: var(--text-accent);
+}
+
+.dwl-suggestions:not(:empty) {
+	margin-bottom: var(--size-4-3);
+	padding-bottom: var(--size-4-3);
+	border-bottom: var(--border-width) solid var(--background-modifier-border);
+}
+
+.dwl-suggestions-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--size-4-2);
+	margin-bottom: var(--size-4-2);
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+	font-weight: var(--font-semibold);
+}
+
+.dwl-footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--size-4-2);
+	margin-top: var(--size-4-3);
+}
+
+.dwl-muted {
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+	overflow-wrap: anywhere;
+}
+
+.dwl-empty {
+	padding: var(--size-4-2) 0;
+	color: var(--text-faint);
+	font-size: var(--font-ui-small);
+}
+
+/* ```work-log: project buttons. */
+
+.dwl-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--size-4-2);
+	padding: var(--size-2-2) 0;
+}
+
+.dwl-chip {
+	height: auto;
+	padding: var(--size-2-2) var(--size-4-3);
+	border: var(--border-width) solid var(--background-modifier-border);
+	border-radius: var(--radius-l);
+	background-color: var(--background-primary);
+	box-shadow: none;
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+.dwl-chip:hover {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+
+.dwl-chip[aria-pressed='true'] {
+	border-color: var(--interactive-accent);
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+.dwl-chip[aria-pressed='true']:hover {
+	background-color: var(--interactive-accent-hover);
+}
+
+.dwl-chip.is-suggested {
+	border-style: dashed;
+	border-color: var(--text-accent);
+	color: var(--text-accent);
+}
+
+/* ```work-log-summary. */
+
+.dwl-summary {
+	padding: var(--size-2-2) 0;
+}
+
+.dwl-summary-head {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	margin-bottom: var(--size-4-2);
+}
+
+.dwl-summary-title {
+	font-weight: var(--font-semibold);
+}
+
+.dwl-summary-list {
+	margin: 0 0 var(--size-4-2);
+}
+
+.dwl-summary-days {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: var(--size-2-2);
+	margin-left: var(--size-4-2);
+}
+
+.dwl-summary-days .dwl-day {
+	padding: 0 var(--size-4-1);
+	border-radius: var(--radius-s);
+	background-color: var(--background-modifier-hover);
+	font-size: var(--font-ui-smaller);
+	text-decoration: none;
+}
+
+.dwl-error {
+	color: var(--text-error);
+	font-size: var(--font-ui-small);
+}

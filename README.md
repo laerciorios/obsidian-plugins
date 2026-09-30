@@ -17,6 +17,7 @@ Planejamento e specs ficam no vault, em `1 - Knowledge/Projects/Obsidian Plugins
 | [Pseudocode](plugins/pseudocode) | `pseudocode` | em desenvolvimento | Renderiza os blocos ` ```pseudo ` na sintaxe do plugin da comunidade (pseudocode.js) e na do `algorithm2e`, com linhas e algoritmos numerados, referências (`\ref`) e exportação para LaTeX. Substitui o Pseudocode da comunidade. |
 | [Attachments Guard](plugins/attachments-guard) | `attachments-guard` | em desenvolvimento | Todo anexo em `Attachments/` com nome previsível: imagens coladas viram `<nota>-<n>`, capas `<nota>-cover`, arquivos soltos são recolhidos com os links atualizados e órfãos vão para `.trash/`. |
 | [Vault Structure](plugins/vault-structure) | `vault-structure` | em desenvolvimento | Cria áreas e tópicos com o esqueleto do vault (`index.md`, `_Discovery/`, `_References/`) e verifica as regras de estrutura: pastas em Title Case, notas em kebab-case, `index.md` em cada área, conteúdo `ai-generated` no lugar certo. Corrige com um clique; as regras ficam numa nota do vault. |
+| [Daily Work Log](plugins/daily-work-log) | `daily-work-log` | em desenvolvimento | Registra os projetos do dia na propriedade `projects` da daily note: janela com um checkbox por projeto ativo, botões no topo da nota (bloco `work-log`), sugestões das atas do dia e resumo de dias por projeto na semana ou no mês (bloco `work-log-summary`). |
 <!-- plugins:end -->
 
 ## Estrutura

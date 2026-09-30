@@ -1,0 +1,10 @@
+{
+	"id": "daily-work-log",
+	"name": "Daily Work Log",
+	"version": "0.1.0",
+	"minAppVersion": "1.13.0",
+	"description": "Log the projects worked on each day in the daily note, with suggestions from meeting notes and a weekly summary.",
+	"author": "Laercio Rios",
+	"authorUrl": "https://laerciorios.com",
+	"isDesktopOnly": false
+}

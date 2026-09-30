@@ -1,0 +1,17 @@
+{
+	"name": "daily-work-log",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Log the projects worked on each day in the daily note, with suggestions from meeting notes and a weekly summary.",
+	"main": "dist/main.js",
+	"scripts": {
+		"dev": "node ../../scripts/esbuild.mjs",
+		"build": "tsc --noEmit && node ../../scripts/esbuild.mjs --production",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint src"
+	},
+	"dependencies": {
+		"@obsidian-plugins/core-plugins": "workspace:*",
+		"@obsidian-plugins/i18n": "workspace:*"
+	}
+}
