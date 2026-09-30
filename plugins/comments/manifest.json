@@ -1,0 +1,10 @@
+{
+	"id": "comments",
+	"name": "Comments",
+	"version": "0.1.0",
+	"minAppVersion": "1.13.0",
+	"description": "Comment on passages of a note, Google Docs style: select, comment, reply and resolve, with the comments stored as readable markdown.",
+	"author": "Laercio Rios",
+	"authorUrl": "https://laerciorios.com",
+	"isDesktopOnly": false
+}

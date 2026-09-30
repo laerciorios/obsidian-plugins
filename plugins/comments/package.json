@@ -1,0 +1,16 @@
+{
+	"name": "comments",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Comment on passages of a note, Google Docs style: select, comment, reply and resolve, with the comments stored as readable markdown.",
+	"main": "dist/main.js",
+	"scripts": {
+		"dev": "node ../../scripts/esbuild.mjs",
+		"build": "tsc --noEmit && node ../../scripts/esbuild.mjs --production",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint src"
+	},
+	"dependencies": {
+		"@obsidian-plugins/i18n": "workspace:*"
+	}
+}

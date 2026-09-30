@@ -14,6 +14,7 @@ Este é o vault de desenvolvimento do monorepo `obsidian-plugins`. Ele existe pa
 - Casos de teste do Shortcuts: [[Shortcuts/index|Shortcuts]], com a nota [[Shortcuts/playground|playground]] para digitar
 - Casos de teste do Colored Text: [[Colored Text/index|Colored Text]], com a nota [[Colored Text/playground|playground]] para colorir
 - Casos de teste do Reading Time: [[Reading Time/index|Reading Time]], com notas de contagem conhecida, um canvas e o `leitura.base`
+- Casos de teste do Comments: [[Comments/index|Comments]], com a nota [[Comments/playground|playground]] para comentar e uma ata com conversas prontas
 - Catálogo fictício de filmes, séries, jogos e livros: `1 - Knowledge/Entertainment/DB/`. Casos de teste do [[1 - Knowledge/Entertainment/index|Media Catalog]]
 - Templates: `_Templates/` (card, pessoa, projeto, daily e media)
 - `.obsidian/plugins/` é gerada pelos scripts de build e fica fora do git.

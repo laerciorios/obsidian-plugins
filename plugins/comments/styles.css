@@ -1,0 +1,255 @@
+/* Comments: only Obsidian CSS variables, so light and dark themes keep working. */
+
+/* Editor: commented passages and the icon in place of the block id. */
+.cmt-highlight {
+	background-color: rgba(var(--color-yellow-rgb), 0.18);
+	border-bottom: 2px solid rgba(var(--color-yellow-rgb), 0.55);
+}
+
+.cmt-anchor-icon {
+	display: inline-flex;
+	align-items: center;
+	vertical-align: middle;
+	margin-inline-start: var(--size-2-1);
+	color: var(--text-faint);
+	cursor: pointer;
+}
+
+.cmt-anchor-icon:hover {
+	color: var(--interactive-accent);
+}
+
+.cmt-anchor-icon svg {
+	width: var(--icon-xs);
+	height: var(--icon-xs);
+}
+
+/* Panel */
+.cmt-panel {
+	padding: var(--size-4-3);
+}
+
+.cmt-header {
+	margin-bottom: var(--size-4-3);
+}
+
+.cmt-title {
+	font-weight: var(--font-semibold);
+	color: var(--text-normal);
+	overflow-wrap: anywhere;
+}
+
+.cmt-summary {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+}
+
+.cmt-toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--size-4-2);
+	margin-top: var(--size-4-2);
+}
+
+.cmt-filter {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-2-3);
+	font-size: var(--font-ui-small);
+	color: var(--text-muted);
+	cursor: pointer;
+}
+
+.cmt-empty {
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+	padding: var(--size-4-4) 0;
+	text-align: center;
+}
+
+.cmt-list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-3);
+}
+
+.cmt-thread {
+	border: var(--border-width) solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background-color: var(--background-primary);
+	padding: var(--size-4-3);
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-2);
+}
+
+.cmt-thread.is-focused {
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 1px var(--interactive-accent);
+}
+
+.cmt-thread.is-resolved {
+	opacity: 0.7;
+}
+
+.cmt-badges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--size-2-2);
+}
+
+.cmt-badge {
+	font-size: var(--font-ui-smaller);
+	line-height: 1.4;
+	padding: 0 var(--size-2-3);
+	border-radius: var(--radius-s);
+	background-color: var(--background-modifier-hover);
+	color: var(--text-muted);
+}
+
+.cmt-badge-orphan {
+	background-color: rgba(var(--color-red-rgb), 0.15);
+	color: var(--text-error);
+}
+
+.cmt-badge-resolved {
+	background-color: rgba(var(--color-green-rgb), 0.15);
+	color: var(--text-success);
+}
+
+.cmt-badge-ai {
+	font-weight: var(--font-semibold);
+	background-color: rgba(var(--color-purple-rgb), 0.15);
+	color: var(--color-purple);
+}
+
+.cmt-quote,
+.cmt-message-quote,
+.cmt-modal-quote {
+	border-inline-start: 3px solid rgba(var(--color-yellow-rgb), 0.7);
+	padding-inline-start: var(--size-4-2);
+	color: var(--text-muted);
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+.cmt-quote {
+	font-size: var(--font-ui-small);
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.cmt-quote.is-clickable {
+	cursor: pointer;
+}
+
+.cmt-quote.is-clickable:hover {
+	color: var(--text-normal);
+}
+
+.cmt-thread.is-orphan .cmt-quote {
+	text-decoration: line-through;
+	text-decoration-color: var(--text-faint);
+}
+
+.cmt-message {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-2);
+}
+
+.cmt-message + .cmt-message {
+	border-top: var(--border-width) solid var(--background-modifier-border);
+	padding-top: var(--size-4-2);
+}
+
+.cmt-message-header {
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: var(--size-2-3);
+	font-size: var(--font-ui-smaller);
+}
+
+.cmt-author {
+	font-weight: var(--font-semibold);
+	color: var(--text-normal);
+}
+
+.cmt-date {
+	color: var(--text-faint);
+}
+
+.cmt-message-quote {
+	font-size: var(--font-ui-smaller);
+}
+
+.cmt-body {
+	font-size: var(--font-ui-small);
+	overflow-wrap: anywhere;
+}
+
+.cmt-body > :first-child {
+	margin-top: 0;
+}
+
+.cmt-body > :last-child {
+	margin-bottom: 0;
+}
+
+.cmt-actions {
+	display: flex;
+	justify-content: flex-end;
+	flex-wrap: wrap;
+	gap: var(--size-2-3);
+}
+
+.cmt-actions button {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	font-size: var(--font-ui-smaller);
+}
+
+.cmt-actions button svg {
+	width: var(--icon-xs);
+	height: var(--icon-xs);
+}
+
+.cmt-reply {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-3);
+}
+
+.cmt-input {
+	width: 100%;
+	resize: vertical;
+	font-size: var(--font-ui-small);
+}
+
+.cmt-hint {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-faint);
+}
+
+/* Comment box */
+.cmt-modal-quote {
+	margin: 0 0 var(--size-4-3);
+	max-height: 8em;
+	overflow-y: auto;
+}
+
+.cmt-modal-note {
+	font-size: var(--font-ui-small);
+	color: var(--text-muted);
+	margin-bottom: var(--size-4-2);
+}
+
+/* Status bar: equal-width digits, like the other counters there. */
+.cmt-status {
+	font-variant-numeric: tabular-nums;
+}
