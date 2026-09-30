@@ -1,0 +1,10 @@
+{
+	"id": "attachments-guard",
+	"name": "Attachments Guard",
+	"version": "0.1.0",
+	"minAppVersion": "1.13.0",
+	"description": "Keep every attachment in one folder with predictable names, collect loose files and find orphans.",
+	"author": "Laercio Rios",
+	"authorUrl": "https://laerciorios.com",
+	"isDesktopOnly": false
+}

@@ -54,6 +54,12 @@ importers:
 
   packages/i18n: {}
 
+  plugins/attachments-guard:
+    dependencies:
+      '@obsidian-plugins/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
+
   plugins/bases-board:
     dependencies:
       '@obsidian-plugins/i18n':

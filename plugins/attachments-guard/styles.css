@@ -1,0 +1,91 @@
+/* Attachments Guard: only Obsidian CSS variables, so light and dark themes keep working. */
+
+.ag-list {
+	max-height: 40vh;
+	overflow-y: auto;
+	margin: 0;
+	padding: var(--size-4-2) var(--size-4-3);
+	list-style: none;
+	border: var(--border-width) solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background-color: var(--background-secondary);
+	font-family: var(--font-monospace);
+	font-size: var(--font-ui-smaller);
+}
+
+.ag-list-item {
+	padding: var(--size-2-1) 0;
+	overflow-wrap: anywhere;
+}
+
+.ag-arrow {
+	margin: 0 var(--size-4-2);
+	color: var(--text-faint);
+}
+
+.ag-muted,
+.ag-orphan-meta {
+	color: var(--text-muted);
+}
+
+.ag-toolbar {
+	display: flex;
+	gap: var(--size-4-2);
+	margin-bottom: var(--size-4-2);
+}
+
+.ag-orphans {
+	max-height: 50vh;
+	overflow-y: auto;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	border: var(--border-width) solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+}
+
+.ag-orphan + .ag-orphan {
+	border-top: var(--border-width) solid var(--background-modifier-border);
+}
+
+.ag-orphan label {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-3);
+	padding: var(--size-4-2) var(--size-4-3);
+	cursor: var(--cursor);
+}
+
+.ag-thumb,
+.ag-thumb-empty {
+	flex: none;
+	width: var(--size-4-12);
+	height: var(--size-4-12);
+	border-radius: var(--radius-s);
+	background-color: var(--background-secondary);
+}
+
+.ag-thumb {
+	object-fit: cover;
+}
+
+.ag-thumb-empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--text-faint);
+	font-size: var(--font-ui-smaller);
+}
+
+.ag-orphan-name {
+	overflow-wrap: anywhere;
+}
+
+.ag-orphan-meta {
+	font-size: var(--font-ui-smaller);
+	overflow-wrap: anywhere;
+}
+
+.ag-example {
+	overflow-wrap: anywhere;
+}

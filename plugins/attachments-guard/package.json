@@ -1,0 +1,16 @@
+{
+	"name": "attachments-guard",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Keep every attachment in one folder with predictable names, collect loose files and find orphans.",
+	"main": "dist/main.js",
+	"scripts": {
+		"dev": "node ../../scripts/esbuild.mjs",
+		"build": "tsc --noEmit && node ../../scripts/esbuild.mjs --production",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint src"
+	},
+	"dependencies": {
+		"@obsidian-plugins/i18n": "workspace:*"
+	}
+}
