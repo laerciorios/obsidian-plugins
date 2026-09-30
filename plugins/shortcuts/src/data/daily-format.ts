@@ -1,7 +1,6 @@
-import { normalizePath } from 'obsidian';
+import { DAILY_NOTES_DEFAULTS, readDailyNotesSettings } from '@obsidian-plugins/core-plugins';
 import type { App } from 'obsidian';
-import { DAILY_FORMAT_FALLBACK, DAILY_FORMAT_TTL_MS } from '../constants';
-import { isRecord } from './text';
+import { DAILY_FORMAT_TTL_MS } from '../constants';
 
 /**
  * Date format of the Daily notes core plugin, read from its config file in
@@ -9,7 +8,7 @@ import { isRecord } from './text';
  * last value and refreshes in the background when the cache is old.
  */
 export class DailyNotesFormat {
-	private format = DAILY_FORMAT_FALLBACK;
+	private format = DAILY_NOTES_DEFAULTS.format;
 	private readAt = 0;
 	private pending: Promise<void> | null = null;
 
@@ -29,17 +28,6 @@ export class DailyNotesFormat {
 
 	private async read(): Promise<void> {
 		this.readAt = Date.now();
-		const path = normalizePath(`${this.app.vault.configDir}/daily-notes.json`);
-		try {
-			if (!(await this.app.vault.adapter.exists(path))) {
-				this.format = DAILY_FORMAT_FALLBACK;
-				return;
-			}
-			const data: unknown = JSON.parse(await this.app.vault.adapter.read(path));
-			const format = isRecord(data) && typeof data.format === 'string' ? data.format.trim() : '';
-			this.format = format || DAILY_FORMAT_FALLBACK;
-		} catch {
-			this.format = DAILY_FORMAT_FALLBACK;
-		}
+		this.format = (await readDailyNotesSettings(this.app)).format;
 	}
 }

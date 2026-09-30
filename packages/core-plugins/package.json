@@ -1,0 +1,15 @@
+{
+	"name": "@obsidian-plugins/core-plugins",
+	"version": "0.1.0",
+	"private": true,
+	"description": "What the plugins need to behave like Obsidian's core plugins: the Daily notes settings and the Templates variables.",
+	"type": "module",
+	"main": "src/index.ts",
+	"types": "src/index.ts",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit"
+	}
+}

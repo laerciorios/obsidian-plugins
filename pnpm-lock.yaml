@@ -52,6 +52,8 @@ importers:
         specifier: ^8.71.0
         version: 8.71.0(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
 
+  packages/core-plugins: {}
+
   packages/i18n: {}
 
   plugins/attachments-guard:
@@ -102,12 +104,18 @@ importers:
 
   plugins/shortcuts:
     dependencies:
+      '@obsidian-plugins/core-plugins':
+        specifier: workspace:*
+        version: link:../../packages/core-plugins
       '@obsidian-plugins/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
 
   plugins/vault-structure:
     dependencies:
+      '@obsidian-plugins/core-plugins':
+        specifier: workspace:*
+        version: link:../../packages/core-plugins
       '@obsidian-plugins/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n

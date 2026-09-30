@@ -19,7 +19,7 @@ export const FORBIDDEN_NAME_CHARS = /[\\/:*?"<>|#^[\]]/g;
 
 /**
  * Built-in template of `index.md`, like the vault's current indexes. Written to
- * notes, so it is data and never translated. Variables in vault/index-note.ts.
+ * notes, so it is data and never translated. Variables: fillTemplate of @obsidian-plugins/core-plugins.
  */
 export const DEFAULT_INDEX_TEMPLATE = `---
 title: "{{title}}"

@@ -11,7 +11,6 @@ export const QUERY_PATTERN = /^[\p{L}\p{M}\p{N} _-]*$/u;
 /** Characters allowed right before the trigger, so "name@mail.com" does not open it. */
 export const BOUNDARY_PATTERN = /[\s([{"'“‘«*]/u;
 
-export const DAILY_FORMAT_FALLBACK = 'YYYY-MM-DD';
 /** How long the Daily notes format read from disk is trusted before re-reading it. */
 export const DAILY_FORMAT_TTL_MS = 10_000;
 
