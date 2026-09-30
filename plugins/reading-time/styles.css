@@ -1,0 +1,7 @@
+/* Reading Time: only Obsidian CSS variables, so light and dark themes keep working. */
+
+/* Digits of equal width: the status bar does not jitter while the time changes as you type. */
+.rt-status,
+.rt-preview {
+	font-variant-numeric: tabular-nums;
+}

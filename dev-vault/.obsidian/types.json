@@ -11,6 +11,7 @@
 		"season": "number",
 		"episodes": "number",
 		"pages": "number",
-		"hours": "number"
+		"hours": "number",
+		"reading_time": "number"
 	}
 }

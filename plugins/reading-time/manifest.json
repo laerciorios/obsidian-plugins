@@ -1,0 +1,10 @@
+{
+	"id": "reading-time",
+	"name": "Reading Time",
+	"version": "0.1.0",
+	"minAppVersion": "1.13.0",
+	"description": "Show the estimated reading time of the active note or selection in the status bar, with configurable formats and an optional frontmatter property.",
+	"author": "Laercio Rios",
+	"authorUrl": "https://laerciorios.com",
+	"isDesktopOnly": false
+}

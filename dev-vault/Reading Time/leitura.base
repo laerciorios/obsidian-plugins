@@ -1,0 +1,16 @@
+filters:
+  and:
+    - file.inFolder("Reading Time")
+    - file.ext == "md"
+properties:
+  note.reading_time:
+    displayName: Tempo de leitura (min)
+views:
+  - type: table
+    name: Por tempo de leitura
+    order:
+      - file.name
+      - reading_time
+    sort:
+      - property: reading_time
+        direction: DESC

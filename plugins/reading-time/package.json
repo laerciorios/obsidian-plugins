@@ -1,0 +1,16 @@
+{
+	"name": "reading-time",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Show the estimated reading time of the active note or selection in the status bar, with configurable formats and an optional frontmatter property.",
+	"main": "dist/main.js",
+	"scripts": {
+		"dev": "node ../../scripts/esbuild.mjs",
+		"build": "tsc --noEmit && node ../../scripts/esbuild.mjs --production",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint src"
+	},
+	"dependencies": {
+		"@obsidian-plugins/i18n": "workspace:*"
+	}
+}

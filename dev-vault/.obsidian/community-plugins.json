@@ -1,7 +1,8 @@
 [
-  "hot-reload",
-  "bases-board",
-  "shortcuts",
-  "media-catalog",
-  "colored-text"
+	"hot-reload",
+	"bases-board",
+	"shortcuts",
+	"media-catalog",
+	"colored-text",
+	"reading-time"
 ]
