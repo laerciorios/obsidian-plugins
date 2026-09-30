@@ -1,7 +1,27 @@
 import { Keymap } from 'obsidian';
-import type { CatalogContext, CatalogNoteInfo, Provider, SearchResult, SeasonInfo } from '../types';
+import type { MessageKey } from '../i18n';
+import type { CatalogContext, CatalogNoteInfo, Provider, SearchResult, SeasonInfo, Track } from '../types';
 
-export type CatalogModalOptions = { mode: 'create' } | { mode: 'cover'; note: CatalogNoteInfo };
+/**
+ * create: a new note. cover: "Change cover" of `note`. tracks: "Update album
+ * tracks" of `note` (an album). The last two search the note and lock its kind.
+ */
+export type CatalogModalOptions =
+	| { mode: 'create' }
+	| { mode: 'cover'; note: CatalogNoteInfo }
+	| { mode: 'tracks'; note: CatalogNoteInfo };
+
+/** The note a cover or tracks modal works on; null when creating. */
+export function noteOf(options: CatalogModalOptions): CatalogNoteInfo | null {
+	return options.mode === 'create' ? null : options.note;
+}
+
+/** Title of the modal before the last step (search, loading). */
+export const MODE_TITLES: Record<CatalogModalOptions['mode'], MessageKey> = {
+	create: 'modal.add.title',
+	cover: 'modal.cover.title',
+	tracks: 'modal.tracks.title',
+};
 
 /** One screen of the catalog modal. The modal owns the state that survives going back. */
 export interface Step {
@@ -27,6 +47,16 @@ export interface Step {
 export interface Chosen {
 	result: SearchResult;
 	provider: Provider;
+	/**
+	 * Albums in create mode with the tracklist setting on: the tracks fetched
+	 * after the pick, null when unavailable. Undefined otherwise.
+	 */
+	tracks?: Track[] | null;
+}
+
+/** Cache key of a picked result: `<provider>:<externalId>`. */
+export function resultKey(result: SearchResult, provider: Provider): string {
+	return `${provider.id}:${result.externalId}`;
 }
 
 /** What a step may ask of the modal. */

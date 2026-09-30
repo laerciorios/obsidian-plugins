@@ -9,6 +9,7 @@ import { CatalogError } from '../providers/errors';
 import { modEnterLabel, renderInstructions } from '../ui/instructions';
 import { renderChosenPreview } from './chosen-preview';
 import { ConfirmForm } from './confirm-fields';
+import { tracklistOf } from './confirm-values';
 import type { ConfirmInput } from './confirm-values';
 import { isSubmitKey } from './steps';
 import type { Step, StepHost } from './steps';
@@ -33,7 +34,10 @@ export class ConfirmStep implements Step {
 	}
 
 	render(el: HTMLElement): void {
-		renderChosenPreview(el, this.input, { onCover: (url) => this.form.setCover(url) });
+		renderChosenPreview(el, this.input, {
+			onCover: (url) => this.form.setCover(url),
+			tracks: tracklistOf(this.input, this.host.context.settings),
+		});
 		this.duplicateEl = el.createDiv({ cls: CLS.duplicate, attr: { role: 'alert' } });
 		this.form.render(el.createDiv({ cls: CLS.form }));
 
@@ -130,6 +134,8 @@ export class ConfirmStep implements Step {
 			return;
 		}
 		new Notice(t('notice.created', { name: result.file.basename }));
+		// Album without its tracklist (fetch failed, none listed, a source without tracks): the note has no section.
+		if (draft.kind === 'album' && settings.albumTracklist && !draft.tracks) new Notice(t('notice.tracksMissing'));
 		// Closed while saving (Esc): the note exists, but do not pull the user into it.
 		if (!this.active) return;
 		this.host.close();

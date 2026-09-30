@@ -35,6 +35,31 @@ export interface SearchResult {
 	};
 }
 
+/** One track of an album. `disc` and `position` start at 1. */
+export interface Track {
+	disc: number;
+	position: number;
+	/** Exactly as the source gives it. */
+	title: string;
+	lengthMs?: number;
+}
+
+/** One edition of an album (a MusicBrainz release; for iTunes, the collection itself). */
+export interface Edition {
+	id: string;
+	title: string;
+	/** "1997", "1997-05" or "1997-05-21". */
+	date?: string;
+	/** ISO country code or MusicBrainz's "XW"/"XE". */
+	country?: string;
+	/** Format of the first medium ("CD", "Digital Media", "12\" Vinyl"…). */
+	format?: string;
+	discCount?: number;
+	trackCount?: number;
+	/** MusicBrainz disambiguation ("deluxe edition", "BMG club version"…). */
+	note?: string;
+}
+
 /** One season of a series (TVmaze). */
 export interface SeasonInfo {
 	id: string;
@@ -59,6 +84,18 @@ export interface Provider {
 	 * (a missing cover is not an error); returns the result, possibly updated.
 	 */
 	resolve?(result: SearchResult): Promise<SearchResult>;
+	/**
+	 * Albums, optional. Editions of the result, the representative one first
+	 * (MusicBrainz: official releases of the release group ordered by the
+	 * edition rule; iTunes: the collection itself). Rejects on network errors.
+	 */
+	editions?(result: SearchResult): Promise<Edition[]>;
+	/**
+	 * Albums, optional. Tracks of `edition` (default: the representative one),
+	 * sorted by disc and position. Resolves to [] when the source has none;
+	 * rejects on network errors.
+	 */
+	tracks?(result: SearchResult, edition?: Edition): Promise<Track[]>;
 }
 
 export interface SeasonProvider extends Provider {
@@ -88,6 +125,8 @@ export interface CatalogDraft {
 	referenceArea: string | null;
 	cover: { url: string | null; download: boolean };
 	source: { provider: ProviderId; name: string; url: string | null };
+	/** Albums: tracklist written in `## Faixas`; null when disabled, unavailable or not an album. */
+	tracks: Track[] | null;
 }
 
 export interface CatalogSettings {
@@ -107,6 +146,10 @@ export interface CatalogSettings {
 	albumIncludeSecondary: boolean;
 	/** Albums from MusicBrainz without a Cover Art Archive front cover: look for one on iTunes. */
 	albumItunesFallback: boolean;
+	/** Albums: write the tracklist section in new notes (fetched after the pick). */
+	albumTracklist: boolean;
+	/** Albums: also write `tracks` (number of tracks) after `year`. */
+	albumTracksProperty: boolean;
 	/** Kind picked in the last search, so the modal reopens on it. */
 	lastKind: MediaKind;
 	/** Ids of secrets in Obsidian's secret storage (never the secret values). */

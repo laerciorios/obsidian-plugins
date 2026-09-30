@@ -18,6 +18,8 @@ export const CONTROL_KEYS = [
 	'albumIncludeEps',
 	'albumIncludeSecondary',
 	'albumItunesFallback',
+	'albumTracklist',
+	'albumTracksProperty',
 ] as const;
 export type ControlKey = (typeof CONTROL_KEYS)[number];
 
@@ -58,6 +60,12 @@ const WRITERS: { [K in ControlKey]: (settings: CatalogSettings, value: unknown) 
 	},
 	albumItunesFallback: (settings, value) => {
 		settings.albumItunesFallback = flag(value, settings.albumItunesFallback);
+	},
+	albumTracklist: (settings, value) => {
+		settings.albumTracklist = flag(value, settings.albumTracklist);
+	},
+	albumTracksProperty: (settings, value) => {
+		settings.albumTracksProperty = flag(value, settings.albumTracksProperty);
 	},
 };
 

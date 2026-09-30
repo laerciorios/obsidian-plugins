@@ -2,13 +2,25 @@ import { isIsoDate, todayIso } from '../catalog/dates';
 import { FRONTMATTER_KEYS, RATING_MAX, RATING_MIN } from '../constants';
 import { t } from '../i18n';
 import type { MessageKey } from '../i18n';
-import type { MediaKind, Provider, SearchResult, SeasonInfo, Status } from '../types';
+import type { CatalogSettings, MediaKind, Provider, SearchResult, SeasonInfo, Status, Track } from '../types';
 
 /** What the confirm step works on: the chosen result, its provider and, for series, the season. */
 export interface ConfirmInput {
 	result: SearchResult;
 	provider: Provider;
 	season: SeasonInfo | null;
+	/** Albums: tracks fetched after the pick (see Chosen.tracks). */
+	tracks?: Track[] | null;
+}
+
+/**
+ * The tracklist of the new note: albums with the setting on get the fetched
+ * tracks, or null when there are none (no section, a notice after creating).
+ * Undefined: this note has no tracklist at all (another kind, setting off).
+ */
+export function tracklistOf(input: ConfirmInput, settings: CatalogSettings): Track[] | null | undefined {
+	if (input.result.kind !== 'album' || !settings.albumTracklist) return undefined;
+	return input.tracks && input.tracks.length > 0 ? input.tracks : null;
 }
 
 /** Text inputs hold strings; they are parsed into the draft on submit. */

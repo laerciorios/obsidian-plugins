@@ -34,6 +34,11 @@ export const REFERENCE_SECTIONS = ['## Resumo', '## Notas pessoais'] as const;
 
 export const COVER_SUFFIX = '-cover';
 
+/** Albums: optional frontmatter key with the number of tracks, written right after `year` when enabled. */
+export const ALBUM_TRACKS_KEY = 'tracks';
+/** Albums: the tracklist section goes right before this heading of the template body (note content, as in the vault). */
+export const IMPRESSIONS_HEADING = '## Impressões';
+
 /** Hosts the plugin may call. Anything else is refused by providers/http.ts. */
 export const API_HOSTS = [
 	'v3.sg.media-imdb.com',
@@ -88,6 +93,7 @@ export const COMMAND_IDS = {
 	add: 'add',
 	changeCover: 'change-cover',
 	markFinished: 'mark-finished',
+	updateTracks: 'update-tracks',
 } as const;
 
 export const SETTINGS_ICON = 'clapperboard';
@@ -123,4 +129,7 @@ export const CLS = {
 	hint: 'mc-hint',
 	rating: 'mc-rating',
 	ratingButtons: 'mc-rating-buttons',
+	tracklist: 'mc-tracklist',
+	tracklistDisc: 'mc-tracklist-disc',
+	tracklistTime: 'mc-tracklist-time',
 } as const;

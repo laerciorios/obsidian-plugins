@@ -19,6 +19,11 @@ export function num(value: unknown): number | undefined {
 	return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
 }
 
+/** Integer >= 1 (a position, a count), or undefined. */
+export function positiveInt(value: unknown): number | undefined {
+	return typeof value === 'number' && Number.isInteger(value) && value >= 1 ? value : undefined;
+}
+
 export function arr(value: unknown): unknown[] {
 	return Array.isArray(value) ? value : [];
 }

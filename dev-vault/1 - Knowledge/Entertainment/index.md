@@ -13,18 +13,18 @@ O plugin busca filmes, séries, livros, jogos e álbuns na internet e cria notas
 | `DB/` (série) | [[horta-selvagem-s01\|Horta Selvagem T1]] (done) e [[horta-selvagem-s02\|T2]] (in-progress): uma nota por temporada |
 | `DB/` (jogos) | [[semente-eterna\|Semente Eterna]] (done, 42 horas), [[jardineiro-espacial\|Jardineiro Espacial]] (dropped) |
 | `DB/` (livros) | [[refatorando-canteiros\|Refatorando Canteiros]] (técnico, com `reference`), [[o-livro-das-mudas\|O Livro das Mudas]] (backlog) |
-| `DB/` (álbuns) | [[os-samambaias\|Os Samambaias]] (homônimo da banda Os Samambaias, done, vinil), [[mare-de-musgo\|Maré de Musgo]] (Lia Broto, in-progress, Spotify), [[raizes-aereas\|Raízes Aéreas]] (EP do Coletivo Orvalho, backlog) |
+| `DB/` (álbuns) | [[os-samambaias\|Os Samambaias]] (homônimo da banda Os Samambaias, done, vinil, `## Faixas` com dois discos), [[mare-de-musgo\|Maré de Musgo]] (Lia Broto, in-progress, Spotify, **sem** `## Faixas`), [[raizes-aereas\|Raízes Aéreas]] (EP do Coletivo Orvalho, backlog, `## Faixas` com uma faixa sem duração e outra de mais de uma hora, `tracks: 4`) |
 | `Attachments/` | `girassois-em-marte-cover.png`, capa local (retângulo verde 200×300) |
 | `Software Development/_References/Books/` | [[1 - Knowledge/Software Development/_References/Books/refatorando-canteiros\|referência]] do livro técnico |
 | `Game Dev/_References/Books/` | só um `index.md`: segunda área para o campo **Área** |
 | `_Templates/media.md` | template do catálogo (pasta de templates: `_Templates`) |
-| [[entertainment.base]] | views **Todos** (tabela), **Galeria** (cards com a capa) e **Álbuns** (tabela com artista, ordenada por **Concluído**) |
+| [[entertainment.base]] | views **Todos** (tabela), **Galeria** (cards com a capa) e **Álbuns** (tabela com artista e **Faixas**, ordenada por **Concluído**) |
 
 ## Preparação
 
 - [ ] Na raiz do repo, `pnpm --filter media-catalog dev`. Confira **Media Catalog** ativo em Plugins da comunidade.
-- [ ] Em Configurações → Media Catalog: **Pasta do catálogo** `1 - Knowledge/Entertainment/DB`, **Template** vazio, **Link para a fonte** ligado, **Status padrão** "Em andamento", **Fonte de livros** Open Library, **Fonte de álbuns** MusicBrainz, **Incluir EPs** ligado, **Incluir coletâneas e álbuns ao vivo** desligado, **Capas do iTunes** ligado.
-- [ ] A paleta de comandos mostra **Adicionar ao catálogo**. **Trocar capa** e **Terminei** só aparecem com uma nota do catálogo aberta (abra [[semente-eterna]] e depois este índice para comparar).
+- [ ] Em Configurações → Media Catalog: **Pasta do catálogo** `1 - Knowledge/Entertainment/DB`, **Template** vazio, **Link para a fonte** ligado, **Status padrão** "Em andamento", **Fonte de livros** Open Library, **Fonte de álbuns** MusicBrainz, **Incluir EPs** ligado, **Incluir coletâneas e álbuns ao vivo** desligado, **Capas do iTunes** ligado, **Incluir lista de faixas em álbuns** ligado, **Propriedade com o número de faixas** desligado.
+- [ ] A paleta de comandos mostra **Adicionar ao catálogo**. **Trocar capa** e **Terminei** só aparecem com uma nota do catálogo aberta (abra [[semente-eterna]] e depois este índice para comparar). **Atualizar faixas do álbum** só aparece com uma nota de álbum aberta ([[raizes-aereas]] sim, [[semente-eterna]] não).
 
 ## Filmes (IMDb)
 
@@ -94,6 +94,33 @@ O plugin busca filmes, séries, livros, jogos e álbuns na internet e cria notas
 - [ ] **Terminei** em [[mare-de-musgo]] grava `status: done`, `finished` e `rating`. Restaure a nota depois (`in-progress`, `rating` e `finished` vazios).
 - [ ] A view **Álbuns** abaixo lista só os álbuns, com **Autor ou artista**, ordenados por **Concluído** do mais recente para o mais antigo.
 
+## Faixas de álbuns (criação)
+
+- [ ] `ok computer` no MusicBrainz: ao escolher, o modal mostra "Procurando capa e faixas…". O formulário mostra, abaixo do artista, `Álbum · N faixas · m:ss` (número de faixas e duração total da edição representativa).
+- [ ] A nota criada tem `## Faixas` logo antes de `## Impressões`, com uma linha em branco antes e depois: itens `1. Título — m:ss`, numerados pela posição, títulos como no MusicBrainz. A linha `- MusicBrainz: …` continua no fim da nota, depois de `## Impressões`.
+- [ ] Dois discos: `the wall pink floyd` mostra `2 discos` no formulário, e a nota tem `### Disco 1` e `### Disco 2`, com a numeração recomeçando em 1 no segundo disco.
+- [ ] Fonte iTunes: `acabou chorare` mostra "Procurando as faixas…" (a capa já veio na busca). A lista não tem vídeos, só músicas.
+- [ ] **Voltar** durante "Procurando capa e faixas…" volta para a busca, e nada aparece depois. Escolher o mesmo álbum de novo depois de chegar ao formulário vai direto ao formulário, com as mesmas faixas.
+- [ ] Sem rede: faça a busca, desligue a internet e escolha o álbum. O formulário avisa "Lista de faixas indisponível: a nota será criada sem ela."; **Criar nota** cria a nota sem `## Faixas` e mostra o aviso "lista de faixas indisponível; a nota foi criada sem ela". Religue a internet.
+- [ ] **Incluir lista de faixas em álbuns** desligado: no MusicBrainz aparece só "Procurando a capa…", no iTunes o modal vai direto ao formulário; o formulário não fala de faixas além do número da busca, e a nota sai sem `## Faixas` e sem aviso. Religue a opção.
+- [ ] **Propriedade com o número de faixas** ligado: a nota criada tem `tracks: <número>` logo depois de `year`. Desligado (o padrão), nenhuma chave `tracks`. Com a opção ligada e sem rede (lista indisponível), também nenhuma `tracks`.
+- [ ] Obsidian em inglês: a nota criada tem `## Tracks` (e `### Disc 1`, `### Disc 2` em dois discos).
+
+## Atualizar faixas do álbum
+
+Os álbuns do dev-vault são fictícios: para buscar, troque temporariamente `title` e `author` da nota por um álbum real, e depois restaure a nota com `git checkout -- "dev-vault/1 - Knowledge/Entertainment/DB/<nota>.md"`.
+
+- [ ] Em [[mare-de-musgo]] (sem `## Faixas`), troque `title` e `author` por `OK Computer` e `Radiohead`. **Atualizar faixas do álbum** abre com o tipo Álbum travado, a busca `OK Computer Radiohead` já rodando e, na fonte, só MusicBrainz e iTunes.
+- [ ] Escolha o álbum: "Carregando edições…", depois **Edição** com as edições oficiais (`data · país · formato · N faixas`, e `N discos` ou a observação do MusicBrainz quando houver), a primeira selecionada, e a lista de faixas com número de faixas e duração total acima dela.
+- [ ] Troque de edição: "Carregando faixas…" e a lista da nova edição. Volte à primeira: a lista aparece na hora, sem carregar. Troque de edição duas vezes bem rápido: a lista que fica é a da última escolhida.
+- [ ] **Atualizar faixas** (ou ⌘↵): aviso "faixas de "OK Computer" atualizadas" e o modal fecha. A nota ganha `## Faixas` logo antes de `## Impressões`, com uma linha em branco antes e depois; `git diff` mostra só as linhas novas (e o `title`/`author` temporários). Restaure a nota.
+- [ ] Em [[os-samambaias]] (dois discos em `## Faixas`), troque `title` e `author` por `OK Computer` e `Radiohead` e atualize: os dois `### Disco` somem e entra a lista da edição escolhida. `## Impressões` e o texto dela ficam iguais; `git diff` só mostra a seção trocada. Restaure a nota.
+- [ ] Sem `## Impressões`: em [[mare-de-musgo]], apague também a linha `## Impressões` e atualize: a seção vai para o fim da nota. Restaure a nota.
+- [ ] Título em inglês: em [[raizes-aereas]], troque `## Faixas` por `## Tracks` (e `title`/`author` por um álbum real): a seção `## Tracks` é substituída (agora como `## Faixas`), sem sobrar a antiga. O `tracks: 4` do frontmatter não muda. Restaure a nota.
+- [ ] Fonte iTunes no modal: a **Edição** aparece como texto (o álbum da loja), sem menu.
+- [ ] Voltar e Esc: **Voltar** no último passo volta para a busca; escolher o mesmo álbum de novo não recarrega as edições. Esc fecha sem gravar nada.
+- [ ] Sem rede depois da busca: escolher o álbum mostra o erro da fonte com **Tentar de novo**, e **Atualizar faixas** fica desativado.
+
 ## Duplicatas e colisão de nome
 
 - [ ] Com `the-matrix.md` já criada, busque `matrix` e escolha The Matrix de novo: o formulário mostra "Já está no catálogo: the-matrix", com **Abrir nota**, e **Criar nota** fica desativado.
@@ -145,7 +172,7 @@ O plugin busca filmes, séries, livros, jogos e álbuns na internet e cria notas
 
 ## Idiomas
 
-- [ ] Obsidian em inglês (Configurações → Geral → Idioma, reinicia o app): comandos **Add to catalog**, **Change cover** e **Mark as finished**, e modal, formulário, avisos e configurações em inglês.
+- [ ] Obsidian em inglês (Configurações → Geral → Idioma, reinicia o app): comandos **Add to catalog**, **Change cover**, **Mark as finished** e **Update album tracks**, e modal, formulário, avisos e configurações em inglês.
 - [ ] Em inglês, as notas continuam com os mesmos valores (`status: done`, `kind: movie`), e a nota de referência continua com `Leitura:`, **Resumo** e **Notas pessoais**.
 - [ ] De volta ao português, tudo volta a aparecer em português.
 

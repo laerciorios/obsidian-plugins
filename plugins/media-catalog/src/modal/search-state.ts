@@ -4,6 +4,7 @@ import { slugify } from '../catalog/slug';
 import { ALBUM_SOURCES, BOOK_SOURCES, MIN_QUERY_LENGTH } from '../constants';
 import { providersFor } from '../providers';
 import type { CatalogContext, CatalogNoteInfo, CatalogSettings, MediaKind, Provider, ProviderId, SearchResult } from '../types';
+import { noteOf } from './steps';
 import type { CatalogModalOptions } from './steps';
 
 /** Kept by the modal, so going back shows the same query, results and selection. */
@@ -20,12 +21,13 @@ export interface SearchState {
 }
 
 export function createSearchState(context: CatalogContext, options: CatalogModalOptions): SearchState {
-	const kind = options.mode === 'cover' ? options.note.kind : context.settings.lastKind;
+	const note = noteOf(options);
+	const kind = note ? note.kind : context.settings.lastKind;
 	return {
 		kind,
-		providerId: defaultProvider(context, kind)?.id ?? null,
-		// Cover mode searches the note as soon as the modal opens.
-		query: options.mode === 'cover' ? coverQuery(context.app, options.note) : '',
+		providerId: defaultProvider(context, kind, options)?.id ?? null,
+		// Cover and tracks modes search the note as soon as the modal opens.
+		query: note ? coverQuery(context.app, note) : '',
 		phase: 'idle',
 		searched: null,
 		results: [],
@@ -35,7 +37,7 @@ export function createSearchState(context: CatalogContext, options: CatalogModal
 }
 
 /**
- * What cover mode searches: the note title; albums add the artist, since
+ * What cover and tracks modes search: the note title; albums add the artist, since
  * albums of different artists often share a title. A self-titled album
  * searches its title once.
  */
@@ -69,8 +71,14 @@ export function rememberSource(settings: CatalogSettings, kind: MediaKind, id: P
 	return false;
 }
 
-export function defaultProvider(context: CatalogContext, kind: MediaKind): Provider | undefined {
+/** Sources the search offers for a kind. Tracks mode: only the ones that list tracks. */
+export function sourcesFor(context: CatalogContext, kind: MediaKind, options?: CatalogModalOptions): Provider[] {
 	const providers = providersFor(context.providers, kind);
+	return options?.mode === 'tracks' ? providers.filter((provider) => typeof provider.tracks === 'function') : providers;
+}
+
+export function defaultProvider(context: CatalogContext, kind: MediaKind, options?: CatalogModalOptions): Provider | undefined {
+	const providers = sourcesFor(context, kind, options);
 	const preferred = preferredSource(context.settings, kind);
 	return providers.find((provider) => provider.id === preferred) ?? providers[0];
 }
@@ -79,7 +87,7 @@ export function defaultProvider(context: CatalogContext, kind: MediaKind): Provi
 export interface SearchPlan {
 	/** Text sent to the provider. */
 	text: string;
-	/** Year to highlight: the note's (cover mode) or the one typed at the end of the query. */
+	/** Year to highlight: the note's (cover and tracks modes) or the one typed at the end of the query. */
 	year: number | null;
 	/** Year typed: the whole query, in case it is a title that ends in a number ("Fern Road 1984"). */
 	fullTitle: string | null;
@@ -104,11 +112,11 @@ export function yearHint(query: string): { text: string; year: number } | null {
 
 /** `query` is trimmed. */
 export function searchPlan(options: CatalogModalOptions, query: string): SearchPlan {
-	if (options.mode === 'cover') {
-		const { note } = options;
+	const note = noteOf(options);
+	if (note) {
 		// A series note holds the season's year; the results carry the show's first year.
 		const year = note.kind === 'series' && (note.season ?? 1) > 1 ? null : note.year;
-		return { text: query, year, fullTitle: null, coversFirst: true };
+		return { text: query, year, fullTitle: null, coversFirst: options.mode === 'cover' };
 	}
 	const hint = yearHint(query);
 	if (!hint) return { text: query, year: null, fullTitle: null, coversFirst: false };

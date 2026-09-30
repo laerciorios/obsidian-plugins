@@ -1,5 +1,5 @@
 import type { App, SettingDefinitionItem, TFile } from 'obsidian';
-import { DEFAULT_FOLDER, DEFAULT_TEMPLATE_NAME, STATUSES } from '../constants';
+import { DEFAULT_FOLDER, DEFAULT_TEMPLATE_NAME, IMPRESSIONS_HEADING, STATUSES } from '../constants';
 import { t } from '../i18n';
 import type { AlbumSource, BookSource, CatalogSettings, Status } from '../types';
 import type { ControlKey } from './bindings';
@@ -101,6 +101,16 @@ export function settingDefinitions(context: DefinitionContext): SettingDefinitio
 					name: t('settings.albumItunesFallback.name'),
 					desc: t('settings.albumItunesFallback.desc'),
 					control: { type: 'toggle', key: 'albumItunesFallback' },
+				},
+				{
+					name: t('settings.albumTracklist.name'),
+					desc: t('settings.albumTracklist.desc', { impressions: IMPRESSIONS_HEADING }),
+					control: { type: 'toggle', key: 'albumTracklist' },
+				},
+				{
+					name: t('settings.albumTracksProperty.name'),
+					desc: t('settings.albumTracksProperty.desc'),
+					control: { type: 'toggle', key: 'albumTracksProperty' },
 				},
 			],
 		},

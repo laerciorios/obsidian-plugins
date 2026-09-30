@@ -1,11 +1,13 @@
 import { MUSICBRAINZ_INTERVAL_MS } from '../constants';
-import type { Provider, SearchResult } from '../types';
+import type { Edition, Provider, SearchResult, Track } from '../types';
+import { isMbid } from './albums';
 import type { AlbumOptions } from './albums';
 import { CAA_HOST, caaUrl, resolveCover } from './cover-art';
 import { HttpError, SupersededError } from './errors';
 import { isRecord, num, records, str, strings, yearOf } from './guards';
 import { getJson, setHostHeaders } from './http';
 import type { ItunesClient } from './itunes';
+import { createMusicBrainzReleases, MUSICBRAINZ_HOST as HOST, MUSICBRAINZ_WS } from './musicbrainz-releases';
 import { RequestLimiter } from './rate-limit';
 import { cleanQuery, finalize } from './results';
 
@@ -14,18 +16,20 @@ import { cleanQuery, finalize } from './results';
  * is the original release (`first-release-date`), not a reissue. Covers come
  * from the Cover Art Archive (./cover-art). MusicBrainz requires a
  * User-Agent that names the application and a contact, and allows about one
- * request per second: searches go through a limiter where a newer search
- * replaces one still waiting. It answers 503 when that limit (or its global
- * one) is hit: retried once, then reported as a rate limit (429).
+ * request per second: every call goes through one limiter, where a newer
+ * search replaces a search still waiting. It answers 503 when that limit (or
+ * its global one) is hit: retried once, then reported as a rate limit (429).
+ *
+ * Editions and tracklists (./musicbrainz-releases) share the limiter but take
+ * no lane: neither a new search nor another tracklist request drops them (an
+ * answer the UI no longer wants is ignored there).
  */
 
 const NAME = 'MusicBrainz';
-const HOST = 'musicbrainz.org';
-const API = `https://${HOST}/ws/2/release-group`;
+const API = `${MUSICBRAINZ_WS}/release-group`;
 /** More than MAX_RESULTS: the client-side filters and ordering pick from a larger page. */
 const PAGE_SIZE = 25;
 const BUSY_RETRIES = 1;
-const MBID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 /** Secondary types shown only with `includeSecondary`: other takes of material released elsewhere. */
 const OPTIONAL_SECONDARY = ['Compilation', 'Live', 'Remix', 'DJ-mix', 'Demo'];
@@ -124,7 +128,7 @@ function readGroup(item: Record<string, unknown>, options: AlbumOptions): Group 
 	const id = str(item.id);
 	const title = str(item.title);
 	const primary = str(item['primary-type']);
-	if (!id || !MBID.test(id) || !title) return null;
+	if (!id || !isMbid(id) || !title) return null;
 	const albumType = primary === 'Album' ? 'album' : primary === 'EP' && options.includeEps ? 'ep' : null;
 	if (albumType === null) return null;
 	const excluded = new Set(excludedTypes(options).map((type) => type.toLowerCase()));
@@ -171,23 +175,34 @@ function isBusy(error: unknown): error is HttpError {
 	return error instanceof HttpError && error.host === HOST && error.status === 503;
 }
 
+/** The release group of a MusicBrainz result, or null for any other result. */
+function groupOf(result: SearchResult): string | null {
+	return result.provider === 'musicbrainz' && isMbid(result.externalId) ? result.externalId : null;
+}
+
 export function createMusicBrainz(deps: MusicBrainzDeps): Provider {
 	setHostHeaders([HOST, CAA_HOST], { 'User-Agent': deps.userAgent });
 	const limiter = new RequestLimiter({ max: 1, windowMs: MUSICBRAINZ_INTERVAL_MS });
 	let latest = 0;
 
-	/** One search, retried once on 503 unless a newer search came in meanwhile. */
-	async function fetchGroups(url: string, search: number): Promise<unknown> {
+	/**
+	 * One request through the limiter, retried once on 503, then reported as a
+	 * rate limit. Searches take the "search" lane and stop retrying once a newer
+	 * search came in (`wanted`); the other requests take no lane.
+	 */
+	async function fetchJson(url: string, lane?: string, wanted: () => boolean = () => true): Promise<unknown> {
 		for (let attempt = 0; ; attempt++) {
 			try {
-				return await limiter.schedule(() => getJson(url), 'search');
+				return await limiter.schedule(() => getJson(url), lane);
 			} catch (error) {
 				if (!isBusy(error)) throw error;
-				if (search !== latest) throw new SupersededError();
+				if (!wanted()) throw new SupersededError();
 				if (attempt >= BUSY_RETRIES) throw new HttpError(error.host, 429);
 			}
 		}
 	}
+
+	const releases = createMusicBrainzReleases((url) => fetchJson(url));
 
 	return {
 		id: 'musicbrainz',
@@ -198,7 +213,8 @@ export function createMusicBrainz(deps: MusicBrainzDeps): Provider {
 			const options = deps.albumOptions();
 			const lucene = cleaned === null ? null : releaseGroupQuery(cleaned, options);
 			if (lucene === null) return [];
-			const json = await fetchGroups(searchUrl(lucene), ++latest);
+			const search = ++latest;
+			const json = await fetchJson(searchUrl(lucene), 'search', () => search === latest);
 			return parseMusicBrainz(json, options);
 		},
 		async resolve(result: SearchResult): Promise<SearchResult> {
@@ -207,6 +223,16 @@ export function createMusicBrainz(deps: MusicBrainzDeps): Provider {
 			} catch {
 				return result;
 			}
+		},
+		async editions(result: SearchResult): Promise<Edition[]> {
+			const group = groupOf(result);
+			return group === null ? [] : releases.editions(group);
+		},
+		async tracks(result: SearchResult, edition?: Edition): Promise<Track[]> {
+			const group = groupOf(result);
+			if (group === null) return [];
+			const release = edition ?? (await releases.editions(group))[0];
+			return release === undefined ? [] : releases.tracks(release.id);
 		},
 	};
 }

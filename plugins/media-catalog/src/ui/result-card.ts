@@ -22,14 +22,24 @@ export function renderResultCard(el: HTMLElement, result: SearchResult, sourceNa
 	body.createDiv().createSpan({ cls: CLS.resultSource, text: sourceName });
 }
 
-/** Albums: "Album · 12 tracks", "EP · 4 tracks", or either part alone. Null when the result has neither. */
-export function releaseLabel(result: SearchResult): string | null {
+/**
+ * Albums: "Album · 12 tracks", "EP · 4 tracks", or either part alone. Null
+ * when the result has neither. `tracks` (the summary of a fetched tracklist,
+ * "12 tracks · 53:21") takes the place of the count the search gave.
+ */
+export function releaseLabel(result: SearchResult, tracks?: string): string | null {
 	const albumType = result.details?.albumType;
-	const tracks = result.details?.trackCount;
+	const count = result.details?.trackCount;
 	const parts: string[] = [];
 	if (albumType) parts.push(t(`album.type.${albumType}`));
-	if (tracks !== undefined && tracks > 0) parts.push(tracks === 1 ? t('album.tracksOne') : t('album.tracks', { count: tracks }));
+	if (tracks !== undefined) parts.push(tracks);
+	else if (count !== undefined && count > 0) parts.push(tracksLabel(count));
 	return parts.length > 0 ? parts.join(' · ') : null;
+}
+
+/** "12 tracks", "1 track". */
+export function tracksLabel(count: number): string {
+	return count === 1 ? t('album.tracksOne') : t('album.tracks', { count });
 }
 
 /** Poster tile of a season: poster, "Season N", episode count and year. */

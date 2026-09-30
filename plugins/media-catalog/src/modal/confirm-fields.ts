@@ -3,7 +3,7 @@ import { todayIso } from '../catalog/dates';
 import { listAreas } from '../catalog/reference-note';
 import { RATING_MAX, RATING_MIN, STATUSES } from '../constants';
 import { t } from '../i18n';
-import type { CatalogDraft, CatalogSettings, Status } from '../types';
+import type { CatalogDraft, CatalogSettings, Status, Track } from '../types';
 import { coverChoiceRow, noCoverRow } from '../ui/cover-row';
 import { dropdownRow, infoRow, toggleRow } from '../ui/form';
 import {
@@ -20,6 +20,7 @@ import {
 	hasRating,
 	initialValues,
 	toNumber,
+	tracklistOf,
 	yearDescOf,
 } from './confirm-values';
 import type { ConfirmInput, ConfirmValues, TextKey } from './confirm-values';
@@ -38,6 +39,8 @@ export class ConfirmForm {
 	private status: Status;
 	private download: boolean;
 	private cover: string | null;
+	/** Albums: the section of the new note (see tracklistOf). */
+	private readonly tracks: Track[] | null;
 	/** `started` holds the date the form filled in (today), not one the user typed. */
 	private startedAuto: boolean;
 	private technical = false;
@@ -58,6 +61,7 @@ export class ConfirmForm {
 		this.values = initialValues(input, this.status);
 		this.startedAuto = this.values.started !== '';
 		this.cover = coverUrlOf(input);
+		this.tracks = tracklistOf(input, settings) ?? null;
 		this.fields = new TextFields(this.values, (key) => this.isShown(key));
 	}
 
@@ -179,6 +183,7 @@ export class ConfirmForm {
 			referenceArea: kind === 'book' && this.technical && this.area ? this.area : null,
 			cover: { url: cover, download: cover !== null && this.download },
 			source: { provider: result.provider, name: provider.name, url: result.sourceUrl ?? null },
+			tracks: kind === 'album' ? this.tracks : null,
 		};
 	}
 

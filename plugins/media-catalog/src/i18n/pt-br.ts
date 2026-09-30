@@ -6,6 +6,7 @@ export const ptBR: Translation<typeof en> = {
 	'command.add': 'Adicionar ao catálogo',
 	'command.changeCover': 'Trocar capa',
 	'command.markFinished': 'Terminei',
+	'command.updateTracks': 'Atualizar faixas do álbum',
 
 	// ---- kinds and statuses -------------------------------------------------
 	'kind.movie': 'Filme',
@@ -21,6 +22,7 @@ export const ptBR: Translation<typeof en> = {
 	// ---- modal: shared ------------------------------------------------------
 	'modal.add.title': 'Adicionar ao catálogo',
 	'modal.cover.title': 'Trocar capa',
+	'modal.tracks.title': 'Atualizar faixas do álbum',
 	'modal.season.title': 'Escolha a temporada',
 	'modal.confirm.title': 'Confira os dados',
 	'modal.back': 'Voltar',
@@ -43,10 +45,24 @@ export const ptBR: Translation<typeof en> = {
 
 	// ---- after the pick ----------------------------------------------------
 	'resolve.loading': 'Procurando a capa…',
+	'resolve.loadingBoth': 'Procurando capa e faixas…',
+	'resolve.loadingTracks': 'Procurando as faixas…',
 	'album.type.album': 'Álbum',
 	'album.type.ep': 'EP',
 	'album.tracks': '{count} faixas',
 	'album.tracksOne': '1 faixa',
+	'album.discs': '{count} discos',
+
+	// ---- tracklist ----------------------------------------------------------
+	'tracks.unavailable': 'Lista de faixas indisponível: a nota será criada sem ela.',
+	'tracks.edition': 'Edição',
+	'tracks.editionDesc': 'Edições podem ter outras faixas: faixas bônus, um disco a mais. A primeira é a do lançamento original.',
+	'tracks.loadingEditions': 'Carregando edições…',
+	'tracks.loading': 'Carregando faixas…',
+	'tracks.empty': 'Nenhuma faixa cadastrada para esta edição.',
+	'tracks.list': 'Faixas',
+	'tracks.hint': 'Só a seção "{heading}" da nota muda. Se a nota não tiver essa seção, ela é criada antes de "{impressions}", ou no fim.',
+	'tracks.update': 'Atualizar faixas',
 
 	// ---- season step --------------------------------------------------------
 	'season.loading': 'Carregando temporadas…',
@@ -145,6 +161,9 @@ export const ptBR: Translation<typeof en> = {
 	'notice.referenceCreated': 'Media Catalog: nota de referência "{name}" criada.',
 	'notice.referenceExists': 'Media Catalog: a nota de referência "{name}" já existia e foi ligada.',
 	'notice.referenceFailed': 'Media Catalog: a nota foi criada, mas a nota de referência não.',
+	'notice.tracksMissing': 'Media Catalog: lista de faixas indisponível; a nota foi criada sem ela.',
+	'notice.tracksUpdated': 'Media Catalog: faixas de "{name}" atualizadas.',
+	'notice.tracksFailed': 'Media Catalog: não foi possível atualizar as faixas de "{name}".',
 	'notice.folderIsFile': 'Media Catalog: "{path}" é um arquivo, não uma pasta. Confira a pasta do catálogo nas configurações.',
 
 	// ---- settings -----------------------------------------------------------
@@ -177,6 +196,12 @@ export const ptBR: Translation<typeof en> = {
 	'settings.albumItunesFallback.name': 'Capas do iTunes',
 	'settings.albumItunesFallback.desc':
 		'Quando o Cover Art Archive não tem a capa de um álbum do MusicBrainz, procura o álbum no iTunes e usa a capa de lá.',
+	'settings.albumTracklist.name': 'Incluir lista de faixas em álbuns',
+	'settings.albumTracklist.desc':
+		'As notas novas de álbuns ganham a lista numerada das faixas, com a duração, antes de "{impressions}". As faixas são buscadas depois que você escolhe o álbum. Desligado: nada é buscado.',
+	'settings.albumTracksProperty.name': 'Propriedade com o número de faixas',
+	'settings.albumTracksProperty.desc':
+		'Grava também "tracks" com o número de faixas depois de "year" nas notas novas de álbuns, quando a lista de faixas é conhecida.',
 	'settings.keys.heading': 'Chaves de API',
 	'settings.keys.desc':
 		'As chaves ficam no chaveiro do Obsidian (configurações, chaveiro). O plugin só guarda qual segredo usar.',
@@ -186,4 +211,8 @@ export const ptBR: Translation<typeof en> = {
 	'settings.igdbClientSecret.desc': 'Escolha o segredo com o client secret do mesmo app da Twitch.',
 	'settings.googleBooksKey.name': 'Chave do Google Books',
 	'settings.googleBooksKey.desc': 'Só para a fonte Google Books. Gratuita: ative a Books API no console do Google Cloud.',
+
+	// ---- note text (written into new notes, in the app language) -----------
+	'note.tracks.heading': 'Faixas',
+	'note.tracks.disc': 'Disco {n}',
 };

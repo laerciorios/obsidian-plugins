@@ -10,6 +10,13 @@ export interface AlbumOptions {
 	itunesFallback: boolean;
 }
 
+const MBID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+/** A MusicBrainz id (release group, release): a lowercase UUID. */
+export function isMbid(value: string): boolean {
+	return MBID.test(value);
+}
+
 /**
  * Name folded for comparisons: no accents, case or punctuation, "&" read as
  * "and", no leading "the" ("The Beatles" = "beatles", "Lô Borges" = "lo borges").

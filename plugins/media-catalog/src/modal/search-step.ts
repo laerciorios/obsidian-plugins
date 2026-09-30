@@ -1,16 +1,15 @@
 import { DropdownComponent, SearchComponent, debounce } from 'obsidian';
 import { CLS, KINDS, MIN_QUERY_LENGTH, SEARCH_DEBOUNCE_MS } from '../constants';
 import { t } from '../i18n';
-import { providersFor } from '../providers';
 import { CatalogError, describeError } from '../providers/errors';
 import type { Provider, SearchResult } from '../types';
 import { renderInstructions } from '../ui/instructions';
 import { OptionList } from '../ui/option-list';
 import { renderResultCard } from '../ui/result-card';
 import { renderEmpty, renderError, renderHint, renderLoading } from '../ui/states';
-import { defaultProvider, highlightIndex, orderResults, rememberSource, searchPlan } from './search-state';
+import { defaultProvider, highlightIndex, orderResults, rememberSource, searchPlan, sourcesFor } from './search-state';
 import type { SearchState } from './search-state';
-import { isOnControl } from './steps';
+import { MODE_TITLES, isOnControl } from './steps';
 import type { Step, StepHost } from './steps';
 
 export class SearchStep implements Step {
@@ -26,7 +25,7 @@ export class SearchStep implements Step {
 		private readonly host: StepHost,
 		private readonly state: SearchState,
 	) {
-		this.title = t(host.options.mode === 'cover' ? 'modal.cover.title' : 'modal.add.title');
+		this.title = t(MODE_TITLES[host.options.mode]);
 	}
 
 	render(el: HTMLElement): void {
@@ -40,7 +39,7 @@ export class SearchStep implements Step {
 		]);
 		this.paint();
 
-		// First open in cover mode, a search cut short by leaving the step, or a
+		// First open in cover or tracks mode, a search cut short by leaving the step, or a
 		// query typed right before leaving: search now. Results that still match
 		// the query (coming back from a later step) are kept as they are.
 		const { phase } = this.state;
@@ -78,11 +77,11 @@ export class SearchStep implements Step {
 		const kind = new DropdownComponent(toolbar);
 		for (const value of KINDS) kind.addOption(value, t(`kind.${value}`));
 		kind.setValue(this.state.kind)
-			.setDisabled(options.mode === 'cover')
+			.setDisabled(options.mode !== 'create')
 			.onChange((value) => this.changeKind(value));
 		kind.selectEl.setAttr('aria-label', t('search.kind'));
 
-		const providers = providersFor(context.providers, this.state.kind);
+		const providers = sourcesFor(context, this.state.kind, options);
 		if (providers.length > 1) {
 			const source = new DropdownComponent(toolbar);
 			for (const provider of providers) source.addOption(provider.id, provider.name);
@@ -105,7 +104,7 @@ export class SearchStep implements Step {
 		if (!kind || kind === this.state.kind) return;
 		const { context } = this.host;
 		this.state.kind = kind;
-		this.state.providerId = defaultProvider(context, kind)?.id ?? null;
+		this.state.providerId = defaultProvider(context, kind, this.host.options)?.id ?? null;
 		this.clearResults();
 		context.settings.lastKind = kind;
 		context.settingsChanged();
@@ -120,7 +119,7 @@ export class SearchStep implements Step {
 
 	private changeSource(value: string): void {
 		const { context } = this.host;
-		const provider = providersFor(context.providers, this.state.kind).find((p) => p.id === value);
+		const provider = sourcesFor(context, this.state.kind, this.host.options).find((p) => p.id === value);
 		if (!provider || provider.id === this.state.providerId) return;
 		this.state.providerId = provider.id;
 		// Remembered like the kind: the next book or album search starts on this source.
@@ -267,7 +266,7 @@ export class SearchStep implements Step {
 	}
 
 	private provider(): Provider | undefined {
-		const providers = providersFor(this.host.context.providers, this.state.kind);
+		const providers = sourcesFor(this.host.context, this.state.kind, this.host.options);
 		return providers.find((provider) => provider.id === this.state.providerId) ?? providers[0];
 	}
 }

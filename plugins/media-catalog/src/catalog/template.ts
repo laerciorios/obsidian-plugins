@@ -1,9 +1,11 @@
 import { getFrontMatterInfo, moment, normalizePath } from 'obsidian';
 import type { App } from 'obsidian';
 import { DEFAULT_TEMPLATE_NAME } from '../constants';
+import { t } from '../i18n';
 import { isRecord } from '../providers/guards';
 import type { CatalogDraft, CatalogSettings } from '../types';
 import { joinPath } from './paths';
+import { insertTracklist, renderTracklist } from './tracklist';
 
 /** Settings of the core Templates plugin that matter here. */
 export interface TemplatesConfig {
@@ -74,14 +76,27 @@ async function templateBody(app: App, path: string): Promise<string> {
 }
 
 /**
+ * Albums with tracks: the tracklist section in the template body, before
+ * `## Impressões` (first when the template has none). Added after the
+ * variables are expanded, so a track title is never read as `{{title}}`.
+ */
+export function withTracklist(body: string, draft: CatalogDraft): string {
+	const tracks = draft.kind === 'album' ? draft.tracks : null;
+	if (!tracks || tracks.length === 0) return body;
+	return insertTracklist(body, renderTracklist(tracks, t)).trimEnd();
+}
+
+/**
  * Body of a new catalog note: the template body with its variables expanded
  * (`basename` is the new note's name, like the core plugin's `{{title}}`),
- * then the source line after one blank line when enabled. Ends with a single
- * newline, or is "" when there is nothing to write.
+ * the tracklist of albums, then the source line after one blank line when
+ * enabled (always last). Ends with a single newline, or is "" when there is
+ * nothing to write.
  */
 export async function noteBody(app: App, settings: CatalogSettings, draft: CatalogDraft, basename: string): Promise<string> {
 	const config = await readTemplatesConfig(app);
-	const body = expandTemplate(await templateBody(app, templatePath(settings, config)), basename, config).trimEnd();
+	const expanded = expandTemplate(await templateBody(app, templatePath(settings, config)), basename, config).trimEnd();
+	const body = withTracklist(expanded, draft);
 	const source = settings.addSourceLink ? sourceLine(draft) : null;
 	const parts = [body, source].filter((part): part is string => !!part);
 	return parts.length > 0 ? `${parts.join('\n\n')}\n` : '';

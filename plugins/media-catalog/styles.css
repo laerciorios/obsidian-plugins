@@ -1,5 +1,5 @@
 /*
- * Media Catalog — the catalog modal (search, season, confirm) and the rating modal.
+ * Media Catalog — the catalog modal (search, season, confirm, tracks) and the rating modal.
  * Only Obsidian CSS variables: works in light and dark themes and follows the
  * user's theme. Classes are prefixed with `mc-`.
  */
@@ -309,6 +309,68 @@ body:not(.is-phone) .mc-modal {
 
 .mc-actions {
 	margin-top: 0;
+}
+
+/* ---- tracklist ("Update album tracks") --------------------------------- */
+
+/* Long edition labels ("1997-05-21 · XE · CD · 2 discs · 15 tracks · …") stay inside the row. */
+.mc-form .dropdown {
+	max-width: min(440px, 100%);
+	text-overflow: ellipsis;
+}
+
+.mc-tracklist {
+	max-height: 40vh;
+	overflow-y: auto;
+	padding: var(--size-4-2) var(--size-4-3);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background-color: var(--background-secondary);
+	font-size: var(--font-ui-small);
+}
+
+.mc-tracklist:focus-visible {
+	outline: 2px solid var(--interactive-accent);
+	outline-offset: 1px;
+}
+
+.mc-tracklist ol {
+	margin: 0;
+	padding-inline-start: var(--size-4-8);
+}
+
+.mc-tracklist ol + .mc-tracklist-disc {
+	margin-top: var(--size-4-3);
+}
+
+.mc-tracklist li {
+	padding: var(--size-2-1) 0;
+	color: var(--text-normal);
+	font-variant-numeric: tabular-nums;
+}
+
+.mc-tracklist li::marker {
+	color: var(--text-muted);
+}
+
+/* Title on the left, duration on the right. */
+.mc-tracklist li > span:first-child {
+	overflow-wrap: anywhere;
+}
+
+.mc-tracklist-time {
+	float: inline-end;
+	margin-inline-start: var(--size-4-3);
+	color: var(--text-muted);
+}
+
+.mc-tracklist-disc {
+	margin-bottom: var(--size-2-2);
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	font-weight: var(--font-semibold);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
 }
 
 /* ---- rating modal ------------------------------------------------------- */

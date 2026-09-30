@@ -48,6 +48,17 @@ export default class MediaCatalogPlugin extends Plugin implements CatalogContext
 			},
 		});
 		this.addCommand({
+			id: COMMAND_IDS.updateTracks,
+			name: t('command.updateTracks'),
+			icon: 'list-music',
+			checkCallback: (checking) => {
+				const note = this.activeNote();
+				if (note?.kind !== 'album') return false;
+				if (!checking) new CatalogModal(this, { mode: 'tracks', note }).open();
+				return true;
+			},
+		});
+		this.addCommand({
 			id: COMMAND_IDS.markFinished,
 			name: t('command.markFinished'),
 			icon: 'circle-check',

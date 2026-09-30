@@ -5,7 +5,7 @@ import { CatalogError } from '../providers/errors';
 import type { CatalogDraft, CatalogSettings } from '../types';
 import { downloadCover } from './cover-download';
 import { baseName, findDuplicate } from './duplicates';
-import { catalogFrontmatter } from './frontmatter';
+import { catalogFrontmatter, tracksProperty } from './frontmatter';
 import { folderPath, joinPath } from './paths';
 import { ensureReferenceNote, referenceLink } from './reference-note';
 import { hasSlug, seasonSuffix, slugify } from './slug';
@@ -97,7 +97,7 @@ async function createReference(app: App, draft: CatalogDraft, area: string, name
 
 /**
  * Resolves slug/path (collision → "-<year>", albums "-<artist>" first), re-checks duplicates, downloads the cover when
- * draft.cover.download (failure → Notice + keeps URL), writes the note with a single
+ * draft.cover.download (failure → Notice + keeps URL), writes the note (albums: with the tracklist) with a single
  * vault.create (creating the folder when missing), then creates the reference note when
  * draft.referenceArea (failure → Notice + `reference: ""`). Does NOT open the note.
  * Throws on unexpected failure.
@@ -122,7 +122,8 @@ export async function createCatalogNote(app: App, settings: CatalogSettings, dra
 	// The link is known before the reference note exists, so it is written with the note.
 	const reference = area ? referenceLink(area, name) : '';
 	const body = await noteBody(app, settings, draft, name);
-	const file = await app.vault.create(path, catalogFrontmatter(draft, { cover, reference }) + body);
+	const tracks = tracksProperty(draft, settings.albumTracksProperty);
+	const file = await app.vault.create(path, catalogFrontmatter(draft, { cover, reference, tracks }) + body);
 	if (area) await createReference(app, draft, area, name, file);
 	return { status: 'created', file };
 }

@@ -9,6 +9,8 @@ export interface PreviewOptions {
 	cover: string | null;
 	/** Cover mode: draws the note's current cover, shown before the new one with captions. */
 	current?: (el: HTMLElement) => void;
+	/** Albums: summary of the fetched tracklist, in place of the track count of the search. */
+	tracks?: string;
 }
 
 export interface Preview {
@@ -64,7 +66,7 @@ export function renderPreview(
 	}
 	if (year !== undefined) body.createDiv({ cls: CLS.resultMeta, text: String(year) });
 	if (result.subtitle) body.createDiv({ cls: CLS.resultMeta, text: result.subtitle });
-	const release = releaseLabel(result);
+	const release = releaseLabel(result, options.tracks);
 	if (release) body.createDiv({ cls: CLS.resultMeta, text: release });
 	body.createDiv().createSpan({ cls: CLS.resultSource, text: sourceName });
 	return { body, setCover };

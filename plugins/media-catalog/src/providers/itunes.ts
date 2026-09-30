@@ -1,12 +1,14 @@
 import { appLanguage } from '@obsidian-plugins/i18n';
-import type { Provider, SearchResult } from '../types';
+import type { Edition, Provider, SearchResult, Track } from '../types';
 import { baseTitle, foldName, sameArtist, titleMatch } from './albums';
 import type { AlbumOptions } from './albums';
 import { HttpError } from './errors';
 import { isRecord, num, records, str, yearOf } from './guards';
 import { getJson } from './http';
+import { PromiseCache } from './memo';
 import { RequestLimiter } from './rate-limit';
 import { cleanQuery, finalize, imageUrl } from './results';
+import { itunesEdition, parseItunesTracks } from './tracklists';
 
 /**
  * Albums from the iTunes Search API (no key). Also the cover fallback for
@@ -17,9 +19,19 @@ import { cleanQuery, finalize, imageUrl } from './results';
  * ("pt-BR" → BR, whose catalog has more Brazilian albums, e.g. "Clube da
  * Esquina 2"); otherwise Apple's default (US). `lang` only knows en_us and
  * ja_jp, so it is not sent.
+ *
+ * Tracklists come from a lookup of the collection with its songs, in the same
+ * store as the search (a BR-only album has no songs in the US store). The
+ * lookup takes no lane: a newer search or lookup never drops it.
  */
 
 const SEARCH_URL = 'https://itunes.apple.com/search';
+const LOOKUP_URL = 'https://itunes.apple.com/lookup';
+/** Without it a lookup stops at 50 tracks (a super deluxe edition has 107); 200 is the API's maximum. */
+const LOOKUP_LIMIT = 200;
+const LOOKUP_CACHE = { max: 20, ttlMs: 10 * 60_000 };
+/** iTunes collection ids are numbers. */
+const COLLECTION_ID = /^\d+$/;
 /** More than MAX_RESULTS: singles, repeated editions and (maybe) EPs are dropped. */
 const PAGE_SIZE = 25;
 const ITUNES_LIMIT = { max: 20, windowMs: 60_000 };
@@ -33,6 +45,8 @@ const TYPE_SUFFIX = /\s*-\s+(EP|Single)$/;
 export interface ItunesClient {
 	/** Raw JSON of an album search. A request waiting for its turn is replaced by a newer one of the same lane. */
 	searchAlbums(term: string, lane: 'search' | 'artwork'): Promise<unknown>;
+	/** Raw JSON of a collection lookup with its songs (and music videos), in the store of the searches. */
+	lookupSongs(collectionId: string): Promise<unknown>;
 }
 
 /** Store country: the region of a language tag ("pt-BR" → "BR"), undefined without one. */
@@ -46,6 +60,13 @@ export function itunesSearchUrl(term: string, country?: string): string {
 	return `${SEARCH_URL}?${params.toString()}`;
 }
 
+/** Lookup of a collection and its tracks. */
+export function itunesLookupUrl(collectionId: string, country?: string): string {
+	const params = new URLSearchParams({ id: collectionId, entity: 'song', limit: String(LOOKUP_LIMIT) });
+	if (country) params.set('country', country);
+	return `${LOOKUP_URL}?${params.toString()}`;
+}
+
 /** Apple answers 403 (sometimes 429) when the limit is exceeded: no key is involved, so it is a rate limit. */
 function rateLimited(error: unknown): unknown {
 	return error instanceof HttpError && (error.status === 403 || error.status === 429) ? new HttpError(error.host, 429) : error;
@@ -53,6 +74,8 @@ function rateLimited(error: unknown): unknown {
 
 export function createItunesClient(country: () => string | undefined = () => storeCountry()): ItunesClient {
 	const limiter = new RequestLimiter(ITUNES_LIMIT);
+	// The editions and the tracks of a collection share one lookup.
+	const lookups = new PromiseCache<unknown>(LOOKUP_CACHE);
 	return {
 		async searchAlbums(term, lane) {
 			try {
@@ -60,6 +83,16 @@ export function createItunesClient(country: () => string | undefined = () => sto
 			} catch (error) {
 				throw rateLimited(error);
 			}
+		},
+		lookupSongs(collectionId) {
+			const url = itunesLookupUrl(collectionId, country());
+			return lookups.get(url, async () => {
+				try {
+					return await limiter.schedule(() => getJson(url));
+				} catch (error) {
+					throw rateLimited(error);
+				}
+			});
 		},
 	};
 }
@@ -187,6 +220,16 @@ export function createItunes(client: ItunesClient, options: () => AlbumOptions):
 			const cleaned = cleanQuery(query);
 			if (cleaned === null) return [];
 			return parseItunes(await client.searchAlbums(cleaned, 'search'), options().includeEps);
+		},
+		/** The collection itself, from the lookup its tracks come from (one request for both). */
+		async editions(result: SearchResult): Promise<Edition[]> {
+			if (result.provider !== 'itunes' || !COLLECTION_ID.test(result.externalId)) return [];
+			return [itunesEdition(await client.lookupSongs(result.externalId), result)];
+		},
+		async tracks(result: SearchResult, edition?: Edition): Promise<Track[]> {
+			const id = edition?.id ?? result.externalId;
+			if (result.provider !== 'itunes' || !COLLECTION_ID.test(id)) return [];
+			return parseItunesTracks(await client.lookupSongs(id), id);
 		},
 	};
 }

@@ -20,6 +20,8 @@ properties:
     displayName: Concluído
   note.platform:
     displayName: Plataforma
+  note.tracks:
+    displayName: Faixas
 views:
   - type: table
     name: Todos
@@ -50,6 +52,7 @@ views:
       - file.name
       - author
       - year
+      - tracks
       - status
       - rating
       - finished

@@ -10,6 +10,7 @@ export const en = {
 	'command.add': 'Add to catalog',
 	'command.changeCover': 'Change cover',
 	'command.markFinished': 'Mark as finished',
+	'command.updateTracks': 'Update album tracks',
 
 	// ---- kinds and statuses (labels only; notes store the English values) --
 	'kind.movie': 'Movie',
@@ -25,6 +26,7 @@ export const en = {
 	// ---- modal: shared ------------------------------------------------------
 	'modal.add.title': 'Add to catalog',
 	'modal.cover.title': 'Change cover',
+	'modal.tracks.title': 'Update album tracks',
 	'modal.season.title': 'Choose the season',
 	'modal.confirm.title': 'Check the details',
 	'modal.back': 'Back',
@@ -47,10 +49,24 @@ export const en = {
 
 	// ---- after the pick (albums: the cover is checked before the form) ------
 	'resolve.loading': 'Looking for the cover…',
+	'resolve.loadingBoth': 'Looking for the cover and tracks…',
+	'resolve.loadingTracks': 'Looking for the tracks…',
 	'album.type.album': 'Album',
 	'album.type.ep': 'EP',
 	'album.tracks': '{count} tracks',
 	'album.tracksOne': '1 track',
+	'album.discs': '{count} discs',
+
+	// ---- tracklist (confirm preview and "Update album tracks") -------------
+	'tracks.unavailable': 'Tracklist unavailable: the note will be created without it.',
+	'tracks.edition': 'Edition',
+	'tracks.editionDesc': 'Editions can have other tracks: bonus tracks, an extra disc. The first one is the original release.',
+	'tracks.loadingEditions': 'Loading editions…',
+	'tracks.loading': 'Loading tracks…',
+	'tracks.empty': 'No tracks listed for this edition.',
+	'tracks.list': 'Tracks',
+	'tracks.hint': 'Only the "{heading}" section of the note changes. When the note has none, it is created before "{impressions}", or at the end.',
+	'tracks.update': 'Update tracks',
 
 	// ---- season step --------------------------------------------------------
 	'season.loading': 'Loading seasons…',
@@ -149,6 +165,9 @@ export const en = {
 	'notice.referenceCreated': 'Media Catalog: reference note "{name}" created.',
 	'notice.referenceExists': 'Media Catalog: reference note "{name}" already existed and was linked.',
 	'notice.referenceFailed': 'Media Catalog: the note was created, but not the reference note.',
+	'notice.tracksMissing': 'Media Catalog: tracklist unavailable, the note was created without it.',
+	'notice.tracksUpdated': 'Media Catalog: tracks of "{name}" updated.',
+	'notice.tracksFailed': 'Media Catalog: could not update the tracks of "{name}".',
 	'notice.folderIsFile': 'Media Catalog: "{path}" is a file, not a folder. Check the catalog folder setting.',
 
 	// ---- settings -----------------------------------------------------------
@@ -181,6 +200,11 @@ export const en = {
 	'settings.albumItunesFallback.name': 'Covers from iTunes',
 	'settings.albumItunesFallback.desc':
 		'When the Cover Art Archive has no front cover for a MusicBrainz album, look for the album on iTunes and use its cover.',
+	'settings.albumTracklist.name': 'Include the tracklist in albums',
+	'settings.albumTracklist.desc':
+		'New album notes get the numbered list of tracks, with durations, before "{impressions}". The tracks are fetched after you pick the album. Off: nothing is fetched.',
+	'settings.albumTracksProperty.name': 'Number of tracks property',
+	'settings.albumTracksProperty.desc': 'Also writes "tracks" with the number of tracks after "year" in new album notes, when the tracklist is known.',
 	'settings.keys.heading': 'API keys',
 	'settings.keys.desc':
 		'Keys are kept in the keychain of Obsidian (settings, keychain). The plugin only stores which secret to use.',
@@ -190,4 +214,8 @@ export const en = {
 	'settings.igdbClientSecret.desc': 'Pick the secret that holds the client secret of the same Twitch app.',
 	'settings.googleBooksKey.name': 'Google Books key',
 	'settings.googleBooksKey.desc': 'Only for the Google Books source. Free: enable the Books API in the Google Cloud console.',
+
+	// ---- note text (written into new notes, in the app language) -----------
+	'note.tracks.heading': 'Tracks',
+	'note.tracks.disc': 'Disc {n}',
 } satisfies Messages;

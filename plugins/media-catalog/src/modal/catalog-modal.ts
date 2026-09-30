@@ -1,7 +1,7 @@
 import { Modal } from 'obsidian';
 import { CLS } from '../constants';
 import { hasSeasons } from '../providers';
-import type { CatalogContext, Provider, SearchResult, SeasonInfo } from '../types';
+import type { CatalogContext, Provider, SearchResult, SeasonInfo, Track } from '../types';
 import { ConfirmStep } from './confirm-step';
 import { CoverStep } from './cover-step';
 import { ResolveStep } from './resolve-step';
@@ -10,7 +10,10 @@ import type { SearchState } from './search-state';
 import { SearchStep } from './search-step';
 import { SeasonStep, createSeasonState, seasonKey } from './season-step';
 import type { SeasonState } from './season-step';
+import { resultKey } from './steps';
 import type { CatalogModalOptions, Chosen, Step, StepHost } from './steps';
+import { TracksStep, createTracksState } from './tracks-step';
+import type { TracksState } from './tracks-step';
 
 export type { CatalogModalOptions } from './steps';
 
@@ -18,18 +21,22 @@ const NAV_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'] as
 
 /**
  * One modal, a few steps: search → (resolve, for sources that finish a result
- * once picked) → season (series only) → confirm. The state that must survive
- * going back (query, results, selection, seasons, resolved results) lives
- * here; each step only draws it. Keys reach the step on screen through the
- * modal scope. Closing destroys the step, which cancels its timers and makes
- * pending responses stale.
+ * once picked, and the tracklist of albums) → season (series only) → confirm.
+ * "Update album tracks" goes search → tracks. The state that must survive
+ * going back (query, results, selection, seasons, resolved results, tracks)
+ * lives here; each step only draws it. Keys reach the step on screen through
+ * the modal scope. Closing destroys the step, which cancels its timers and
+ * makes pending responses stale.
  */
 export class CatalogModal extends Modal {
 	private readonly host: StepHost;
 	private readonly searchState: SearchState;
 	private seasonState: SeasonState | null = null;
+	private tracksState: TracksState | null = null;
 	/** Results already resolved, by `<provider>:<externalId>`: picking one again after Back does not repeat the requests. */
 	private readonly resolved = new Map<string, SearchResult>();
+	/** Tracklists already fetched (create mode), by the same key. Failed requests are not kept: a new pick tries again. */
+	private readonly trackLists = new Map<string, Track[]>();
 	private chosen: Chosen | null = null;
 	private step: Step | null = null;
 	private atConfirm = false;
@@ -95,21 +102,51 @@ export class CatalogModal extends Modal {
 		this.show(new SearchStep(this.host, this.searchState));
 	}
 
-	/** A result was picked: resolve it first when its source can, then seasons or confirm. */
+	/**
+	 * A result was picked. Tracks mode: its tracks. Otherwise resolve it and
+	 * fetch the tracklist of an album first (whatever is not known yet, both
+	 * at once), then seasons or confirm.
+	 */
 	private chooseResult(result: SearchResult, provider: Provider): void {
-		const key = `${provider.id}:${result.externalId}`;
+		if (this.launch.mode === 'tracks') {
+			this.showTracks({ result, provider });
+			return;
+		}
+		const key = resultKey(result, provider);
 		const known = this.resolved.get(key);
-		if (known || !provider.resolve) {
-			this.proceed({ result: known ?? result, provider });
+		const wantsTracks = this.wantsTracks(result, provider);
+		const jobs = { resolve: !known && !!provider.resolve, tracks: wantsTracks && !this.trackLists.has(key) };
+		const go = (found: SearchResult): void => {
+			this.proceed({ result: found, provider, tracks: wantsTracks ? (this.trackLists.get(key) ?? null) : undefined });
+		};
+		if (!jobs.resolve && !jobs.tracks) {
+			go(known ?? result);
 			return;
 		}
 		this.atConfirm = false;
 		this.show(
-			new ResolveStep(this.host, { result, provider }, (resolved) => {
-				this.resolved.set(key, resolved);
-				this.proceed({ result: resolved, provider });
+			new ResolveStep(this.host, { result: known ?? result, provider }, jobs, (outcome) => {
+				if (jobs.resolve) this.resolved.set(key, outcome.result);
+				if (outcome.tracks) this.trackLists.set(key, outcome.tracks);
+				go(outcome.result);
 			}),
 		);
+	}
+
+	/** New album notes get their tracklist: setting on and a source that lists tracks. */
+	private wantsTracks(result: SearchResult, provider: Provider): boolean {
+		const { settings } = this.host.context;
+		return this.launch.mode === 'create' && result.kind === 'album' && settings.albumTracklist && !!provider.tracks;
+	}
+
+	private showTracks(chosen: Chosen): void {
+		if (this.launch.mode !== 'tracks') return;
+		const key = resultKey(chosen.result, chosen.provider);
+		const kept = this.tracksState;
+		const state = kept && kept.key === key ? kept : createTracksState(key);
+		this.tracksState = state;
+		this.atConfirm = true;
+		this.show(new TracksStep(this.host, this.launch.note, chosen, state));
 	}
 
 	private proceed(chosen: Chosen): void {
@@ -137,7 +174,7 @@ export class CatalogModal extends Modal {
 	private showConfirm(season: SeasonInfo | null): void {
 		const chosen = this.chosen;
 		if (!chosen) return;
-		const input = { result: chosen.result, provider: chosen.provider, season };
+		const input = { result: chosen.result, provider: chosen.provider, season, tracks: chosen.tracks };
 		const { launch } = this;
 		this.atConfirm = true;
 		this.show(launch.mode === 'cover' ? new CoverStep(this.host, launch.note, input) : new ConfirmStep(this.host, input));
