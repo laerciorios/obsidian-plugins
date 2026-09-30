@@ -2,7 +2,7 @@
 	"name": "media-catalog",
 	"version": "0.1.0",
 	"private": true,
-	"description": "Search movies, series, games and books online and file them as catalog notes.",
+	"description": "Search movies, series, games, books and albums online and file them as catalog notes.",
 	"main": "dist/main.js",
 	"scripts": {
 		"dev": "node ../../scripts/esbuild.mjs",

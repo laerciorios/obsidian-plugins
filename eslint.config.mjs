@@ -19,6 +19,14 @@ const BRANDS = [
 	'Google Cloud',
 	'Open Library',
 	'Twitch',
+	'MusicBrainz',
+	'iTunes',
+	'Cover Art Archive',
+	'Apple',
+	'Spotify',
+	'YouTube Music',
+	'EP',
+	'EPs',
 ];
 
 export default defineConfig(

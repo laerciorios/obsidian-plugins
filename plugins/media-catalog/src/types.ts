@@ -1,10 +1,11 @@
 import type { App, TFile } from 'obsidian';
-import type { BOOK_SOURCES, KINDS, PROVIDER_IDS, STATUSES } from './constants';
+import type { ALBUM_SOURCES, BOOK_SOURCES, KINDS, PROVIDER_IDS, STATUSES } from './constants';
 
 export type MediaKind = (typeof KINDS)[number];
 export type Status = (typeof STATUSES)[number];
 export type ProviderId = (typeof PROVIDER_IDS)[number];
 export type BookSource = (typeof BOOK_SOURCES)[number];
+export type AlbumSource = (typeof ALBUM_SOURCES)[number];
 
 /** One item of a provider's search results. Everything except the ids and title is optional. */
 export interface SearchResult {
@@ -27,6 +28,10 @@ export interface SearchResult {
 		pages?: number;
 		isbn?: string;
 		platforms?: string[];
+		/** Albums: primary type, shown as a label in the result list. */
+		albumType?: 'album' | 'ep';
+		/** Albums: number of tracks, when the source gives it. */
+		trackCount?: number;
 	};
 }
 
@@ -47,6 +52,13 @@ export interface Provider {
 	name: string;
 	kinds: readonly MediaKind[];
 	search(query: string, kind: MediaKind): Promise<SearchResult[]>;
+	/**
+	 * Optional. Runs once the user picks a result, before the confirm (or
+	 * cover) step, to fill what the search could not: e.g. whether the Cover
+	 * Art Archive has a front cover, else an iTunes fallback. Must resolve
+	 * (a missing cover is not an error); returns the result, possibly updated.
+	 */
+	resolve?(result: SearchResult): Promise<SearchResult>;
 }
 
 export interface SeasonProvider extends Provider {
@@ -87,6 +99,14 @@ export interface CatalogSettings {
 	defaultStatus: Status;
 	downloadCovers: boolean;
 	bookSource: BookSource;
+	/** Source selected first when searching albums. */
+	albumSource: AlbumSource;
+	/** Albums: include EPs besides albums. */
+	albumIncludeEps: boolean;
+	/** Albums: include compilations and live albums (MusicBrainz secondary types). */
+	albumIncludeSecondary: boolean;
+	/** Albums from MusicBrainz without a Cover Art Archive front cover: look for one on iTunes. */
+	albumItunesFallback: boolean;
 	/** Kind picked in the last search, so the modal reopens on it. */
 	lastKind: MediaKind;
 	/** Ids of secrets in Obsidian's secret storage (never the secret values). */

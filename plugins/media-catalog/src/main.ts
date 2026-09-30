@@ -5,7 +5,7 @@ import { COMMAND_IDS, SAVE_DEBOUNCE_MS } from './constants';
 import { t } from './i18n';
 import { CatalogModal } from './modal/catalog-modal';
 import { askRating } from './modal/rating-modal';
-import { createProviders } from './providers';
+import { createProviders, userAgentFor } from './providers';
 import { googleBooksKey, igdbCredentials } from './settings/secrets';
 import { defaultSettings, normalizeSettings } from './settings/settings';
 import { MediaCatalogSettingTab } from './settings/settings-tab';
@@ -18,10 +18,16 @@ export default class MediaCatalogPlugin extends Plugin implements CatalogContext
 
 	async onload(): Promise<void> {
 		this.settings = normalizeSettings(await this.loadData());
-		// Secrets are read at call time, so a key added in the settings works at once.
+		// Secrets and album options are read at call time, so a change in the settings works at once.
 		this.providers = createProviders({
 			igdbCredentials: () => igdbCredentials(this.app, this.settings),
 			googleBooksKey: () => googleBooksKey(this.app, this.settings),
+			userAgent: userAgentFor(this.manifest),
+			albumOptions: () => ({
+				includeEps: this.settings.albumIncludeEps,
+				includeSecondary: this.settings.albumIncludeSecondary,
+				itunesFallback: this.settings.albumItunesFallback,
+			}),
 		});
 
 		this.addCommand({

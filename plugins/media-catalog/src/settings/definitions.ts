@@ -1,7 +1,7 @@
 import type { App, SettingDefinitionItem, TFile } from 'obsidian';
 import { DEFAULT_FOLDER, DEFAULT_TEMPLATE_NAME, STATUSES } from '../constants';
 import { t } from '../i18n';
-import type { BookSource, CatalogSettings, Status } from '../types';
+import type { AlbumSource, BookSource, CatalogSettings, Status } from '../types';
 import type { ControlKey } from './bindings';
 import { secretRow } from './secrets';
 
@@ -9,6 +9,10 @@ import { secretRow } from './secrets';
 const BOOK_SOURCE_NAMES: Record<BookSource, string> = {
 	'open-library': 'Open Library',
 	'google-books': 'Google Books',
+};
+const ALBUM_SOURCE_NAMES: Record<AlbumSource, string> = {
+	musicbrainz: 'MusicBrainz',
+	itunes: 'iTunes',
 };
 
 /** What the definitions need from the settings tab. */
@@ -77,6 +81,26 @@ export function settingDefinitions(context: DefinitionContext): SettingDefinitio
 					name: t('settings.bookSource.name'),
 					desc: t('settings.bookSource.desc'),
 					control: { type: 'dropdown', key: 'bookSource', options: BOOK_SOURCE_NAMES },
+				},
+				{
+					name: t('settings.albumSource.name'),
+					desc: t('settings.albumSource.desc'),
+					control: { type: 'dropdown', key: 'albumSource', options: ALBUM_SOURCE_NAMES },
+				},
+				{
+					name: t('settings.albumIncludeEps.name'),
+					desc: t('settings.albumIncludeEps.desc'),
+					control: { type: 'toggle', key: 'albumIncludeEps' },
+				},
+				{
+					name: t('settings.albumIncludeSecondary.name'),
+					desc: t('settings.albumIncludeSecondary.desc'),
+					control: { type: 'toggle', key: 'albumIncludeSecondary' },
+				},
+				{
+					name: t('settings.albumItunesFallback.name'),
+					desc: t('settings.albumItunesFallback.desc'),
+					control: { type: 'toggle', key: 'albumItunesFallback' },
 				},
 			],
 		},

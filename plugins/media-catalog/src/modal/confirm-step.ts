@@ -71,7 +71,7 @@ export class ConfirmStep implements Step {
 		const { app, settings } = this.host.context;
 		const title = this.form.title;
 		const season = this.input.season?.number ?? null;
-		const query = { kind: this.input.result.kind, title, season, year: this.form.year };
+		const query = { kind: this.input.result.kind, title, season, year: this.form.year, author: this.form.author };
 		this.showDuplicate(title ? findDuplicate(app, settings.folder, query) : null);
 	}
 

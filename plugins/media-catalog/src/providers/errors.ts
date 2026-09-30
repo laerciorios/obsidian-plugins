@@ -37,6 +37,16 @@ export class UnexpectedResponseError extends CatalogError {
 	}
 }
 
+/**
+ * A request still waiting for its turn (see ./rate-limit) was dropped because
+ * a newer one of the same kind was queued. Its answer would be ignored anyway.
+ */
+export class SupersededError extends CatalogError {
+	constructor() {
+		super('replaced by a newer request');
+	}
+}
+
 /** A provider that needs an API key has none configured. */
 export class MissingCredentialsError extends CatalogError {
 	constructor(readonly source: string) {
@@ -56,7 +66,7 @@ export function describeError(error: unknown, source: string): string {
 	if (error instanceof HttpError) {
 		const denied = error.status === 401 || error.status === 403;
 		if (denied && KEYED_SOURCES.has(source)) return t('error.denied', { source });
-		if (error.status === 429) return t('error.rateLimit', { source });
+		if (error.status === 429) return t(KEYED_SOURCES.has(source) ? 'error.rateLimit' : 'error.rateLimitNoKey', { source });
 		return t('error.http', { host: error.host, status: error.status });
 	}
 	if (error instanceof NetworkError) return t('error.network', { host: error.host });

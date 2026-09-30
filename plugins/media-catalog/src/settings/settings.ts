@@ -1,5 +1,5 @@
 import { normalizePath } from 'obsidian';
-import { BOOK_SOURCES, DEFAULT_FOLDER, KINDS, STATUSES } from '../constants';
+import { ALBUM_SOURCES, BOOK_SOURCES, DEFAULT_FOLDER, KINDS, STATUSES } from '../constants';
 import { isRecord } from '../providers/guards';
 import type { CatalogSettings } from '../types';
 
@@ -17,6 +17,10 @@ export function defaultSettings(): CatalogSettings {
 		defaultStatus: 'in-progress',
 		downloadCovers: false,
 		bookSource: 'open-library',
+		albumSource: 'musicbrainz',
+		albumIncludeEps: true,
+		albumIncludeSecondary: false,
+		albumItunesFallback: true,
 		lastKind: 'movie',
 		igdbClientId: '',
 		igdbClientSecret: '',
@@ -62,6 +66,10 @@ export function normalizeSettings(raw: unknown): CatalogSettings {
 		defaultStatus: oneOf(raw.defaultStatus, STATUSES, defaults.defaultStatus),
 		downloadCovers: flag(raw.downloadCovers, defaults.downloadCovers),
 		bookSource: oneOf(raw.bookSource, BOOK_SOURCES, defaults.bookSource),
+		albumSource: oneOf(raw.albumSource, ALBUM_SOURCES, defaults.albumSource),
+		albumIncludeEps: flag(raw.albumIncludeEps, defaults.albumIncludeEps),
+		albumIncludeSecondary: flag(raw.albumIncludeSecondary, defaults.albumIncludeSecondary),
+		albumItunesFallback: flag(raw.albumItunesFallback, defaults.albumItunesFallback),
 		lastKind: oneOf(raw.lastKind, KINDS, defaults.lastKind),
 		igdbClientId: text(raw.igdbClientId, defaults.igdbClientId),
 		igdbClientSecret: text(raw.igdbClientSecret, defaults.igdbClientSecret),

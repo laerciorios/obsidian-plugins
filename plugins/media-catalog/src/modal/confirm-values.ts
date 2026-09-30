@@ -1,5 +1,5 @@
 import { isIsoDate, todayIso } from '../catalog/dates';
-import { RATING_MAX, RATING_MIN } from '../constants';
+import { FRONTMATTER_KEYS, RATING_MAX, RATING_MIN } from '../constants';
 import { t } from '../i18n';
 import type { MessageKey } from '../i18n';
 import type { MediaKind, Provider, SearchResult, SeasonInfo, Status } from '../types';
@@ -29,11 +29,20 @@ export type TextKey = keyof ConfirmValues;
 /** Message for an invalid value, null when valid. Values arrive trimmed. */
 export type Check = (value: string) => string | null;
 
+export const TITLE_DESC: Record<MediaKind, MessageKey> = {
+	movie: 'field.title.desc',
+	series: 'field.title.desc',
+	game: 'field.title.desc',
+	book: 'field.title.descBook',
+	album: 'field.title.descAlbum',
+};
+
 export const YEAR_DESC: Record<MediaKind, MessageKey> = {
 	movie: 'field.year.desc',
 	series: 'field.year.descSeries',
 	game: 'field.year.desc',
 	book: 'field.year.descBook',
+	album: 'field.year.descAlbum',
 };
 
 export const PLATFORM_DESC: Record<MediaKind, MessageKey> = {
@@ -41,7 +50,20 @@ export const PLATFORM_DESC: Record<MediaKind, MessageKey> = {
 	series: 'field.platform.desc',
 	game: 'field.platform.descGame',
 	book: 'field.platform.descBook',
+	album: 'field.platform.descAlbum',
 };
+
+/** Albums say what the dates mean (first listen, full listen); the other kinds only give the format. */
+export function dateDescOf(kind: MediaKind, key: 'started' | 'finished'): MessageKey {
+	if (kind !== 'album') return 'field.date.desc';
+	return key === 'started' ? 'field.started.descAlbum' : 'field.finished.descAlbum';
+}
+
+/** Kinds whose notes have `author` (books: authors; albums: the artist). */
+export function hasAuthor(kind: MediaKind): boolean {
+	const keys: readonly string[] = FRONTMATTER_KEYS[kind];
+	return keys.includes('author');
+}
 
 /** Year description of the form: Google Books gives the year of the edition, not of the first publication. */
 export function yearDescOf(result: SearchResult): MessageKey {

@@ -4,6 +4,7 @@ import { hasSeasons } from '../providers';
 import type { CatalogContext, Provider, SearchResult, SeasonInfo } from '../types';
 import { ConfirmStep } from './confirm-step';
 import { CoverStep } from './cover-step';
+import { ResolveStep } from './resolve-step';
 import { createSearchState } from './search-state';
 import type { SearchState } from './search-state';
 import { SearchStep } from './search-step';
@@ -16,8 +17,9 @@ export type { CatalogModalOptions } from './steps';
 const NAV_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'] as const;
 
 /**
- * One modal, three steps: search → season (series only) → confirm. The state
- * that must survive going back (query, results, selection, seasons) lives
+ * One modal, a few steps: search → (resolve, for sources that finish a result
+ * once picked) → season (series only) → confirm. The state that must survive
+ * going back (query, results, selection, seasons, resolved results) lives
  * here; each step only draws it. Keys reach the step on screen through the
  * modal scope. Closing destroys the step, which cancels its timers and makes
  * pending responses stale.
@@ -26,6 +28,8 @@ export class CatalogModal extends Modal {
 	private readonly host: StepHost;
 	private readonly searchState: SearchState;
 	private seasonState: SeasonState | null = null;
+	/** Results already resolved, by `<provider>:<externalId>`: picking one again after Back does not repeat the requests. */
+	private readonly resolved = new Map<string, SearchResult>();
 	private chosen: Chosen | null = null;
 	private step: Step | null = null;
 	private atConfirm = false;
@@ -91,8 +95,25 @@ export class CatalogModal extends Modal {
 		this.show(new SearchStep(this.host, this.searchState));
 	}
 
+	/** A result was picked: resolve it first when its source can, then seasons or confirm. */
 	private chooseResult(result: SearchResult, provider: Provider): void {
-		this.chosen = { result, provider };
+		const key = `${provider.id}:${result.externalId}`;
+		const known = this.resolved.get(key);
+		if (known || !provider.resolve) {
+			this.proceed({ result: known ?? result, provider });
+			return;
+		}
+		this.atConfirm = false;
+		this.show(
+			new ResolveStep(this.host, { result, provider }, (resolved) => {
+				this.resolved.set(key, resolved);
+				this.proceed({ result: resolved, provider });
+			}),
+		);
+	}
+
+	private proceed(chosen: Chosen): void {
+		this.chosen = chosen;
 		if (this.hasSeasonStep()) this.showSeason();
 		else this.showConfirm(null);
 	}

@@ -8,12 +8,15 @@ import { coverChoiceRow, noCoverRow } from '../ui/cover-row';
 import { dropdownRow, infoRow, toggleRow } from '../ui/form';
 import {
 	PLATFORM_DESC,
+	TITLE_DESC,
 	checkDate,
 	checkNumber,
 	checkRating,
 	checkTitle,
 	checkYear,
 	coverUrlOf,
+	dateDescOf,
+	hasAuthor,
 	hasRating,
 	initialValues,
 	toNumber,
@@ -47,7 +50,7 @@ export class ConfirmForm {
 		private readonly app: App,
 		settings: CatalogSettings,
 		private readonly input: ConfirmInput,
-		/** Title or year edited: what the duplicate check looks at. */
+		/** Title, year or (albums) artist edited: what the duplicate check looks at. */
 		private readonly onIdentityChange: () => void,
 	) {
 		this.status = settings.defaultStatus;
@@ -60,6 +63,11 @@ export class ConfirmForm {
 
 	get title(): string {
 		return this.values.title.trim();
+	}
+
+	/** Books and albums: the author or artist as typed, trimmed. */
+	get author(): string {
+		return this.values.author.trim();
 	}
 
 	/** The year as typed, or null while empty or not four digits. */
@@ -81,8 +89,7 @@ export class ConfirmForm {
 		const { result, season } = this.input;
 		const { kind } = result;
 		const fields = this.fields;
-		const titleDesc = kind === 'book' ? 'field.title.descBook' : 'field.title.desc';
-		fields.add(el, 'title', { name: t('field.title.name'), desc: t(titleDesc) }, checkTitle, this.onIdentityChange);
+		fields.add(el, 'title', { name: t('field.title.name'), desc: t(TITLE_DESC[kind]) }, checkTitle, this.onIdentityChange);
 		const year = { name: t('field.year.name'), desc: t(yearDescOf(result)), type: 'number', min: 1000, max: 9999 } as const;
 		fields.add(el, 'year', year, checkYear, this.onIdentityChange);
 		if (kind === 'series' && season) {
@@ -94,6 +101,11 @@ export class ConfirmForm {
 			fields.add(el, 'author', { name: t('field.author.name') }, null);
 			fields.add(el, 'pages', { name: t('field.pages.name'), type: 'number', min: 1 }, checkNumber(true));
 		}
+		if (kind === 'album') {
+			// The artist tells two albums with one title apart (duplicates, note name).
+			const artist = { name: t('field.artist.name'), desc: t('field.artist.desc') };
+			fields.add(el, 'author', artist, null, this.onIdentityChange);
+		}
 
 		dropdownRow(el, {
 			name: t('field.status.name'),
@@ -101,11 +113,12 @@ export class ConfirmForm {
 			value: this.status,
 			onChange: (value) => this.changeStatus(value),
 		});
-		const date = { desc: t('field.date.desc'), type: 'date' } as const;
-		fields.add(el, 'started', { name: t('field.started.name'), ...date }, checkDate, () => {
+		const started = { name: t('field.started.name'), desc: t(dateDescOf(kind, 'started')), type: 'date' } as const;
+		fields.add(el, 'started', started, checkDate, () => {
 			this.startedAuto = false;
 		});
-		this.finishedRow = fields.add(el, 'finished', { name: t('field.finished.name'), ...date }, checkDate).setting;
+		const finished = { name: t('field.finished.name'), desc: t(dateDescOf(kind, 'finished')), type: 'date' } as const;
+		this.finishedRow = fields.add(el, 'finished', finished, checkDate).setting;
 		const rating = {
 			name: t('field.rating.name'),
 			desc: t('field.rating.desc'),
@@ -161,7 +174,7 @@ export class ConfirmForm {
 			season: kind === 'series' ? (season?.number ?? null) : null,
 			episodes: kind === 'series' && season ? toNumber(values.episodes) : null,
 			hours: kind === 'game' ? toNumber(values.hours) : null,
-			author: kind === 'book' ? values.author.trim() : '',
+			author: hasAuthor(kind) ? values.author.trim() : '',
 			pages: kind === 'book' ? toNumber(values.pages) : null,
 			referenceArea: kind === 'book' && this.technical && this.area ? this.area : null,
 			cover: { url: cover, download: cover !== null && this.download },

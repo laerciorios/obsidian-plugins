@@ -17,6 +17,11 @@ export function slugify(title: string): string {
 	return slug || FALLBACK_SLUG;
 }
 
+/** True when the text has a letter or digit, i.e. its slug is not the "untitled" fallback. */
+export function hasSlug(text: string): boolean {
+	return /[\p{L}\p{N}]/u.test(text);
+}
+
 /** Suffix of a series note: 1 → "-s01", 12 → "-s12". */
 export function seasonSuffix(season: number): string {
 	return `-s${String(season).padStart(2, '0')}`;

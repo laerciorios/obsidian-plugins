@@ -6,6 +6,8 @@ properties:
     displayName: Título
   note.kind:
     displayName: Tipo
+  note.author:
+    displayName: Autor ou artista
   note.season:
     displayName: Temporada
   note.year:
@@ -39,3 +41,19 @@ views:
       - year
       - rating
     image: note.cover
+  - type: table
+    name: Álbuns
+    filters:
+      and:
+        - kind == "album"
+    order:
+      - file.name
+      - author
+      - year
+      - status
+      - rating
+      - finished
+      - platform
+    sort:
+      - property: finished
+        direction: DESC

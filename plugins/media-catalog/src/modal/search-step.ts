@@ -1,5 +1,5 @@
 import { DropdownComponent, SearchComponent, debounce } from 'obsidian';
-import { BOOK_SOURCES, CLS, KINDS, MIN_QUERY_LENGTH, SEARCH_DEBOUNCE_MS } from '../constants';
+import { CLS, KINDS, MIN_QUERY_LENGTH, SEARCH_DEBOUNCE_MS } from '../constants';
 import { t } from '../i18n';
 import { providersFor } from '../providers';
 import { CatalogError, describeError } from '../providers/errors';
@@ -8,7 +8,7 @@ import { renderInstructions } from '../ui/instructions';
 import { OptionList } from '../ui/option-list';
 import { renderResultCard } from '../ui/result-card';
 import { renderEmpty, renderError, renderHint, renderLoading } from '../ui/states';
-import { defaultProvider, highlightIndex, orderResults, searchPlan } from './search-state';
+import { defaultProvider, highlightIndex, orderResults, rememberSource, searchPlan } from './search-state';
 import type { SearchState } from './search-state';
 import { isOnControl } from './steps';
 import type { Step, StepHost } from './steps';
@@ -90,11 +90,13 @@ export class SearchStep implements Step {
 			source.selectEl.setAttr('aria-label', t('search.source'));
 		}
 
+		// Album sources search artists too.
+		const placeholder = t(this.state.kind === 'album' ? 'search.placeholderAlbum' : 'search.placeholder');
 		const search = new SearchComponent(toolbar.createDiv({ cls: CLS.search }))
-			.setPlaceholder(t('search.placeholder'))
+			.setPlaceholder(placeholder)
 			.setValue(this.state.query)
 			.onChange((value) => this.changeQuery(value));
-		search.inputEl.setAttrs({ 'aria-label': t('search.placeholder'), 'aria-autocomplete': 'list' });
+		search.inputEl.setAttrs({ 'aria-label': placeholder, 'aria-autocomplete': 'list' });
 		this.inputEl = search.inputEl;
 	}
 
@@ -121,12 +123,8 @@ export class SearchStep implements Step {
 		const provider = providersFor(context.providers, this.state.kind).find((p) => p.id === value);
 		if (!provider || provider.id === this.state.providerId) return;
 		this.state.providerId = provider.id;
-		const bookSource = BOOK_SOURCES.find((source) => source === provider.id);
-		if (this.state.kind === 'book' && bookSource) {
-			// Remembered like the kind: the next book search starts on this source.
-			context.settings.bookSource = bookSource;
-			context.settingsChanged();
-		}
+		// Remembered like the kind: the next book or album search starts on this source.
+		if (rememberSource(context.settings, this.state.kind, provider.id)) context.settingsChanged();
 		this.clearResults();
 		void this.run();
 		this.inputEl?.focus();

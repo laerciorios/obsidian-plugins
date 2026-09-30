@@ -3,7 +3,7 @@ import type { App } from 'obsidian';
 import type { MediaKind } from '../types';
 import { frontmatterOf, numberOf, textOf } from './catalog-note';
 import { folderAt, joinPath } from './paths';
-import { seasonSuffix, slugify } from './slug';
+import { hasSlug, seasonSuffix, slugify } from './slug';
 
 export interface DuplicateQuery {
 	kind: MediaKind;
@@ -14,8 +14,15 @@ export interface DuplicateQuery {
 	 * note is not a duplicate ("Fern Road" 1984 and "Fern Road" 2021 are two films).
 	 * Ignored for books: Open Library gives the first publication year and
 	 * Google Books the edition year, so one book can come with two years.
+	 * Albums keep it: a self-titled band can release two albums with one title.
 	 */
 	year?: number | null;
+	/**
+	 * Albums only: the artist, compared by slug. When both this and the note
+	 * have one and they differ, the note is not a duplicate (two bands, one
+	 * album title). An empty artist on either side does not decide.
+	 */
+	author?: string | null;
 }
 
 /** Base name (no extension) a new note for this item gets before collisions: `<slug>` or `<slug>-sNN`. */
@@ -24,9 +31,17 @@ export function baseName(kind: MediaKind, title: string, season: number | null):
 	return kind === 'series' && season !== null ? `${slug}${seasonSuffix(season)}` : slug;
 }
 
+function sameArtist(noteAuthor: unknown, wanted: string | null | undefined): boolean {
+	const note = textOf(noteAuthor);
+	const query = wanted?.trim() ?? '';
+	if (!note || !hasSlug(note) || !hasSlug(query)) return true;
+	return slugify(note) === slugify(query);
+}
+
 function sameEntry(frontmatter: Record<string, unknown>, query: DuplicateQuery, checkTitle: boolean): boolean {
 	if (frontmatter.kind !== query.kind) return false;
 	if (query.kind === 'series' && numberOf(frontmatter.season) !== query.season) return false;
+	if (query.kind === 'album' && !sameArtist(frontmatter.author, query.author)) return false;
 	if (query.kind !== 'book') {
 		const year = numberOf(frontmatter.year);
 		const wanted = query.year ?? null;
@@ -38,10 +53,11 @@ function sameEntry(frontmatter: Record<string, unknown>, query: DuplicateQuery, 
 }
 
 /**
- * Existing catalog note with the same kind + normalized title (+ season),
- * searched only inside `folder` (subfolders included). The note at the path a
- * new note would take counts too when kind (+ season) match, even if its title
- * was edited. Reads the metadata cache only, never the files.
+ * Existing catalog note with the same kind + normalized title (+ season, +
+ * artist for albums), searched only inside `folder` (subfolders included).
+ * The note at the path a new note would take counts too when kind (+ season,
+ * + artist) match, even if its title was edited. Reads the metadata cache
+ * only, never the files.
  */
 export function findDuplicate(app: App, folder: string, query: DuplicateQuery): TFile | null {
 	const root = folderAt(app, folder);

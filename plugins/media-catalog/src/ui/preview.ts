@@ -2,7 +2,7 @@ import { CLS } from '../constants';
 import { t } from '../i18n';
 import type { SearchResult, SeasonInfo } from '../types';
 import { createCoverImg } from './cover-img';
-import { episodesLabel } from './result-card';
+import { episodesLabel, releaseLabel } from './result-card';
 
 export interface PreviewOptions {
 	/** The cover that goes into the note. */
@@ -38,7 +38,7 @@ export function renderPreview(
 	season: SeasonInfo | null,
 	options: PreviewOptions,
 ): Preview {
-	const el = parent.createDiv({ cls: CLS.preview });
+	const el = parent.createDiv({ cls: CLS.preview, attr: { 'data-kind': result.kind } });
 	const covers = el.createDiv({ cls: CLS.previewCovers });
 	let slot: HTMLElement;
 	if (options.current) {
@@ -64,6 +64,8 @@ export function renderPreview(
 	}
 	if (year !== undefined) body.createDiv({ cls: CLS.resultMeta, text: String(year) });
 	if (result.subtitle) body.createDiv({ cls: CLS.resultMeta, text: result.subtitle });
+	const release = releaseLabel(result);
+	if (release) body.createDiv({ cls: CLS.resultMeta, text: release });
 	body.createDiv().createSpan({ cls: CLS.resultSource, text: sourceName });
 	return { body, setCover };
 }

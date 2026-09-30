@@ -1,7 +1,9 @@
+import type { App } from 'obsidian';
+import { frontmatterOf, textOf } from '../catalog/catalog-note';
 import { slugify } from '../catalog/slug';
-import { MIN_QUERY_LENGTH } from '../constants';
+import { ALBUM_SOURCES, BOOK_SOURCES, MIN_QUERY_LENGTH } from '../constants';
 import { providersFor } from '../providers';
-import type { CatalogContext, MediaKind, Provider, ProviderId, SearchResult } from '../types';
+import type { CatalogContext, CatalogNoteInfo, CatalogSettings, MediaKind, Provider, ProviderId, SearchResult } from '../types';
 import type { CatalogModalOptions } from './steps';
 
 /** Kept by the modal, so going back shows the same query, results and selection. */
@@ -22,8 +24,8 @@ export function createSearchState(context: CatalogContext, options: CatalogModal
 	return {
 		kind,
 		providerId: defaultProvider(context, kind)?.id ?? null,
-		// Cover mode searches the note title as soon as the modal opens.
-		query: options.mode === 'cover' ? options.note.title : '',
+		// Cover mode searches the note as soon as the modal opens.
+		query: options.mode === 'cover' ? coverQuery(context.app, options.note) : '',
 		phase: 'idle',
 		searched: null,
 		results: [],
@@ -32,10 +34,45 @@ export function createSearchState(context: CatalogContext, options: CatalogModal
 	};
 }
 
+/**
+ * What cover mode searches: the note title; albums add the artist, since
+ * albums of different artists often share a title. A self-titled album
+ * searches its title once.
+ */
+export function coverQuery(app: App, note: CatalogNoteInfo): string {
+	if (note.kind !== 'album') return note.title;
+	const artist = textOf(frontmatterOf(app, note.file)?.author);
+	return artist && slugify(artist) !== slugify(note.title) ? `${note.title} ${artist}` : note.title;
+}
+
+/** Source a kind starts on: books and albums remember the one picked last (settings); others have one. */
+export function preferredSource(settings: CatalogSettings, kind: MediaKind): ProviderId | null {
+	if (kind === 'book') return settings.bookSource;
+	if (kind === 'album') return settings.albumSource;
+	return null;
+}
+
+/** Remembers the source picked for books or albums. False when nothing changed (another kind, the same source). */
+export function rememberSource(settings: CatalogSettings, kind: MediaKind, id: ProviderId): boolean {
+	if (kind === 'book') {
+		const source = BOOK_SOURCES.find((candidate) => candidate === id);
+		if (!source || source === settings.bookSource) return false;
+		settings.bookSource = source;
+		return true;
+	}
+	if (kind === 'album') {
+		const source = ALBUM_SOURCES.find((candidate) => candidate === id);
+		if (!source || source === settings.albumSource) return false;
+		settings.albumSource = source;
+		return true;
+	}
+	return false;
+}
+
 export function defaultProvider(context: CatalogContext, kind: MediaKind): Provider | undefined {
 	const providers = providersFor(context.providers, kind);
-	if (kind === 'book') return providers.find((provider) => provider.id === context.settings.bookSource) ?? providers[0];
-	return providers[0];
+	const preferred = preferredSource(context.settings, kind);
+	return providers.find((provider) => provider.id === preferred) ?? providers[0];
 }
 
 /** How one query is searched and which result is highlighted first. */

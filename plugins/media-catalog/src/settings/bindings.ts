@@ -1,4 +1,4 @@
-import { BOOK_SOURCES, STATUSES } from '../constants';
+import { ALBUM_SOURCES, BOOK_SOURCES, STATUSES } from '../constants';
 import type { CatalogSettings } from '../types';
 import { catalogFolder, flag, oneOf, vaultPath } from './settings';
 
@@ -7,7 +7,18 @@ import { catalogFolder, flag, oneOf, vaultPath } from './settings';
  * fields themselves (the object is flat). Secret ids are written by their
  * own rows (see ./secrets), `lastKind` by the modal.
  */
-export const CONTROL_KEYS = ['folder', 'templateFile', 'addSourceLink', 'defaultStatus', 'downloadCovers', 'bookSource'] as const;
+export const CONTROL_KEYS = [
+	'folder',
+	'templateFile',
+	'addSourceLink',
+	'defaultStatus',
+	'downloadCovers',
+	'bookSource',
+	'albumSource',
+	'albumIncludeEps',
+	'albumIncludeSecondary',
+	'albumItunesFallback',
+] as const;
 export type ControlKey = (typeof CONTROL_KEYS)[number];
 
 const CONTROL_KEY_SET: ReadonlySet<string> = new Set<string>(CONTROL_KEYS);
@@ -35,6 +46,18 @@ const WRITERS: { [K in ControlKey]: (settings: CatalogSettings, value: unknown) 
 	},
 	bookSource: (settings, value) => {
 		settings.bookSource = oneOf(value, BOOK_SOURCES, settings.bookSource);
+	},
+	albumSource: (settings, value) => {
+		settings.albumSource = oneOf(value, ALBUM_SOURCES, settings.albumSource);
+	},
+	albumIncludeEps: (settings, value) => {
+		settings.albumIncludeEps = flag(value, settings.albumIncludeEps);
+	},
+	albumIncludeSecondary: (settings, value) => {
+		settings.albumIncludeSecondary = flag(value, settings.albumIncludeSecondary);
+	},
+	albumItunesFallback: (settings, value) => {
+		settings.albumItunesFallback = flag(value, settings.albumItunesFallback);
 	},
 };
 

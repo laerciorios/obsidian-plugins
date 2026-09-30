@@ -1,9 +1,9 @@
 # Media Catalog: casos de teste
 
-O plugin busca filmes, séries, livros e jogos na internet e cria notas em `1 - Knowledge/Entertainment/DB/`. As notas da tabela **Dados** são fictícias; as buscas dos testes usam obras reais só como termo de busca.
+O plugin busca filmes, séries, livros, jogos e álbuns na internet e cria notas em `1 - Knowledge/Entertainment/DB/`. As notas da tabela **Dados** são fictícias; as buscas dos testes usam obras reais só como termo de busca.
 
 > [!warning] Apague as notas criadas nos testes antes de commitar
-> Os testes criam notas e capas com títulos reais (`the-matrix.md`, `Attachments/the-matrix-cover.jpg`…). Elas **não** vão para o git: antes do commit, apague tudo em `DB/`, `Attachments/` e `_References/Books/` que não esteja na tabela abaixo (`git status dev-vault` mostra o que sobrou).
+> Os testes criam notas e capas com títulos reais (`the-matrix.md`, `ok-computer.md`, `Attachments/the-matrix-cover.jpg`…). Elas **não** vão para o git: antes do commit, apague tudo em `DB/`, `Attachments/` e `_References/Books/` que não esteja na tabela abaixo (`git status dev-vault` mostra o que sobrou).
 
 ## Dados
 
@@ -13,16 +13,17 @@ O plugin busca filmes, séries, livros e jogos na internet e cria notas em `1 - 
 | `DB/` (série) | [[horta-selvagem-s01\|Horta Selvagem T1]] (done) e [[horta-selvagem-s02\|T2]] (in-progress): uma nota por temporada |
 | `DB/` (jogos) | [[semente-eterna\|Semente Eterna]] (done, 42 horas), [[jardineiro-espacial\|Jardineiro Espacial]] (dropped) |
 | `DB/` (livros) | [[refatorando-canteiros\|Refatorando Canteiros]] (técnico, com `reference`), [[o-livro-das-mudas\|O Livro das Mudas]] (backlog) |
+| `DB/` (álbuns) | [[os-samambaias\|Os Samambaias]] (homônimo da banda Os Samambaias, done, vinil), [[mare-de-musgo\|Maré de Musgo]] (Lia Broto, in-progress, Spotify), [[raizes-aereas\|Raízes Aéreas]] (EP do Coletivo Orvalho, backlog) |
 | `Attachments/` | `girassois-em-marte-cover.png`, capa local (retângulo verde 200×300) |
 | `Software Development/_References/Books/` | [[1 - Knowledge/Software Development/_References/Books/refatorando-canteiros\|referência]] do livro técnico |
 | `Game Dev/_References/Books/` | só um `index.md`: segunda área para o campo **Área** |
 | `_Templates/media.md` | template do catálogo (pasta de templates: `_Templates`) |
-| [[entertainment.base]] | views **Todos** (tabela) e **Galeria** (cards com a capa) |
+| [[entertainment.base]] | views **Todos** (tabela), **Galeria** (cards com a capa) e **Álbuns** (tabela com artista, ordenada por **Concluído**) |
 
 ## Preparação
 
 - [ ] Na raiz do repo, `pnpm --filter media-catalog dev`. Confira **Media Catalog** ativo em Plugins da comunidade.
-- [ ] Em Configurações → Media Catalog: **Pasta do catálogo** `1 - Knowledge/Entertainment/DB`, **Template** vazio, **Link para a fonte** ligado, **Status padrão** "Em andamento", **Fonte de livros** Open Library.
+- [ ] Em Configurações → Media Catalog: **Pasta do catálogo** `1 - Knowledge/Entertainment/DB`, **Template** vazio, **Link para a fonte** ligado, **Status padrão** "Em andamento", **Fonte de livros** Open Library, **Fonte de álbuns** MusicBrainz, **Incluir EPs** ligado, **Incluir coletâneas e álbuns ao vivo** desligado, **Capas do iTunes** ligado.
 - [ ] A paleta de comandos mostra **Adicionar ao catálogo**. **Trocar capa** e **Terminei** só aparecem com uma nota do catálogo aberta (abra [[semente-eterna]] e depois este índice para comparar).
 
 ## Filmes (IMDb)
@@ -71,6 +72,27 @@ O plugin busca filmes, séries, livros e jogos na internet e cria notas em `1 - 
 - [ ] `hollow knight`: resultados com capa, ano e estúdio. O formulário mostra **Horas**, e **Onde** sugere as plataformas do jogo.
 - [ ] Várias buscas seguidas funcionam sem erro. O token fica só em memória: não aparece em `data.json` nem nos segredos (as chamadas do `requestUrl` não aparecem na aba Network).
 - [ ] Client secret errado: mensagem de chave recusada. Corrija e busque de novo sem recarregar o plugin.
+
+## Álbuns (MusicBrainz, iTunes)
+
+- [ ] Tipo **Álbum** mostra **Fonte** com MusicBrainz selecionado, e a busca diz "Buscar pelo título ou pelo artista…". Troque para iTunes, feche e abra o modal: continua iTunes, e **Configurações → Fonte de álbuns** também. Volte para MusicBrainz; **Fonte de livros** não muda.
+- [ ] Título, artista ou os dois: `ok computer`, `radiohead` e `abbey road beatles` trazem os álbuns certos entre os primeiros. Cada card mostra a capa quadrada, título, ano, artista, "Álbum" ou "EP" (e o número de faixas, quando a fonte informa) e o selo da fonte.
+- [ ] Muitas edições, ano original: `abbey road` vem com 1969, `clube da esquina` e `acabou chorare` com 1972, e não com o ano de uma reedição. A descrição de **Ano** diz que é o ano do lançamento original.
+- [ ] Limite do MusicBrainz: digite `clube da esquina` letra por letra, rápido, e depois aperte Enter várias vezes: só a última busca é respondida, sem mensagem de limite de requisições.
+- [ ] Ao escolher um resultado do MusicBrainz, o modal mostra o álbum com "Procurando a capa…" e depois o formulário. **Voltar** durante a espera volta para a busca, e o formulário não aparece depois; Esc fecha sem abrir nada. Voltar do formulário e escolher o mesmo álbum de novo vai direto ao formulário.
+- [ ] O formulário tem **Artista** preenchido, sem **Páginas** nem **Livro técnico**. **Início**, **Fim** e **Onde** falam de primeira audição, audição completa e Spotify, YouTube Music, vinil.
+- [ ] **Criar nota** para OK Computer cria `DB/ok-computer.md` com `kind: album`, `title: "OK Computer"`, `author: "Radiohead"`, `year: 1997`, a ordem `kind, title, author, year, status, rating, started, finished, platform, cover, tags`, e termina com `- MusicBrainz: https://musicbrainz.org/release-group/<id>`.
+- [ ] Álbum homônimo: `weezer` traz os álbuns da banda chamados "Weezer" (1994, 2001, 2008…). Crie o de 1994 (`weezer.md`) e depois o de 2001: não é duplicata e vira `weezer-2001.md`, sem repetir o nome da banda.
+- [ ] Duplicata já no vault: com `ok-computer.md` criada, escolha OK Computer de novo: "Já está no catálogo: ok-computer", com **Abrir nota**, e **Criar nota** desativado. O mesmo com o Weezer de 1994. Mude **Artista** para `Os Samambaias`: o aviso some, e a nota criada é `ok-computer-os-samambaias.md` (apague-a depois).
+- [ ] EPs e singles: `my iron lung` mostra o EP com "EP". Com **Incluir EPs** desligado, ele some. Singles não aparecem em nenhum caso.
+- [ ] Coletâneas e ao vivo: `radiohead` não lista coletâneas nem álbuns ao vivo. Com **Incluir coletâneas e álbuns ao vivo** ligado, eles aparecem (só no MusicBrainz). Trilhas sonoras aparecem com a opção desligada ou ligada.
+- [ ] Sem capa no Cover Art Archive: escolha um resultado do MusicBrainz cujo card veio sem miniatura (ícone de imagem ausente). Depois de "Procurando a capa…", o formulário mostra a capa do iTunes (URL em `isN-ssl.mzstatic.com`, 600×600). Com **Capas do iTunes** desligado, feche e abra o modal e escolha o mesmo álbum: o formulário avisa que a nota é criada sem capa.
+- [ ] Fonte iTunes (Obsidian em português do Brasil, loja brasileira): `acabou chorare` traz títulos sem " - EP" ou " - Single", número de faixas e capa 600×600. A linha da fonte é `- iTunes: <link>` sem `uo=` no link. O ano pode ser o de uma remasterização: confira no formulário.
+- [ ] Baixar a capa: **Baixar para os anexos** em OK Computer salva `Attachments/ok-computer-cover.jpg`. O Cover Art Archive redireciona para `archive.org` e depois para um servidor `*.archive.org`, todos na lista.
+- [ ] Host bloqueado: na aba Network, as imagens de álbuns vêm só de `coverartarchive.org`, `archive.org`, `*.archive.org` e `is1-ssl` a `is5-ssl.mzstatic.com`. Se uma capa do iTunes vier de um host fora da lista (outro `mzstatic.com`), o card e a confirmação mostram o ícone de imagem ausente e nenhuma requisição vai para esse host: anote o host para avaliar a inclusão na lista.
+- [ ] **Trocar capa** em [[os-samambaias]]: a busca é do tipo Álbum com `Os Samambaias` (o artista não se repete) e já buscando. Troque temporariamente `title`, `author` e `year` por `OK Computer`, `Radiohead` e `1997`: a busca vira `OK Computer Radiohead`, o de 1997 vem destacado, e "Procurando a capa…" aparece antes de **Atual** e **Nova**. Restaure a nota (`Os Samambaias`, `Os Samambaias`, `1994`, `cover: ""`).
+- [ ] **Terminei** em [[mare-de-musgo]] grava `status: done`, `finished` e `rating`. Restaure a nota depois (`in-progress`, `rating` e `finished` vazios).
+- [ ] A view **Álbuns** abaixo lista só os álbuns, com **Autor ou artista**, ordenados por **Concluído** do mais recente para o mais antigo.
 
 ## Duplicatas e colisão de nome
 

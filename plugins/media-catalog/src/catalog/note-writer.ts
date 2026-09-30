@@ -8,7 +8,7 @@ import { baseName, findDuplicate } from './duplicates';
 import { catalogFrontmatter } from './frontmatter';
 import { folderPath, joinPath } from './paths';
 import { ensureReferenceNote, referenceLink } from './reference-note';
-import { seasonSuffix, slugify } from './slug';
+import { hasSlug, seasonSuffix, slugify } from './slug';
 import { noteBody } from './template';
 
 export type CreateResult = { status: 'created'; file: TFile } | { status: 'duplicate'; file: TFile };
@@ -30,13 +30,26 @@ async function ensureFolder(app: App, folder: string): Promise<string> {
 /**
  * Note name candidates, in order: `<slug>`, then `<slug>-<year>`, then a
  * counter; series keep `-sNN` at the end (`<slug>-<year>-s01`, `<slug>-2-s01`).
+ * Albums try the artist before the year: `<slug>-<artist>`, then
+ * `<slug>-<artist>-<year>`; a self-titled album (artist slug = title slug)
+ * skips the artist and goes on with `<slug>-<year>`.
  */
-function* nameCandidates(draft: CatalogDraft): Generator<string> {
+export function* nameCandidates(draft: CatalogDraft): Generator<string> {
 	const slug = slugify(draft.title);
 	const suffix = draft.kind === 'series' && draft.season !== null ? seasonSuffix(draft.season) : '';
 	yield baseName(draft.kind, draft.title, draft.season);
-	const stem = draft.year !== null ? `${slug}-${draft.year}` : slug;
-	if (draft.year !== null) yield `${stem}${suffix}`;
+	let stem = slug;
+	if (draft.kind === 'album' && hasSlug(draft.author)) {
+		const artist = slugify(draft.author);
+		if (artist !== slug) {
+			stem = `${slug}-${artist}`;
+			yield stem;
+		}
+	}
+	if (draft.year !== null) {
+		stem = `${stem}-${draft.year}`;
+		yield `${stem}${suffix}`;
+	}
 	for (let n = 2; ; n++) yield `${stem}-${n}${suffix}`;
 }
 
@@ -83,7 +96,7 @@ async function createReference(app: App, draft: CatalogDraft, area: string, name
 }
 
 /**
- * Resolves slug/path (collision → "-<year>"), re-checks duplicates, downloads the cover when
+ * Resolves slug/path (collision → "-<year>", albums "-<artist>" first), re-checks duplicates, downloads the cover when
  * draft.cover.download (failure → Notice + keeps URL), writes the note with a single
  * vault.create (creating the folder when missing), then creates the reference note when
  * draft.referenceArea (failure → Notice + `reference: ""`). Does NOT open the note.
@@ -96,6 +109,7 @@ export async function createCatalogNote(app: App, settings: CatalogSettings, dra
 		title: draft.title,
 		season: draft.season,
 		year: draft.year,
+		author: draft.author,
 	});
 	if (duplicate) return { status: 'duplicate', file: duplicate };
 

@@ -3,10 +3,11 @@
  * text) are data, not UI: they are never translated.
  */
 
-export const KINDS = ['movie', 'series', 'game', 'book'] as const;
+export const KINDS = ['movie', 'series', 'game', 'book', 'album'] as const;
 export const STATUSES = ['backlog', 'in-progress', 'done', 'dropped'] as const;
-export const PROVIDER_IDS = ['imdb', 'tvmaze', 'google-books', 'open-library', 'igdb'] as const;
+export const PROVIDER_IDS = ['imdb', 'tvmaze', 'google-books', 'open-library', 'igdb', 'musicbrainz', 'itunes'] as const;
 export const BOOK_SOURCES = ['open-library', 'google-books'] as const;
+export const ALBUM_SOURCES = ['musicbrainz', 'itunes'] as const;
 
 /** Frontmatter keys per kind, in the order the catalog notes use. Keys not listed are never written. */
 export const FRONTMATTER_KEYS = {
@@ -14,6 +15,7 @@ export const FRONTMATTER_KEYS = {
 	series: ['kind', 'title', 'season', 'episodes', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'cover', 'tags'],
 	game: ['kind', 'title', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'hours', 'cover', 'tags'],
 	book: ['kind', 'title', 'author', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'pages', 'reference', 'cover', 'tags'],
+	album: ['kind', 'title', 'author', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'cover', 'tags'],
 } as const;
 
 export const CATALOG_TAG = 'entertainment';
@@ -41,6 +43,8 @@ export const API_HOSTS = [
 	'covers.openlibrary.org',
 	'id.twitch.tv',
 	'api.igdb.com',
+	'musicbrainz.org',
+	'itunes.apple.com',
 ] as const;
 
 /** Hosts covers are shown from and downloaded from. */
@@ -51,7 +55,24 @@ export const IMAGE_HOSTS = [
 	'books.googleusercontent.com',
 	'images.igdb.com',
 	'covers.openlibrary.org',
+	'coverartarchive.org',
+	'archive.org',
+	'is1-ssl.mzstatic.com',
+	'is2-ssl.mzstatic.com',
+	'is3-ssl.mzstatic.com',
+	'is4-ssl.mzstatic.com',
+	'is5-ssl.mzstatic.com',
 ] as const;
+
+/**
+ * Image hosts matched by suffix: the Cover Art Archive redirects
+ * (coverartarchive.org → archive.org → a storage node such as
+ * ia800123.us.archive.org or dn720706.ca.archive.org) and the node name varies.
+ */
+export const IMAGE_HOST_SUFFIXES = ['.archive.org'] as const;
+
+/** MusicBrainz allows about one request per second per client. */
+export const MUSICBRAINZ_INTERVAL_MS = 1100;
 
 export const SEARCH_DEBOUNCE_MS = 300;
 export const SAVE_DEBOUNCE_MS = 400;

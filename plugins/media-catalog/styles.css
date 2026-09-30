@@ -157,6 +157,11 @@ body:not(.is-phone) .mc-modal {
 	font-size: var(--font-ui-smaller);
 }
 
+/* Album covers are square: the thumbnail, the large preview and, in cover mode, the note's current cover. */
+[data-kind="album"] :is(.mc-cover, .mc-preview-cover, .mc-cover-img, .mc-cover-empty) {
+	aspect-ratio: 1 / 1;
+}
+
 /* Seasons: a responsive grid of poster tiles. */
 .mc-results[data-layout="grid"] {
 	display: grid;
