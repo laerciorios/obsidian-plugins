@@ -14,6 +14,7 @@ Planejamento e specs ficam no vault, em `1 - Knowledge/Projects/Obsidian Plugins
 | [Colored Text](plugins/colored-text) | `colored-text` | em desenvolvimento | Cores sobre o realce nativo: `=={vermelho}texto==`, com paleta em hexadecimal, seletor e atalhos. Substitui o Colored Text da comunidade. |
 | [Reading Time](plugins/reading-time) | `reading-time` | em desenvolvimento | Tempo estimado de leitura da nota na barra de status, com formatos configuráveis, tempo da seleção e propriedade `reading_time` opcional. Substitui o Reading Time da comunidade. |
 | [Comments](plugins/comments) | `comments` | em desenvolvimento | Comentários em trechos de uma nota, no estilo do Google Docs: seleciona, comenta, responde e resolve. As conversas ficam em markdown legível em `Attachments/Comments/`, que a IA também lê e responde. |
+| [Pseudocode](plugins/pseudocode) | `pseudocode` | em desenvolvimento | Renderiza os blocos ` ```pseudo ` na sintaxe do plugin da comunidade (pseudocode.js) e na do `algorithm2e`, com linhas e algoritmos numerados, referências (`\ref`) e exportação para LaTeX. Substitui o Pseudocode da comunidade. |
 <!-- plugins:end -->
 
 ## Estrutura

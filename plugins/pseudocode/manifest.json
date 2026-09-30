@@ -1,0 +1,10 @@
+{
+	"id": "pseudocode",
+	"name": "Pseudocode",
+	"version": "0.1.0",
+	"minAppVersion": "1.13.0",
+	"description": "Render LaTeX-style pseudocode (algorithmic and algorithm2e syntax) in pseudo code blocks, with line numbers, per-note algorithm numbering, cross-references and export to algorithm2e.",
+	"author": "Laercio Rios",
+	"authorUrl": "https://laerciorios.com",
+	"isDesktopOnly": false
+}

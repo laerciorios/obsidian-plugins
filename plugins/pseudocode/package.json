@@ -1,0 +1,20 @@
+{
+	"name": "pseudocode",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Render LaTeX-style pseudocode (algorithmic and algorithm2e syntax) in pseudo code blocks, with line numbers, per-note algorithm numbering, cross-references and export to algorithm2e.",
+	"main": "dist/main.js",
+	"scripts": {
+		"dev": "node ../../scripts/esbuild.mjs",
+		"build": "tsc --noEmit && node ../../scripts/esbuild.mjs --production",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint src",
+		"regression": "node scripts/regression.mjs"
+	},
+	"dependencies": {
+		"@obsidian-plugins/i18n": "workspace:*"
+	},
+	"devDependencies": {
+		"pseudocode": "2.4.1"
+	}
+}

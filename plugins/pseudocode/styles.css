@@ -1,0 +1,282 @@
+/* Pseudocode: only Obsidian CSS variables, so light and dark themes keep working. */
+
+.psc-block {
+	position: relative;
+}
+
+.psc-root {
+	--psc-indent: 1.2em;
+	--psc-rule: var(--text-normal);
+	line-height: var(--line-height-tight);
+	overflow-x: auto;
+}
+
+.psc-algorithm {
+	margin: var(--size-4-2) 0;
+}
+
+/* \begin{algorithm}: rules above, below and under the caption, as in the "ruled" style. */
+.psc-algorithm.psc-float {
+	border-top: 2px solid var(--psc-rule);
+	border-bottom: 2px solid var(--psc-rule);
+	padding-bottom: var(--size-2-2);
+}
+
+.psc-caption {
+	padding: var(--size-2-2) 0;
+	margin-bottom: var(--size-2-2);
+	border-bottom: 1px solid var(--psc-rule);
+}
+
+.psc-algorithm:not(.psc-float) .psc-caption {
+	border-bottom: none;
+}
+
+.psc-line {
+	display: flex;
+	align-items: stretch;
+	min-height: calc(var(--line-height-tight) * 1em);
+}
+
+/* Line numbers sit in a gutter; without numbers the gutter is one indentation level, as in pseudocode.js. */
+.psc-number {
+	flex: 0 0 auto;
+	width: var(--psc-indent);
+	padding-right: var(--size-2-2);
+	box-sizing: content-box;
+	text-align: right;
+	font-size: 0.8em;
+	line-height: calc(var(--line-height-tight) * 1em / 0.8);
+	color: var(--text-muted);
+	font-variant-numeric: tabular-nums;
+	user-select: none;
+}
+
+.psc-numbered .psc-number {
+	width: calc(var(--psc-indent) + 0.6em);
+}
+
+.psc-indent {
+	flex: 0 0 auto;
+	width: var(--psc-indent);
+}
+
+/* Number, text and comment share a baseline (a \Large word keeps its number level); indents stretch for scope lines. */
+.psc-number,
+.psc-content,
+.psc-comment {
+	align-self: baseline;
+}
+
+.psc-scope-lines .psc-indent {
+	border-left: 1px solid var(--text-faint);
+	box-sizing: border-box;
+}
+
+.psc-content {
+	flex: 1 1 auto;
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+/* Require/Input lines: no number, hanging indent when they wrap. */
+.psc-line-io .psc-content {
+	padding-left: var(--psc-indent);
+	text-indent: calc(-1 * var(--psc-indent));
+}
+
+.psc-line-io .psc-content > * {
+	text-indent: 0;
+}
+
+.psc-comment,
+.psc-line-comment .psc-content {
+	color: var(--text-muted);
+	font-style: italic;
+}
+
+.psc-comment {
+	flex: 0 1 auto;
+	max-width: 50%;
+	margin-left: var(--size-4-4);
+	text-align: right;
+}
+
+.psc-keyword {
+	font-weight: var(--font-bold);
+}
+
+.psc-function {
+	font-variant: small-caps;
+}
+
+.psc-data {
+	font-family: var(--font-interface);
+}
+
+.psc-root mjx-container {
+	text-indent: 0;
+}
+
+/* Text commands (\textbf, \small...). */
+.psc-style-textbf,
+.psc-style-bfseries {
+	font-weight: var(--font-bold);
+}
+
+.psc-style-textmd,
+.psc-style-mdseries,
+.psc-style-textlf,
+.psc-style-lfseries,
+.psc-style-textnormal,
+.psc-style-normalfont {
+	font-weight: var(--font-normal);
+	font-style: normal;
+}
+
+.psc-style-textit,
+.psc-style-itshape,
+.psc-style-emph,
+.psc-style-textsl,
+.psc-style-slshape {
+	font-style: italic;
+}
+
+.psc-style-textup,
+.psc-style-upshape,
+.psc-style-textrm,
+.psc-style-rmfamily {
+	font-style: normal;
+}
+
+.psc-style-texttt,
+.psc-style-ttfamily {
+	font-family: var(--font-monospace);
+	font-size: 0.9em;
+}
+
+.psc-style-textsf,
+.psc-style-sffamily {
+	font-family: var(--font-interface);
+}
+
+.psc-style-textsc,
+.psc-style-scshape {
+	font-variant: small-caps;
+}
+
+.psc-style-underline {
+	text-decoration: underline;
+}
+
+.psc-style-uppercase {
+	text-transform: uppercase;
+}
+
+.psc-style-lowercase {
+	text-transform: lowercase;
+}
+
+.psc-style-tiny {
+	font-size: 0.68em;
+}
+
+.psc-style-scriptsize {
+	font-size: 0.8em;
+}
+
+.psc-style-footnotesize {
+	font-size: 0.85em;
+}
+
+.psc-style-small {
+	font-size: 0.92em;
+}
+
+.psc-style-normalsize {
+	font-size: 1em;
+}
+
+.psc-style-large {
+	font-size: 1.17em;
+}
+
+.psc-style-Large {
+	font-size: 1.41em;
+}
+
+.psc-style-LARGE {
+	font-size: 1.58em;
+}
+
+.psc-style-huge {
+	font-size: 1.9em;
+}
+
+.psc-style-Huge {
+	font-size: 2.28em;
+}
+
+/* Copy as LaTeX: bottom right, on hover (the top right belongs to the live preview edit button). */
+.psc-copy {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	opacity: 0;
+	transition: opacity 0.15s ease-in-out;
+}
+
+.psc-block:hover .psc-copy,
+.psc-copy:focus-visible {
+	opacity: 1;
+}
+
+.psc-empty {
+	color: var(--text-faint);
+	font-style: italic;
+}
+
+.psc-error {
+	border: 1px solid var(--background-modifier-error);
+	border-radius: var(--radius-m);
+	padding: var(--size-4-2) var(--size-4-3);
+}
+
+.psc-error-title {
+	font-weight: var(--font-bold);
+	color: var(--text-error);
+}
+
+.psc-error-message {
+	color: var(--text-error);
+	margin-bottom: var(--size-4-2);
+}
+
+.psc-error-source {
+	margin: 0;
+	white-space: pre-wrap;
+}
+
+.psc-error-line.is-error {
+	background-color: var(--background-modifier-error);
+	color: var(--text-on-accent);
+}
+
+/* Live preview: styled like an internal link. */
+.psc-ref-editor {
+	color: var(--link-color);
+	text-decoration: underline;
+	text-decoration-color: var(--link-color);
+	cursor: var(--cursor-link);
+}
+
+.psc-ref-editor:hover {
+	color: var(--link-color-hover);
+}
+
+/* Beats the colour of internal links. */
+.psc-ref.psc-ref-missing,
+.markdown-rendered .internal-link.psc-ref-missing {
+	color: var(--text-error);
+	text-decoration-style: dotted;
+}
