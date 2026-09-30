@@ -1,0 +1,16 @@
+{
+	"name": "vault-structure",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Create areas and topics with the vault skeleton and check folder and file naming rules.",
+	"main": "dist/main.js",
+	"scripts": {
+		"dev": "node ../../scripts/esbuild.mjs",
+		"build": "tsc --noEmit && node ../../scripts/esbuild.mjs --production",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint src"
+	},
+	"dependencies": {
+		"@obsidian-plugins/i18n": "workspace:*"
+	}
+}

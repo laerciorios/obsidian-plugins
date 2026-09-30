@@ -1,0 +1,112 @@
+import type { Translation } from '@obsidian-plugins/i18n';
+import type { en } from './en';
+
+export const ptBR: Translation<typeof en> = {
+	'command.newArea': 'Nova área ou tópico',
+	'command.check': 'Verificar estrutura do vault',
+	'command.openRules': 'Abrir arquivo de regras',
+
+	'menu.newArea': 'Nova área aqui',
+	'menu.newTopic': 'Novo tópico aqui',
+
+	'modal.cancel': 'Cancelar',
+	'modal.more': '…e mais {count}.',
+
+	'newArea.title': 'Nova área ou tópico',
+	'newArea.name': 'Nome',
+	'newArea.name.placeholder': 'Astronomy',
+	'newArea.parent': 'Dentro de',
+	'newArea.parent.area': '{path} (nova área)',
+	'newArea.parent.topic': '{path} (novo tópico)',
+	'newArea.desc': 'Cria a pasta com {index} e {scaffold}.',
+	'newArea.desc.empty': 'Cria a pasta com {index}.',
+	'newArea.titleCase': 'Pastas usam Title Case com espaços. Sugestão: {name}. Nomes próprios podem ficar como estão.',
+	'newArea.useSuggestion': 'Usar sugestão',
+	'newArea.create': 'Criar',
+
+	'name.empty': 'Digite um nome.',
+	'name.chars': 'Tire estes caracteres: {chars}',
+	'name.dot': 'O nome não pode começar com ".".',
+	'name.exists': '{name} já existe nesta pasta.',
+
+	'report.title': 'Estrutura do vault',
+	'report.summary.one': '1 item fora das regras ({folders} pastas e {notes} notas verificadas).',
+	'report.summary.other': '{count} itens fora das regras ({folders} pastas e {notes} notas verificadas).',
+	'report.clean': 'Tudo dentro das regras ({folders} pastas e {notes} notas verificadas).',
+	'report.rules': 'Regras: {path}.',
+	'report.rules.default': 'Regras: as padrão (não há {path} no vault).',
+	'report.rescan': 'Verificar de novo',
+	'report.fixAll': 'Corrigir todos ({count})',
+	'report.ignore': 'Ignorar',
+	'report.ignore.tooltip': 'Acrescentar a "ignore" no arquivo de regras',
+	'report.heading': '{title} ({count})',
+
+	'group.readme': 'README.md em vez de index.md',
+	'group.missingIndex': 'Áreas e tópicos sem index.md',
+	'group.aiOutside': 'Notas com #{tag} fora de {folder}',
+	'group.fileCase': 'Notas fora do kebab-case',
+	'group.folderCase': 'Pastas fora do Title Case',
+
+	'fix.rename': 'Renomear',
+	'fix.move': 'Mover',
+	'fix.createIndex': 'Criar index.md',
+	'fix.renameFolder': 'Renomear…',
+
+	'target.to': '→ {path}',
+	'target.suggestion': 'Sugestão: {name}',
+	'reason.indexExists': 'A pasta já tem um index.md: junte os dois à mão.',
+	'reason.root': 'Na raiz do vault: mova para a área certa à mão.',
+	'reason.noName': 'Sem sugestão: renomeie à mão.',
+
+	'confirm.title': 'Corrigir todos: {group}',
+	'confirm.message.one': '1 item vai mudar. Os links nas notas são atualizados.',
+	'confirm.message.other': '{count} itens vão mudar. Os links nas notas são atualizados.',
+	'confirm.create.one': '1 index.md será criado a partir do template.',
+	'confirm.create.other': '{count} index.md serão criados a partir do template.',
+	'confirm.ok': 'Corrigir',
+
+	'rename.title': 'Renomear pasta',
+	'rename.desc': 'Os links para as notas dentro de {path} são atualizados.',
+	'rename.ok': 'Renomear',
+
+	'notice.created.area': 'Área criada: {path}.',
+	'notice.created.topic': 'Tópico criado: {path}.',
+	'notice.noRoots': 'Nenhuma pasta em index_roots nas regras: não há onde criar uma área.',
+	'notice.template.missing': 'Template de índice {path} não encontrado: usando o embutido.',
+	'notice.fixing': 'Corrigindo… {done}/{total}',
+	'notice.fixed.one': '1 item corrigido.',
+	'notice.fixed.other': '{count} itens corrigidos.',
+	'notice.failed': '{count} não puderam ser corrigidos (detalhes no console do desenvolvedor).',
+	'notice.fixFailed': 'Não deu para corrigir {path}: {message}',
+	'notice.ignored': '{path} ignorado.',
+	'notice.rules.created': '{path} criado com as regras padrão.',
+	'notice.rules.notFile': '{path} é uma pasta, não uma nota: escolha outro arquivo de regras nas configurações.',
+	'notice.error': 'Vault Structure: {message}',
+
+	'rules.heading': 'Regras da estrutura do vault',
+	'rules.intro':
+		'Lidas pelo plugin Vault Structure a cada comando: edite as propriedades acima. Um valor ausente ou inválido volta ao padrão; uma lista vazia desliga a regra.',
+	'rules.key.indexRoots': 'pastas cujas subpastas são áreas e tópicos; cada uma precisa de um `index.md`.',
+	'rules.key.indexDepth': 'quantos níveis abaixo de cada raiz precisam de `index.md` (1 = áreas, 2 = áreas e tópicos, 0 = nenhum).',
+	'rules.key.indexTemplate':
+		'nota usada como template dos `index.md` novos, com `{{title}}`, `{{date}}`, `{{date:FORMATO}}` e `{{time}}`. Vazio usa o embutido.',
+	'rules.key.scaffold': 'subpastas criadas em cada área ou tópico novo.',
+	'rules.key.vocabulary': 'nomes de pasta do vocabulário fixo, que nunca são área nem tópico (pastas que começam com `_` já são).',
+	'rules.key.minorWords': 'palavras que podem ficar em minúscula no Title Case, menos como primeira palavra.',
+	'rules.key.ai': 'notas com esta tag ficam nesta pasta da sua área. Vazio desliga a verificação.',
+	'rules.key.ignore': 'pastas e notas que a verificação não olha.',
+
+	'settings.rules.heading': 'Regras',
+	'settings.rulesPath.name': 'Arquivo de regras',
+	'settings.rulesPath.desc': 'Nota cujas propriedades guardam as regras. Sem ela, valem as padrão.',
+	'settings.openRules.name': 'Abrir arquivo de regras',
+	'settings.openRules.desc': 'Criado com as regras padrão e a explicação de cada uma quando ainda não existe.',
+	'settings.tools.heading': 'Ferramentas',
+	'settings.check.name': 'Verificar estrutura do vault',
+	'settings.check.desc': 'Lista o que foge das regras, com a correção de cada item. Nada muda até você clicar.',
+	'settings.newArea.name': 'Nova área ou tópico',
+	'settings.newArea.desc': 'Cria uma pasta com index.md e o esqueleto do vault.',
+
+	'validation.rulesPath': 'Digite o caminho de uma nota, terminando em .md.',
+	'validation.hidden': 'Pastas ocultas (que começam com ".") não fazem parte do vault.',
+};

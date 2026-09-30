@@ -106,6 +106,12 @@ importers:
         specifier: workspace:*
         version: link:../../packages/i18n
 
+  plugins/vault-structure:
+    dependencies:
+      '@obsidian-plugins/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
+
 packages:
 
   '@codemirror/language@6.11.3':

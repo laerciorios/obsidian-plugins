@@ -16,6 +16,7 @@ Planejamento e specs ficam no vault, em `1 - Knowledge/Projects/Obsidian Plugins
 | [Comments](plugins/comments) | `comments` | em desenvolvimento | Comentários em trechos de uma nota, no estilo do Google Docs: seleciona, comenta, responde e resolve. As conversas ficam em markdown legível em `Attachments/Comments/`, que a IA também lê e responde. |
 | [Pseudocode](plugins/pseudocode) | `pseudocode` | em desenvolvimento | Renderiza os blocos ` ```pseudo ` na sintaxe do plugin da comunidade (pseudocode.js) e na do `algorithm2e`, com linhas e algoritmos numerados, referências (`\ref`) e exportação para LaTeX. Substitui o Pseudocode da comunidade. |
 | [Attachments Guard](plugins/attachments-guard) | `attachments-guard` | em desenvolvimento | Todo anexo em `Attachments/` com nome previsível: imagens coladas viram `<nota>-<n>`, capas `<nota>-cover`, arquivos soltos são recolhidos com os links atualizados e órfãos vão para `.trash/`. |
+| [Vault Structure](plugins/vault-structure) | `vault-structure` | em desenvolvimento | Cria áreas e tópicos com o esqueleto do vault (`index.md`, `_Discovery/`, `_References/`) e verifica as regras de estrutura: pastas em Title Case, notas em kebab-case, `index.md` em cada área, conteúdo `ai-generated` no lugar certo. Corrige com um clique; as regras ficam numa nota do vault. |
 <!-- plugins:end -->
 
 ## Estrutura
@@ -35,7 +36,7 @@ Todos os plugins são multi-idioma. A interface segue o idioma do Obsidian (**Se
 ## Pré-requisitos
 
 - Node 22+ e pnpm 11 (`corepack enable` ou `brew install pnpm`)
-- Obsidian 1.13+ (o Bases Board precisa de 1.10.2, pela API de views do Bases; o Shortcuts usa as configurações declarativas do 1.13; o Media Catalog, o Colored Text, o Comments e o Attachments Guard precisam de 1.13.0, também pelas configurações declarativas)
+- Obsidian 1.13+ (o Bases Board precisa de 1.10.2, pela API de views do Bases; o Shortcuts usa as configurações declarativas do 1.13; o Media Catalog, o Colored Text, o Comments, o Attachments Guard e o Vault Structure precisam de 1.13.0, também pelas configurações declarativas)
 
 ## Começando
 

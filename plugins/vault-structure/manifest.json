@@ -1,0 +1,10 @@
+{
+	"id": "vault-structure",
+	"name": "Vault Structure",
+	"version": "0.1.0",
+	"minAppVersion": "1.13.0",
+	"description": "Create areas and topics with the vault skeleton and check folder and file naming rules.",
+	"author": "Laercio Rios",
+	"authorUrl": "https://laerciorios.com",
+	"isDesktopOnly": false
+}

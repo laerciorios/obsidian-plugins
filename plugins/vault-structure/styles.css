@@ -1,0 +1,73 @@
+/* Vault Structure: only Obsidian CSS variables, so light and dark themes keep working. */
+
+.vs-report .vs-summary {
+	border-top: none;
+}
+
+.vs-group {
+	margin-top: var(--size-4-6);
+}
+
+.vs-group > .setting-item-heading {
+	padding-inline: 0;
+}
+
+.vs-row .setting-item-name {
+	font-family: var(--font-monospace);
+	font-size: var(--font-ui-small);
+	overflow-wrap: anywhere;
+}
+
+.vs-row .setting-item-description {
+	overflow-wrap: anywhere;
+}
+
+.vs-list {
+	max-height: 40vh;
+	overflow-y: auto;
+	margin: 0;
+	padding: var(--size-4-2) var(--size-4-3);
+	list-style: none;
+	border: var(--border-width) solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background-color: var(--background-secondary);
+	font-family: var(--font-monospace);
+	font-size: var(--font-ui-smaller);
+}
+
+.vs-list-item {
+	padding: var(--size-2-1) 0;
+	overflow-wrap: anywhere;
+}
+
+.vs-arrow {
+	margin: 0 var(--size-4-2);
+	color: var(--text-faint);
+}
+
+.vs-muted {
+	color: var(--text-muted);
+}
+
+.vs-hint {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--size-4-2);
+	min-height: var(--size-4-6);
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+.vs-hint:empty {
+	min-height: 0;
+}
+
+.vs-desc {
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+.vs-warning {
+	color: var(--text-error);
+}

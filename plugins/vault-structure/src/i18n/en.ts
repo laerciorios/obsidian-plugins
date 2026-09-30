@@ -1,0 +1,112 @@
+import type { Messages } from '@obsidian-plugins/i18n';
+
+/** Source catalog. Every other locale must define all of these keys. */
+export const en = {
+	'command.newArea': 'New area or topic',
+	'command.check': 'Check vault structure',
+	'command.openRules': 'Open rules file',
+
+	'menu.newArea': 'New area here',
+	'menu.newTopic': 'New topic here',
+
+	'modal.cancel': 'Cancel',
+	'modal.more': '…and {count} more.',
+
+	'newArea.title': 'New area or topic',
+	'newArea.name': 'Name',
+	'newArea.name.placeholder': 'Astronomy',
+	'newArea.parent': 'Inside',
+	'newArea.parent.area': '{path} (new area)',
+	'newArea.parent.topic': '{path} (new topic)',
+	'newArea.desc': 'Creates the folder with {index} and {scaffold}.',
+	'newArea.desc.empty': 'Creates the folder with {index}.',
+	'newArea.titleCase': 'Folders use Title Case with spaces. Suggestion: {name}. Proper names can stay as they are.',
+	'newArea.useSuggestion': 'Use suggestion',
+	'newArea.create': 'Create',
+
+	'name.empty': 'Enter a name.',
+	'name.chars': 'Remove these characters: {chars}',
+	'name.dot': 'The name cannot start with ".".',
+	'name.exists': '{name} already exists in this folder.',
+
+	'report.title': 'Vault structure',
+	'report.summary.one': '1 item breaks the rules ({folders} folders and {notes} notes checked).',
+	'report.summary.other': '{count} items break the rules ({folders} folders and {notes} notes checked).',
+	'report.clean': 'Everything follows the rules ({folders} folders and {notes} notes checked).',
+	'report.rules': 'Rules: {path}.',
+	'report.rules.default': 'Rules: the defaults (no {path} in the vault).',
+	'report.rescan': 'Check again',
+	'report.fixAll': 'Fix all ({count})',
+	'report.ignore': 'Ignore',
+	'report.ignore.tooltip': 'Add to "ignore" in the rules file',
+	'report.heading': '{title} ({count})',
+
+	'group.readme': 'README.md instead of index.md',
+	'group.missingIndex': 'Areas and topics without index.md',
+	'group.aiOutside': 'Notes tagged #{tag} outside {folder}',
+	'group.fileCase': 'Notes not in kebab-case',
+	'group.folderCase': 'Folders not in Title Case',
+
+	'fix.rename': 'Rename',
+	'fix.move': 'Move',
+	'fix.createIndex': 'Create index.md',
+	'fix.renameFolder': 'Rename…',
+
+	'target.to': '→ {path}',
+	'target.suggestion': 'Suggestion: {name}',
+	'reason.indexExists': 'The folder already has an index.md: merge the two by hand.',
+	'reason.root': 'At the vault root: move it to its area by hand.',
+	'reason.noName': 'No suggestion: rename it by hand.',
+
+	'confirm.title': 'Fix all: {group}',
+	'confirm.message.one': '1 item will change. Links in notes are updated.',
+	'confirm.message.other': '{count} items will change. Links in notes are updated.',
+	'confirm.create.one': '1 index.md will be created from the template.',
+	'confirm.create.other': '{count} index.md files will be created from the template.',
+	'confirm.ok': 'Fix',
+
+	'rename.title': 'Rename folder',
+	'rename.desc': 'Links to the notes inside {path} are updated.',
+	'rename.ok': 'Rename',
+
+	'notice.created.area': 'Area created: {path}.',
+	'notice.created.topic': 'Topic created: {path}.',
+	'notice.noRoots': 'No folder in index_roots of the rules: there is nowhere to create an area.',
+	'notice.template.missing': 'Index template {path} not found: using the built-in one.',
+	'notice.fixing': 'Fixing… {done}/{total}',
+	'notice.fixed.one': 'Fixed 1 item.',
+	'notice.fixed.other': 'Fixed {count} items.',
+	'notice.failed': '{count} could not be fixed (details in the developer console).',
+	'notice.fixFailed': 'Could not fix {path}: {message}',
+	'notice.ignored': 'Ignored {path}.',
+	'notice.rules.created': 'Created {path} with the default rules.',
+	'notice.rules.notFile': '{path} is a folder, not a note: choose another rules file in the settings.',
+	'notice.error': 'Vault Structure: {message}',
+
+	'rules.heading': 'Vault structure rules',
+	'rules.intro':
+		'Read by the Vault Structure plugin on every command: edit the properties above. A missing or invalid value falls back to its default; an empty list turns it off.',
+	'rules.key.indexRoots': 'folders whose subfolders are areas and topics; each one needs an `index.md`.',
+	'rules.key.indexDepth': 'how many levels below each root need an `index.md` (1 = areas, 2 = areas and topics, 0 = none).',
+	'rules.key.indexTemplate':
+		'note used as the template of new `index.md` files, with `{{title}}`, `{{date}}`, `{{date:FORMAT}}` and `{{time}}`. Empty uses the built-in one.',
+	'rules.key.scaffold': 'subfolders created in every new area or topic.',
+	'rules.key.vocabulary': 'folder names of the fixed vocabulary, never areas or topics (folders starting with `_` already are).',
+	'rules.key.minorWords': 'words that may stay lowercase in Title Case, except as the first word.',
+	'rules.key.ai': 'notes with this tag belong in this folder of their area. Empty turns the check off.',
+	'rules.key.ignore': 'folders and notes the check never looks at.',
+
+	'settings.rules.heading': 'Rules',
+	'settings.rulesPath.name': 'Rules file',
+	'settings.rulesPath.desc': 'Note whose properties hold the rules. Without it, the defaults apply.',
+	'settings.openRules.name': 'Open rules file',
+	'settings.openRules.desc': 'Created with the default rules and an explanation of each one when it does not exist.',
+	'settings.tools.heading': 'Tools',
+	'settings.check.name': 'Check vault structure',
+	'settings.check.desc': 'List what breaks the rules, with a fix for each item. Nothing changes until you click.',
+	'settings.newArea.name': 'New area or topic',
+	'settings.newArea.desc': 'Create a folder with index.md and the vault skeleton.',
+
+	'validation.rulesPath': 'Enter the path of a note, ending in .md.',
+	'validation.hidden': 'Hidden folders (starting with ".") are not part of the vault.',
+} satisfies Messages;
