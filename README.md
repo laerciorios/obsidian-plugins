@@ -18,6 +18,7 @@ Planejamento e specs ficam no vault, em `1 - Knowledge/Projects/Obsidian Plugins
 | [Attachments Guard](plugins/attachments-guard) | `attachments-guard` | em desenvolvimento | Todo anexo em `Attachments/` com nome previsível: imagens coladas viram `<nota>-<n>`, capas `<nota>-cover`, arquivos soltos são recolhidos com os links atualizados e órfãos vão para `.trash/`. |
 | [Vault Structure](plugins/vault-structure) | `vault-structure` | em desenvolvimento | Cria áreas e tópicos com o esqueleto do vault (`index.md`, `_Discovery/`, `_References/`) e verifica as regras de estrutura: pastas em Title Case, notas em kebab-case, `index.md` em cada área, conteúdo `ai-generated` no lugar certo. Corrige com um clique; as regras ficam numa nota do vault. |
 | [Daily Work Log](plugins/daily-work-log) | `daily-work-log` | em desenvolvimento | Registra os projetos do dia na propriedade `projects` da daily note: janela com um checkbox por projeto ativo, botões no topo da nota (bloco `work-log`), sugestões das atas do dia e resumo de dias por projeto na semana ou no mês (bloco `work-log-summary`). |
+| [Daily Calendar](plugins/daily-calendar) | `daily-calendar` | em desenvolvimento | Calendário do mês no painel lateral: clique abre a daily ou cria pelo template das daily notes nativas; marcadores de daily, projetos do dia, reuniões, cards concluídos e itens do catálogo terminados, com a lista de cada dia no hover (toque longo no mobile). |
 <!-- plugins:end -->
 
 ## Estrutura

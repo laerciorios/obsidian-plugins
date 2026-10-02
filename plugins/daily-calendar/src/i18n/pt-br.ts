@@ -1,0 +1,92 @@
+import type { Translation } from '@obsidian-plugins/i18n';
+import type { en } from './en';
+
+export const ptBR: Translation<typeof en> = {
+	'command.open': 'Abrir calendário',
+
+	'view.title': 'Calendário',
+	'view.month': '{month} de {year}',
+	'view.previous': 'Mês anterior',
+	'view.next': 'Próximo mês',
+	'view.today': 'Hoje',
+
+	'day.summary': '{date}: {items}',
+	'day.daily': 'daily note',
+	'day.projects.one': '1 projeto',
+	'day.projects.other': '{count} projetos',
+	'day.meetings.one': '1 reunião',
+	'day.meetings.other': '{count} reuniões',
+	'day.cards.one': '1 card concluído',
+	'day.cards.other': '{count} cards concluídos',
+	'day.catalog.one': '1 item do catálogo terminado',
+	'day.catalog.other': '{count} itens do catálogo terminados',
+
+	'legend.daily': 'Daily note',
+	'legend.projects': 'Projetos',
+	'legend.meetings': 'Reuniões',
+	'legend.cards': 'Cards',
+	'legend.catalog': 'Catálogo',
+
+	'popover.daily': 'Daily note',
+	'popover.projects': 'Projetos',
+	'popover.meetings': 'Reuniões',
+	'popover.cards': 'Cards concluídos',
+	'popover.catalog': 'Terminados no catálogo',
+
+	'confirm.title': 'Criar a daily note?',
+	'confirm.body': '{date} ainda não tem daily note. Criar {path} pelo template?',
+	'confirm.create': 'Criar',
+	'confirm.cancel': 'Cancelar',
+
+	'notice.dailyIsFolder': '{path} é uma pasta, não uma daily note.',
+	'notice.templateMissing': 'Template da daily note não encontrado: {path}. A nota foi criada vazia.',
+	'notice.createFailed': 'Não foi possível criar {path}.',
+
+	'settings.calendar.heading': 'Calendário',
+	'settings.dailySource.name': 'Daily notes',
+	'settings.dailySource.desc': 'Pasta, formato e template vêm do plugin nativo Daily notes: {folder}, {format}, {template}.',
+	'settings.dailySource.noTemplate': 'sem template',
+	'settings.weekStart.name': 'Início da semana',
+	'settings.weekStart.desc': 'A primeira coluna do calendário.',
+	'settings.weekStart.monday': 'Segunda-feira',
+	'settings.weekStart.sunday': 'Domingo',
+	'settings.highlightWeekends.name': 'Destacar fins de semana',
+	'settings.highlightWeekends.desc': 'Fundo diferente nos sábados e domingos.',
+	'settings.confirmCreate.name': 'Confirmar antes de criar',
+	'settings.confirmCreate.desc': 'Perguntar antes de criar pelo template uma daily note que não existe.',
+
+	'settings.daily.heading': 'Daily note',
+	'settings.source.daily.name': 'Marcar as daily notes',
+	'settings.source.daily.desc': 'Um ponto nos dias que têm daily note.',
+	'settings.source.projects.name': 'Contar projetos',
+	'settings.source.projects.desc': 'O número de itens de uma propriedade de lista da daily note, no canto do dia.',
+	'settings.projectsProperty.name': 'Propriedade dos projetos',
+	'settings.projectsProperty.desc': 'Propriedade de lista da daily note com os projetos do dia.',
+
+	'settings.meetings.heading': 'Reuniões',
+	'settings.source.meetings.name': 'Marcar reuniões',
+	'settings.source.meetings.desc': 'Um ponto nos dias das atas: notas numa pasta de atas cujo nome começa com a data (YYYY-MM-DD).',
+	'settings.meetingsFolder.name': 'Pasta das atas',
+	'settings.meetingsFolder.desc': 'Nome das pastas com as atas, em qualquer nível.',
+
+	'settings.cards.heading': 'Cards',
+	'settings.source.cards.name': 'Marcar cards concluídos',
+	'settings.source.cards.desc': 'Um ponto no dia em que cada card foi concluído.',
+	'settings.cardTag.name': 'Tag dos cards',
+	'settings.cardTag.desc': 'Notas com esta tag são cards. Tags aninhadas não contam.',
+	'settings.cardProperty.name': 'Propriedade de conclusão',
+	'settings.cardProperty.desc': 'Propriedade do card com o dia da conclusão (data, ou data e hora).',
+
+	'settings.catalog.heading': 'Catálogo',
+	'settings.source.catalog.name': 'Marcar itens do catálogo terminados',
+	'settings.source.catalog.desc': 'Um ponto no dia em que cada item do catálogo foi terminado.',
+	'settings.catalogFolder.name': 'Pasta do catálogo',
+	'settings.catalogFolder.desc': 'As notas desta pasta, com as subpastas, são itens do catálogo.',
+	'settings.catalogProperty.name': 'Propriedade de término',
+	'settings.catalogProperty.desc': 'Propriedade do item com o dia em que foi terminado (data, ou data e hora).',
+
+	'validation.property': 'Digite o nome de uma propriedade.',
+	'validation.folderName': 'Digite um nome de pasta sem "/".',
+	'validation.tag': 'Digite uma tag sem espaços.',
+	'validation.folder': 'Digite o caminho de uma pasta.',
+};

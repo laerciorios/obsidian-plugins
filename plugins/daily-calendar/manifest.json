@@ -1,0 +1,10 @@
+{
+	"id": "daily-calendar",
+	"name": "Daily Calendar",
+	"version": "0.1.0",
+	"minAppVersion": "1.13.0",
+	"description": "A month calendar of the daily notes in the sidebar, with markers for projects, meetings, completed cards and finished catalog items.",
+	"author": "Laercio Rios",
+	"authorUrl": "https://laerciorios.com",
+	"isDesktopOnly": false
+}

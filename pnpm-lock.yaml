@@ -80,6 +80,15 @@ importers:
         specifier: workspace:*
         version: link:../../packages/i18n
 
+  plugins/daily-calendar:
+    dependencies:
+      '@obsidian-plugins/core-plugins':
+        specifier: workspace:*
+        version: link:../../packages/core-plugins
+      '@obsidian-plugins/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
+
   plugins/daily-work-log:
     dependencies:
       '@obsidian-plugins/core-plugins':

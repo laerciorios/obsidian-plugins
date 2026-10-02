@@ -1,0 +1,282 @@
+/* Daily Calendar: only Obsidian CSS variables, so light and dark themes keep working. */
+
+.dcal-view {
+	padding: var(--size-4-2) var(--size-4-3);
+}
+
+/* Header: month title, previous, today, next. */
+
+.dcal-header {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	margin-bottom: var(--size-4-2);
+}
+
+.dcal-title {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: var(--text-normal);
+	font-size: var(--font-ui-medium);
+	font-weight: var(--font-semibold);
+}
+
+.dcal-nav {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	gap: var(--size-2-1);
+}
+
+.dcal-today-button {
+	height: auto;
+	padding: var(--size-2-1) var(--size-4-2);
+	font-size: var(--font-ui-smaller);
+}
+
+/* Grid: seven equal columns for the weekday names and the days. */
+
+.dcal-grid {
+	display: grid;
+	grid-template-columns: repeat(7, minmax(0, 1fr));
+	gap: var(--size-2-1);
+}
+
+.dcal-weekday {
+	padding-bottom: var(--size-2-2);
+	overflow: hidden;
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	text-align: center;
+	white-space: nowrap;
+}
+
+/* Day cells are buttons: scoped to the view to win over Obsidian's button:not(.clickable-icon). */
+.dcal-view .dcal-day {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	gap: var(--size-2-1);
+	height: auto;
+	min-height: calc(var(--font-ui-small) * 3.4);
+	margin: 0;
+	padding: var(--size-2-1) 0;
+	border: var(--border-width) solid transparent;
+	border-radius: var(--radius-s);
+	background-color: transparent;
+	box-shadow: none;
+	color: var(--text-normal);
+	font-size: var(--font-ui-small);
+	font-weight: var(--font-normal);
+	cursor: var(--cursor);
+}
+
+.dcal-view .dcal-day:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.dcal-view .dcal-day:focus-visible {
+	box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
+}
+
+.dcal-number {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.9em;
+	height: 1.9em;
+	border-radius: 50%;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+}
+
+.dcal-view.dcal-highlight-weekends .dcal-day.is-weekend,
+.dcal-view.dcal-highlight-weekends .dcal-weekday.is-weekend {
+	background-color: var(--background-modifier-hover);
+}
+
+.dcal-view.dcal-highlight-weekends .dcal-day.is-weekend:hover {
+	background-color: var(--background-modifier-active-hover);
+}
+
+.dcal-view.dcal-highlight-weekends .dcal-weekday.is-weekend {
+	border-radius: var(--radius-s);
+}
+
+.dcal-view .dcal-day.is-other-month {
+	color: var(--text-faint);
+}
+
+.dcal-view .dcal-day.is-today .dcal-number {
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+	font-weight: var(--font-semibold);
+}
+
+.dcal-view .dcal-day.is-active {
+	border-color: var(--interactive-accent);
+}
+
+/* Read by screen readers, invisible on screen. */
+.dcal-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+/* Markers: the number of projects in the corner, one dot per source below the number. */
+
+.dcal-count {
+	position: absolute;
+	top: 1px;
+	right: var(--size-2-1);
+	color: var(--text-accent);
+	font-size: var(--font-ui-smaller);
+	font-weight: var(--font-semibold);
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+}
+
+.dcal-dots {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--size-2-1);
+	height: var(--size-4-1);
+}
+
+.dcal-dot {
+	flex-shrink: 0;
+	width: var(--size-4-1);
+	height: var(--size-4-1);
+	border-radius: 50%;
+	background-color: var(--text-muted);
+}
+
+.dcal-dot-daily {
+	background-color: var(--interactive-accent);
+}
+
+.dcal-dot-meetings {
+	background-color: var(--color-blue);
+}
+
+.dcal-dot-cards {
+	background-color: var(--color-green);
+}
+
+.dcal-dot-catalog {
+	background-color: var(--color-orange);
+}
+
+.dcal-view .dcal-day.is-other-month .dcal-dots,
+.dcal-view .dcal-day.is-other-month .dcal-count {
+	opacity: 0.5;
+}
+
+/* Legend under the grid. */
+
+.dcal-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--size-2-2) var(--size-4-3);
+	margin-top: var(--size-4-3);
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+.dcal-legend-item {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-1);
+}
+
+.dcal-legend-count {
+	color: var(--text-accent);
+	font-weight: var(--font-semibold);
+	line-height: 1;
+}
+
+.dcal-hidden {
+	display: none;
+}
+
+/* The list of a day, on hover or long press. Lives in the body, above the workspace. */
+
+.dcal-popover {
+	position: fixed;
+	z-index: var(--layer-popover);
+	width: max-content;
+	min-width: 180px;
+	max-width: min(300px, calc(100vw - 2 * var(--size-4-2)));
+	max-height: 60vh;
+	overflow-y: auto;
+	padding: var(--size-4-2) var(--size-4-3);
+	border: var(--border-width) solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background-color: var(--background-primary);
+	box-shadow: var(--shadow-s);
+	color: var(--text-normal);
+	font-size: var(--font-ui-small);
+}
+
+.dcal-popover-title {
+	margin-bottom: var(--size-4-2);
+	font-weight: var(--font-semibold);
+}
+
+.dcal-popover-section + .dcal-popover-section {
+	margin-top: var(--size-4-2);
+}
+
+.dcal-popover-heading {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-1);
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+.dcal-popover-count {
+	color: var(--text-faint);
+}
+
+.dcal-popover-list {
+	margin: var(--size-2-1) 0 0;
+	padding: 0 0 0 var(--size-4-3);
+	list-style: none;
+}
+
+.dcal-popover-list li {
+	padding: var(--size-2-1) 0;
+	overflow-wrap: anywhere;
+}
+
+.dcal-popover-link {
+	color: var(--link-color);
+	text-decoration: none;
+	cursor: var(--cursor-link);
+}
+
+.dcal-popover-link:hover {
+	color: var(--link-color-hover);
+	text-decoration: underline;
+}
+
+.dcal-popover-text {
+	color: var(--text-muted);
+}
+
+/* A long press shows the list: no text selection or system callout on the days. */
+.dcal-view .dcal-day {
+	-webkit-touch-callout: none;
+	user-select: none;
+}

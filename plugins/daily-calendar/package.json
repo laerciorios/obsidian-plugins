@@ -1,0 +1,17 @@
+{
+	"name": "daily-calendar",
+	"version": "0.1.0",
+	"private": true,
+	"description": "A month calendar of the daily notes in the sidebar, with markers for projects, meetings, completed cards and finished catalog items.",
+	"main": "dist/main.js",
+	"scripts": {
+		"dev": "node ../../scripts/esbuild.mjs",
+		"build": "tsc --noEmit && node ../../scripts/esbuild.mjs --production",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint src"
+	},
+	"dependencies": {
+		"@obsidian-plugins/core-plugins": "workspace:*",
+		"@obsidian-plugins/i18n": "workspace:*"
+	}
+}

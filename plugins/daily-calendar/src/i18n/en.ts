@@ -1,0 +1,92 @@
+import type { Messages } from '@obsidian-plugins/i18n';
+
+/** Source catalog. Every other locale must define all of these keys. */
+export const en = {
+	'command.open': 'Open calendar',
+
+	'view.title': 'Calendar',
+	'view.month': '{month} {year}',
+	'view.previous': 'Previous month',
+	'view.next': 'Next month',
+	'view.today': 'Today',
+
+	'day.summary': '{date}: {items}',
+	'day.daily': 'daily note',
+	'day.projects.one': '1 project',
+	'day.projects.other': '{count} projects',
+	'day.meetings.one': '1 meeting',
+	'day.meetings.other': '{count} meetings',
+	'day.cards.one': '1 completed card',
+	'day.cards.other': '{count} completed cards',
+	'day.catalog.one': '1 catalog item finished',
+	'day.catalog.other': '{count} catalog items finished',
+
+	'legend.daily': 'Daily note',
+	'legend.projects': 'Projects',
+	'legend.meetings': 'Meetings',
+	'legend.cards': 'Cards',
+	'legend.catalog': 'Catalog',
+
+	'popover.daily': 'Daily note',
+	'popover.projects': 'Projects',
+	'popover.meetings': 'Meetings',
+	'popover.cards': 'Completed cards',
+	'popover.catalog': 'Finished in the catalog',
+
+	'confirm.title': 'Create daily note?',
+	'confirm.body': '{date} has no daily note yet. Create {path} from the template?',
+	'confirm.create': 'Create',
+	'confirm.cancel': 'Cancel',
+
+	'notice.dailyIsFolder': '{path} is a folder, not a daily note.',
+	'notice.templateMissing': 'Daily note template not found: {path}. The note was created empty.',
+	'notice.createFailed': 'Could not create {path}.',
+
+	'settings.calendar.heading': 'Calendar',
+	'settings.dailySource.name': 'Daily notes',
+	'settings.dailySource.desc': 'Folder, format and template come from the Daily notes core plugin: {folder}, {format}, {template}.',
+	'settings.dailySource.noTemplate': 'no template',
+	'settings.weekStart.name': 'First day of the week',
+	'settings.weekStart.desc': 'The first column of the calendar.',
+	'settings.weekStart.monday': 'Monday',
+	'settings.weekStart.sunday': 'Sunday',
+	'settings.highlightWeekends.name': 'Highlight weekends',
+	'settings.highlightWeekends.desc': 'Shade Saturdays and Sundays.',
+	'settings.confirmCreate.name': 'Confirm before creating',
+	'settings.confirmCreate.desc': 'Ask before creating a missing daily note from the template.',
+
+	'settings.daily.heading': 'Daily note',
+	'settings.source.daily.name': 'Mark daily notes',
+	'settings.source.daily.desc': 'A dot on the days that have a daily note.',
+	'settings.source.projects.name': 'Count projects',
+	'settings.source.projects.desc': 'The number of items in a list property of the daily note, in the corner of the day.',
+	'settings.projectsProperty.name': 'Projects property',
+	'settings.projectsProperty.desc': 'List property of the daily note with the projects of the day.',
+
+	'settings.meetings.heading': 'Meetings',
+	'settings.source.meetings.name': 'Mark meetings',
+	'settings.source.meetings.desc': 'A dot on the days of meeting notes: notes in a meetings folder whose name starts with the date (YYYY-MM-DD).',
+	'settings.meetingsFolder.name': 'Meetings folder',
+	'settings.meetingsFolder.desc': 'Name of the folders with meeting notes, at any depth.',
+
+	'settings.cards.heading': 'Cards',
+	'settings.source.cards.name': 'Mark completed cards',
+	'settings.source.cards.desc': 'A dot on the day each card was completed.',
+	'settings.cardTag.name': 'Card tag',
+	'settings.cardTag.desc': 'Notes with this tag are cards. Nested tags do not count.',
+	'settings.cardProperty.name': 'Completion property',
+	'settings.cardProperty.desc': 'Card property with the day it was completed (a date, or a date and time).',
+
+	'settings.catalog.heading': 'Catalog',
+	'settings.source.catalog.name': 'Mark finished catalog items',
+	'settings.source.catalog.desc': 'A dot on the day each catalog item was finished.',
+	'settings.catalogFolder.name': 'Catalog folder',
+	'settings.catalogFolder.desc': 'Notes in this folder, subfolders included, are catalog items.',
+	'settings.catalogProperty.name': 'Finish property',
+	'settings.catalogProperty.desc': 'Catalog property with the day the item was finished (a date, or a date and time).',
+
+	'validation.property': 'Enter a property name.',
+	'validation.folderName': 'Enter a folder name without "/".',
+	'validation.tag': 'Enter a tag without spaces.',
+	'validation.folder': 'Enter a folder path.',
+} satisfies Messages;
