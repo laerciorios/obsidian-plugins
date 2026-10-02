@@ -1,9 +1,8 @@
 import {
 	DAILY_NOTES_DEFAULTS,
+	createDailyNote,
 	dailyNoteDate,
 	dailyNotePath,
-	dailyTemplatePath,
-	fillTemplate,
 	readDailyNotesSettings,
 } from '@obsidian-plugins/core-plugins';
 import type { DailyNotesSettings } from '@obsidian-plugins/core-plugins';
@@ -69,10 +68,9 @@ export class DailyNotes {
 		const existing = this.app.vault.getAbstractFileByPath(path);
 		if (existing instanceof TFile) return existing;
 		if (existing) throw new Error(t('notice.dailyIsFolder', { path }));
-		await this.ensureFolder(path.slice(0, Math.max(0, path.lastIndexOf('/'))));
-		const basename = path.slice(path.lastIndexOf('/') + 1, -3);
-		const template = await this.template(settings);
-		return this.app.vault.create(path, fillTemplate(template, { title: basename, date, dateFormat: settings.format }));
+		const { file, templateMissing } = await createDailyNote(this.app, settings, date);
+		if (templateMissing) new Notice(t('notice.templateMissing', { path: settings.template }));
+		return file;
 	}
 
 	/** Show the note: the tab that already has it, else the active tab (like the core command). */
@@ -87,25 +85,5 @@ export class DailyNotes {
 			return;
 		}
 		await workspace.getLeaf(false).openFile(file);
-	}
-
-	private async template(settings: DailyNotesSettings): Promise<string> {
-		const path = dailyTemplatePath(settings);
-		if (!path) return '';
-		const file =
-			this.app.vault.getFileByPath(path) ?? this.app.metadataCache.getFirstLinkpathDest(settings.template, '');
-		if (file) return this.app.vault.read(file);
-		new Notice(t('notice.templateMissing', { path: settings.template }));
-		return '';
-	}
-
-	/** Create a folder and its missing parents. */
-	private async ensureFolder(path: string): Promise<void> {
-		if (!path) return;
-		let current = '';
-		for (const part of path.split('/')) {
-			current = current ? `${current}/${part}` : part;
-			if (!this.app.vault.getAbstractFileByPath(current)) await this.app.vault.createFolder(current);
-		}
 	}
 }

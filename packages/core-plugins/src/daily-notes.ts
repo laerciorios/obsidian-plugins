@@ -1,5 +1,6 @@
 import { moment, normalizePath } from 'obsidian';
-import type { App } from 'obsidian';
+import type { App, TFile } from 'obsidian';
+import { fillTemplate } from './templates';
 
 /** Settings of the core Daily notes plugin (`<config dir>/daily-notes.json`). */
 export interface DailyNotesSettings {
@@ -72,4 +73,57 @@ export function dailyTemplatePath(settings: DailyNotesSettings): string {
 	if (!settings.template) return '';
 	const path = normalizePath(settings.template);
 	return /\.md$/i.test(path) ? path : `${path}.md`;
+}
+
+/** The daily note of a day, or null when there is none (a folder at the path is none). */
+export function getDailyNote(app: App, settings: DailyNotesSettings, date: moment.Moment): TFile | null {
+	return app.vault.getFileByPath(dailyNotePath(settings, date));
+}
+
+/**
+ * Text of the template: "" when there is no template, null when the setting
+ * points to a note that does not exist. The setting may be a path or a link.
+ */
+export async function readDailyTemplate(app: App, settings: DailyNotesSettings): Promise<string | null> {
+	const path = dailyTemplatePath(settings);
+	if (!path) return '';
+	const file = app.vault.getFileByPath(path) ?? app.metadataCache.getFirstLinkpathDest(settings.template, '');
+	return file ? app.vault.read(file) : null;
+}
+
+/** Create a folder and its missing parents. */
+export async function ensureFolder(app: App, path: string): Promise<void> {
+	if (!path) return;
+	let current = '';
+	for (const part of path.split('/')) {
+		current = current ? `${current}/${part}` : part;
+		if (!app.vault.getAbstractFileByPath(current)) await app.vault.createFolder(current);
+	}
+}
+
+export interface CreatedDailyNote {
+	file: TFile;
+	/** The template setting points to a missing note: the daily note was created empty. */
+	templateMissing: boolean;
+}
+
+/**
+ * Create the daily note of a day like the core plugin: missing folders first,
+ * then the template with its variables filled (`{{date}}` in the daily note
+ * format). Never overwrites: rejects when anything exists at the path, so
+ * callers check `getDailyNote` first.
+ */
+export async function createDailyNote(
+	app: App,
+	settings: DailyNotesSettings,
+	date: moment.Moment,
+): Promise<CreatedDailyNote> {
+	const path = dailyNotePath(settings, date);
+	if (app.vault.getAbstractFileByPath(path)) throw new Error(`${path} already exists.`);
+	const slash = path.lastIndexOf('/');
+	await ensureFolder(app, slash === -1 ? '' : path.slice(0, slash));
+	const template = await readDailyTemplate(app, settings);
+	const title = path.slice(slash + 1, -'.md'.length);
+	const content = fillTemplate(template ?? '', { title, date, dateFormat: settings.format });
+	return { file: await app.vault.create(path, content), templateMissing: template === null };
 }
