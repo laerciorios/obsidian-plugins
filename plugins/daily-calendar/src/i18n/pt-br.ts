@@ -84,6 +84,9 @@ export const ptBR: Translation<typeof en> = {
 	'settings.catalogFolder.desc': 'As notas desta pasta, com as subpastas, são itens do catálogo.',
 	'settings.catalogProperty.name': 'Propriedade de término',
 	'settings.catalogProperty.desc': 'Propriedade do item com o dia em que foi terminado (data, ou data e hora).',
+	'settings.catalogDatesProperty.name': 'Propriedade das datas de término',
+	'settings.catalogDatesProperty.desc':
+		'Propriedade em lista com todos os dias em que o item foi terminado, para itens jogados, vistos ou lidos mais de uma vez. Cada dia ganha um ponto; um dia nas duas propriedades conta uma vez.',
 
 	'validation.property': 'Digite o nome de uma propriedade.',
 	'validation.folderName': 'Digite um nome de pasta sem "/".',

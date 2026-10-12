@@ -44,5 +44,6 @@ export function collectDays(
 		cardProperty: settings.cardProperty,
 		catalogFolder: settings.catalogFolder,
 		catalogProperty: settings.catalogProperty,
+		catalogDatesProperty: settings.catalogDatesProperty,
 	});
 }

@@ -8,7 +8,14 @@ import type { DailyCalendarSettings, SourceId } from '../types';
 import { cleanFolder, cleanTag, isFolderName, isProperty } from './settings';
 
 /** Text settings: how a typed value is checked and stored. Invalid values are not saved. */
-type TextKey = 'projectsProperty' | 'meetingsFolder' | 'cardTag' | 'cardProperty' | 'catalogFolder' | 'catalogProperty';
+type TextKey =
+	| 'projectsProperty'
+	| 'meetingsFolder'
+	| 'cardTag'
+	| 'cardProperty'
+	| 'catalogFolder'
+	| 'catalogProperty'
+	| 'catalogDatesProperty';
 
 const TEXT: Record<TextKey, { clean: (value: string) => string; error: Parameters<typeof t>[0] }> = {
 	projectsProperty: { clean: (value) => (isProperty(value) ? value.trim() : ''), error: 'validation.property' },
@@ -17,6 +24,7 @@ const TEXT: Record<TextKey, { clean: (value: string) => string; error: Parameter
 	cardProperty: { clean: (value) => (isProperty(value) ? value.trim() : ''), error: 'validation.property' },
 	catalogFolder: { clean: cleanFolder, error: 'validation.folder' },
 	catalogProperty: { clean: (value) => (isProperty(value) ? value.trim() : ''), error: 'validation.property' },
+	catalogDatesProperty: { clean: (value) => (isProperty(value) ? value.trim() : ''), error: 'validation.property' },
 };
 
 const SOURCE_KEY = 'sources.';
@@ -116,6 +124,7 @@ export class DailyCalendarSettingTab extends PluginSettingTab {
 						control: { type: 'folder', key: 'catalogFolder', placeholder: '1 - Knowledge/Entertainment/DB' },
 					},
 					text('catalogProperty', 'catalog', 'finished'),
+					text('catalogDatesProperty', 'catalog', 'finished_dates'),
 				],
 			},
 		];

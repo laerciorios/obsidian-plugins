@@ -16,6 +16,7 @@ export function defaultSettings(): DailyCalendarSettings {
 		cardProperty: 'completed',
 		catalogFolder: '1 - Knowledge/Entertainment/DB',
 		catalogProperty: 'finished',
+		catalogDatesProperty: 'finished_dates',
 	};
 }
 
@@ -76,5 +77,6 @@ export function normalizeSettings(raw: unknown): DailyCalendarSettings {
 		cardProperty: valid(raw.cardProperty, isProperty, defaults.cardProperty),
 		catalogFolder: folder || defaults.catalogFolder,
 		catalogProperty: valid(raw.catalogProperty, isProperty, defaults.catalogProperty),
+		catalogDatesProperty: valid(raw.catalogDatesProperty, isProperty, defaults.catalogDatesProperty),
 	};
 }

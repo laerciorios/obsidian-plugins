@@ -32,7 +32,7 @@ Cada fonte é ligável nas configurações e tem uma entrada na legenda embaixo 
 | **Projetos** | número no canto do dia | Itens da propriedade `projects` da daily (lista, lista inline ou um valor só). O mesmo projeto repetido conta uma vez. |
 | **Reuniões** | ponto azul | Nota numa pasta chamada `_Meetings` (em qualquer nível) cujo nome começa com `YYYY-MM-DD` seguido de fim ou de algo que não é dígito (`2026-09-17-mutirao`, `2026-09-17-daily`). Vale o nome, não a propriedade `date`. |
 | **Cards concluídos** | ponto verde | Nota com a tag `card` (no frontmatter ou no texto; com ou sem `#`, sem diferenciar maiúsculas; `card/extra` não conta) e data em `completed`. Cards em `Archived/` contam. |
-| **Catálogo** | ponto laranja | Nota dentro de `1 - Knowledge/Entertainment/DB` (subpastas incluídas) com data em `finished`. |
+| **Catálogo** | ponto laranja | Nota dentro de `1 - Knowledge/Entertainment/DB` (subpastas incluídas) com data em `finished` ou em `finished_dates`. Uma obra jogada, vista ou lida mais de uma vez (registros do Media Catalog) tem um ponto em cada data da lista; o mesmo dia nas duas propriedades (a conclusão atual) conta uma vez. |
 
 Datas valem como `2026-09-30` ou com hora (`2026-09-30T18:30`, `2026-09-30 18:30`): conta o dia. Datas impossíveis (`2026-02-30`), texto e listas são ignorados. Pasta, tag e propriedades são configuráveis e são dados: não mudam com o idioma.
 
@@ -61,7 +61,7 @@ Passar o mouse num dia (por 350 ms) abre a lista do que há nele: a data por ext
 | Propriedade dos projetos | `projects` |
 | Pasta das atas | `_Meetings` (nome de pasta, sem `/`) |
 | Tag dos cards e propriedade de conclusão | `card`, `completed` |
-| Pasta do catálogo e propriedade de término | `1 - Knowledge/Entertainment/DB`, `finished` |
+| Pasta do catálogo, propriedade de término e propriedade das datas de término | `1 - Knowledge/Entertainment/DB`, `finished`, `finished_dates` |
 
 Os campos de uma fonte só aparecem com ela ligada. Valores inválidos (pasta das atas com `/`, tag com espaço, propriedade vazia) mostram o erro no campo e não são gravados.
 
@@ -77,6 +77,7 @@ A linha **Daily notes** mostra pasta, formato e template das daily notes, lidos 
 | `src/daily/open.ts` | Clique no dia: abrir a daily ou criar pelo template (`createDailyNote` do pacote). |
 | `src/index/marks.ts` | Funções puras: marcações de cada dia a partir de fatos das notas (caminho, nome, frontmatter, tags, links do frontmatter). |
 | `src/index/values.ts` | Funções puras: data de uma propriedade, dia no começo de um nome, pastas, tags, itens de `projects`. |
+| `test/` | Testes de unidade (`pnpm --filter daily-calendar test`): datas de término do catálogo (`finished` e `finished_dates`) e a configuração da propriedade. |
 | `src/index/month-index.ts` | Lê a lista de notas e o cache de metadados para as funções puras. |
 | `src/view/calendar-view.ts` | A view: cabeçalho, grade, destaques, eventos do vault. |
 | `src/view/day-cell.ts` | Marcadores de um dia, o resumo para leitor de tela e a legenda. |
@@ -93,6 +94,12 @@ pnpm --filter daily-calendar dev
 
 O build vai para `dist/` e é copiado para `dev-vault/.obsidian/plugins/daily-calendar/` (e para os vaults ligados com `pnpm link-plugin`). Casos de teste em `dev-vault/Daily Calendar/index.md`.
 
+Testes de unidade (Node `node:test`, sem dependências; o `obsidian` é trocado por um stub):
+
+```bash
+pnpm --filter daily-calendar test
+```
+
 Todo texto da interface passa por `t()` de `src/i18n/`: inglês em `en.ts` (fonte) e português em `pt-br.ts`. Nomes de mês e de dia vêm do `moment`, no idioma do Obsidian.
 
 ## Fora de escopo (por enquanto)
@@ -101,4 +108,4 @@ Registrados na spec como "Depois": números da semana e nota semanal (`YYYY-[W]W
 
 ## Status
 
-Em desenvolvimento (0.1.0). `minAppVersion` 1.13.0 (configurações declarativas).
+Em desenvolvimento (0.2.0). `minAppVersion` 1.13.0 (configurações declarativas).

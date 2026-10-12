@@ -1,6 +1,6 @@
 import type { FrontMatterCache } from 'obsidian';
 import type { SourceId } from '../types';
-import { dayOfName, dayOfValue, hasTag, inFolder, inFolderNamed, projectItems } from './values';
+import { dayOfName, dayOfValue, hasTag, inFolder, inFolderNamed, projectItems, toList } from './values';
 import type { FrontmatterLink, ProjectItem } from './values';
 
 /**
@@ -46,6 +46,8 @@ export interface MarkRules {
 	cardProperty: string;
 	catalogFolder: string;
 	catalogProperty: string;
+	/** List property with every day a catalog item was finished (re-entries). */
+	catalogDatesProperty: string;
 }
 
 export function emptyMarks(): DayMarks {
@@ -61,6 +63,19 @@ export function hasMarks(marks: DayMarks): boolean {
 		marks.cards.length > 0 ||
 		marks.catalog.length > 0
 	);
+}
+
+/**
+ * Days a catalog item was finished: the day of `property` and of every item
+ * of the list `datesProperty`, each day once (the current completion is in both).
+ */
+export function finishedDays(frontmatter: FrontMatterCache | undefined, property: string, datesProperty: string): Set<string> {
+	const days = new Set<string>();
+	for (const value of [frontmatter?.[property], ...toList(frontmatter?.[datesProperty])]) {
+		const day = dayOfValue(value);
+		if (day) days.add(day);
+	}
+	return days;
 }
 
 /** `title`, else the folder of an `index.md`, else the file name. */
@@ -115,7 +130,9 @@ export function collectMarks(
 			day(dayOfValue(note.frontmatter?.[rules.cardProperty]))?.cards.push(item());
 		}
 		if (sources.catalog && inFolder(note.path, rules.catalogFolder)) {
-			day(dayOfValue(note.frontmatter?.[rules.catalogProperty]))?.catalog.push(item());
+			for (const key of finishedDays(note.frontmatter, rules.catalogProperty, rules.catalogDatesProperty)) {
+				day(key)?.catalog.push(item());
+			}
 		}
 	}
 	for (const [key, entry] of marks) {

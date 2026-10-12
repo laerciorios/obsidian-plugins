@@ -11,6 +11,7 @@ Os marcadores são testados em **agosto de 2026**, para não mexer nas contagens
 | 05 | [[Daily Notes/2026-08-05]] com um projeto, um link sem destino e texto solto; duas atas em `Work/Horta Digital/_Meetings/` | daily, **3**, reunião |
 | 07 | dois cards concluídos em `Daily Calendar/Cards/` | card |
 | 08 (sáb) | [[Daily Notes/2026-08-08]] sem `projects` | daily |
+| 10 | [[pomar-de-neon\|Pomar de Neon]] com o dia em `finished_dates` (visto de novo depois) | catálogo |
 | 11 | [[os-samambaias\|Os Samambaias]] com `finished`; um "card" sem a tag `card` (não conta) | catálogo |
 | 12 | [[Daily Notes/2026-08-12]] com `projects: []`; card em andamento (não conta) | daily |
 | 13 | nota com a tag `card/extra` (não conta) | — |
@@ -19,6 +20,7 @@ Os marcadores são testados em **agosto de 2026**, para não mexer nas contagens
 | 19 | [[Daily Notes/2026-08-19]], lista inline com Recipe Book | daily, **1** |
 | 20 | nota `2026-08-20-…` fora de `_Meetings` (não conta) | — |
 | 21 | ata `20260821-sem-hifens` (não conta) | — |
+| 24 | [[pomar-de-neon\|Pomar de Neon]] com o dia em `finished` e em `finished_dates` (conta uma vez) | catálogo |
 | 26 | [[Daily Notes/2026-08-26]], `projects` com um valor só | daily, **1** |
 
 Se o `Archive Lab` foi gerado (`pnpm --filter bases-board fixtures`), os cards dele com a tag `card` também aparecem (29 e 31/08).
@@ -62,6 +64,9 @@ Se o `Archive Lab` foi gerado (`pnpm --filter bases-board fixtures`), os cards d
 - [ ] Mude **Tag dos cards** para `lab-card` (com o Archive Lab gerado): aparecem os cards do `Archive Lab/Central`; os de `Daily Calendar/Cards` somem. Volte para `card`.
 - [ ] Em [[Daily Calendar/Cards/2026-08-03-regar-as-mudas]], mude `completed` para `2026-08-20`: o ponto verde aparece no 20 sem recarregar (e o 7 continua com o outro card). Volte para `2026-08-07`.
 - [ ] Em [[mare-de-musgo]], ponha `finished: 2026-08-20`: ponto laranja no 20. Volte `finished` para vazio (o Media Catalog espera vazio).
+- [ ] Pare o mouse no 24: a lista do dia mostra **Pomar de Neon** uma vez só em **Terminados no catálogo**, e o resumo diz "1 item do catálogo terminado". No 10, o mesmo item aparece (só pela data de `finished_dates`).
+- [ ] Em [[pomar-de-neon]], acrescente `2026-08-27` a `finished_dates`: ponto laranja no 27 sem recarregar. Tire de novo.
+- [ ] Em Configurações → Daily Calendar → Catálogo, **Propriedade das datas de término** mostra `finished_dates`. Mude para `outra_lista`: o ponto do 10 some (o 24 fica, por `finished`). Apague todo o texto: aparece "Digite o nome de uma propriedade." e nada muda. Volte para `finished_dates`.
 - [ ] Na [[Daily Notes/2026-08-19]], acrescente um projeto: o número passa para 2. Tire de novo.
 - [ ] Crie `Work/Horta Digital/_Meetings/2026-08-27-teste.md`: ponto azul no 27. Renomeie para `2026-08-28-teste`: o ponto passa para o 28. Apague a nota.
 - [ ] Com o tema claro e com o escuro, os pontos e os números ficam legíveis.

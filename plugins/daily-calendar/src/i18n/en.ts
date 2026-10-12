@@ -84,6 +84,9 @@ export const en = {
 	'settings.catalogFolder.desc': 'Notes in this folder, subfolders included, are catalog items.',
 	'settings.catalogProperty.name': 'Finish property',
 	'settings.catalogProperty.desc': 'Catalog property with the day the item was finished (a date, or a date and time).',
+	'settings.catalogDatesProperty.name': 'Finish dates property',
+	'settings.catalogDatesProperty.desc':
+		'List property with every day the item was finished, for items played, watched or read more than once. Each day gets a dot; a day in both properties counts once.',
 
 	'validation.property': 'Enter a property name.',
 	'validation.folderName': 'Enter a folder name without "/".',

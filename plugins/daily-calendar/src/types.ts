@@ -28,6 +28,8 @@ export interface DailyCalendarSettings {
 	cardProperty: string;
 	/** Folder of the catalog (subfolders included). */
 	catalogFolder: string;
-	/** Catalog property with the day the item was finished. */
+	/** Catalog property with the day the item was finished (the current run). */
 	catalogProperty: string;
+	/** Catalog list property with every day the item was finished (re-entries: replay, rewatch, reread). */
+	catalogDatesProperty: string;
 }
