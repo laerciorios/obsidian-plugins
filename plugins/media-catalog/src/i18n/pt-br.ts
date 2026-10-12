@@ -7,6 +7,7 @@ export const ptBR: Translation<typeof en> = {
 	'command.changeCover': 'Trocar capa',
 	'command.markFinished': 'Terminei',
 	'command.updateTracks': 'Atualizar faixas do álbum',
+	'command.updateAliases': 'Atualizar aliases da nota atual',
 
 	// ---- kinds and statuses -------------------------------------------------
 	'kind.movie': 'Filme',
@@ -23,6 +24,7 @@ export const ptBR: Translation<typeof en> = {
 	'modal.add.title': 'Adicionar ao catálogo',
 	'modal.cover.title': 'Trocar capa',
 	'modal.tracks.title': 'Atualizar faixas do álbum',
+	'modal.aliases.title': 'Atualizar aliases',
 	'modal.season.title': 'Escolha a temporada',
 	'modal.confirm.title': 'Confira os dados',
 	'modal.back': 'Voltar',
@@ -63,6 +65,18 @@ export const ptBR: Translation<typeof en> = {
 	'tracks.list': 'Faixas',
 	'tracks.hint': 'Só a seção "{heading}" da nota muda. Se a nota não tiver essa seção, ela é criada antes de "{impressions}", ou no fim.',
 	'tracks.update': 'Atualizar faixas',
+
+	// ---- "Update aliases" ---------------------------------------------------
+	'aliases.loading': 'Procurando o título alternativo ({country})…',
+	'aliases.localized': 'Título alternativo',
+	'aliases.notFound': 'Nenhum encontrado.',
+	'aliases.sameAsTitle': 'Igual ao título.',
+	'aliases.current': 'Aliases agora',
+	'aliases.next': 'Aliases depois',
+	'aliases.none': '(nenhum)',
+	'aliases.hint': 'Só "aliases" muda na nota. Os aliases que você adicionou ficam; só os repetidos saem.',
+	'aliases.unchanged': 'A nota já tem esses aliases.',
+	'aliases.update': 'Atualizar aliases',
 
 	// ---- season step --------------------------------------------------------
 	'season.loading': 'Carregando temporadas…',
@@ -165,6 +179,9 @@ export const ptBR: Translation<typeof en> = {
 	'notice.tracksMissing': 'Media Catalog: lista de faixas indisponível; a nota foi criada sem ela.',
 	'notice.tracksUpdated': 'Media Catalog: faixas de "{name}" atualizadas.',
 	'notice.tracksFailed': 'Media Catalog: não foi possível atualizar as faixas de "{name}".',
+	'notice.aliasesUpdated': 'Media Catalog: aliases de "{name}" atualizados.',
+	'notice.aliasesUnchanged': 'Media Catalog: "{name}" já tem esses aliases.',
+	'notice.aliasesFailed': 'Media Catalog: não foi possível atualizar os aliases de "{name}".',
 	'notice.folderIsFile': 'Media Catalog: "{path}" é um arquivo, não uma pasta. Confira a pasta do catálogo nas configurações.',
 
 	// ---- settings -----------------------------------------------------------
@@ -178,6 +195,10 @@ export const ptBR: Translation<typeof en> = {
 	'settings.addSourceLink.desc': 'Adiciona uma linha como "- IMDb: <link>" no fim da nota.',
 	'settings.defaultStatus.name': 'Status padrão',
 	'settings.defaultStatus.desc': 'Status sugerido no formulário. O início recebe a data de hoje, exceto na fila.',
+	'settings.aliasCountry.name': 'País do título alternativo',
+	'settings.aliasCountry.desc':
+		'Notas novas de filmes, séries e jogos também ganham, como segundo alias, o título lançado nesse país, quando é diferente do título. Nenhum: o único alias é o título.',
+	'settings.aliasCountry.none': 'Nenhum',
 	'settings.covers.heading': 'Capas',
 	'settings.downloadCovers.name': 'Baixar capas por padrão',
 	'settings.downloadCovers.desc':

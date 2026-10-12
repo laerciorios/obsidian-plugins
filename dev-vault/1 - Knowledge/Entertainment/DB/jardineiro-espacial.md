@@ -1,6 +1,7 @@
 ---
 kind: game
 title: "Jardineiro Espacial"
+aliases: ["Jardineiro Espacial", "JE"]
 year: 2024
 status: dropped
 rating: 4

@@ -184,6 +184,8 @@ export class ConfirmForm {
 			cover: { url: cover, download: cover !== null && this.download },
 			source: { provider: result.provider, name: provider.name, url: result.sourceUrl ?? null },
 			tracks: kind === 'album' ? this.tracks : null,
+			// Looked up by the confirm step while the form is open (see findLocalizedTitle).
+			localizedTitle: null,
 		};
 	}
 

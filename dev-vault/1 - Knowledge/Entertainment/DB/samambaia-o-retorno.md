@@ -1,6 +1,7 @@
 ---
 kind: movie
 title: "Samambaia: O Retorno"
+aliases: ["Samambaia: O Retorno"]
 year: 1994
 status: backlog
 rating:

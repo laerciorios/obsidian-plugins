@@ -1,6 +1,7 @@
 ---
 kind: movie
 title: "Girassóis em Marte"
+aliases: ["Girassóis em Marte"]
 year: 2021
 status: done
 rating: 8

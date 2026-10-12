@@ -1,3 +1,4 @@
+import type { AliasCountry } from '../constants';
 import type { SearchResult, SeasonInfo, SeasonProvider } from '../types';
 import { isRecord, num, records, str, yearOf } from './guards';
 import { getJson } from './http';
@@ -7,6 +8,7 @@ import { cleanQuery, finalize, imageUrl } from './results';
  * Series from TVmaze (no key; limit of 20 calls per 10 s). A search is one call;
  * the season list is one call plus, only for seasons whose `episodeOrder` is
  * null (usually the one still airing), the calls that count their episodes.
+ * The name of the show in a country is one call to its akas.
  */
 
 const API = 'https://api.tvmaze.com';
@@ -123,6 +125,21 @@ function toSeasonInfo(show: SearchResult, season: RawSeason, counted: Map<number
 	};
 }
 
+/**
+ * Name of the show in `country`, from /shows/{id}/akas (`[{ name, country:
+ * { code } }]`; `country` is null for names of no country): the first one
+ * of that country, or null.
+ */
+export function parseAkas(json: unknown, country: string): string | null {
+	const wanted = country.toUpperCase();
+	for (const aka of records(json)) {
+		const name = str(aka.name);
+		const code = isRecord(aka.country) ? str(aka.country.code) : undefined;
+		if (name && code?.toUpperCase() === wanted) return name;
+	}
+	return null;
+}
+
 export function createTvmaze(): SeasonProvider {
 	return {
 		id: 'tvmaze',
@@ -138,6 +155,9 @@ export function createTvmaze(): SeasonProvider {
 			const seasons = parseSeasons(await getJson(`${API}/shows/${encodeURIComponent(showId)}/seasons`));
 			const counted = await missingCounts(showId, seasons);
 			return seasons.map((season) => toSeasonInfo(result, season, counted));
+		},
+		async localizedTitle(result: SearchResult, country: AliasCountry): Promise<string | null> {
+			return parseAkas(await getJson(`${API}/shows/${encodeURIComponent(result.externalId)}/akas`), country);
 		},
 	};
 }

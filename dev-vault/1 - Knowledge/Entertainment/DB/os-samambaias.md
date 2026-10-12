@@ -1,6 +1,7 @@
 ---
 kind: album
 title: "Os Samambaias"
+aliases: ["Os Samambaias"]
 author: "Os Samambaias"
 year: 1994
 status: done

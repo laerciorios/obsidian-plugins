@@ -3,6 +3,7 @@ import { imageStatus } from './http';
 import { findArtwork } from './itunes';
 import type { ItunesClient } from './itunes';
 import { imageUrl } from './results';
+import { settleWithin } from './settle';
 
 /**
  * Covers of MusicBrainz release groups from the Cover Art Archive. The URLs
@@ -20,23 +21,6 @@ const ARTWORK_TIMEOUT_MS = 10_000;
 /** Front cover of a release group; 250, 500 and 1200 px exist. */
 export function caaUrl(mbid: string, size: 250 | 500 | 1200): string | undefined {
 	return imageUrl(`https://${CAA_HOST}/release-group/${encodeURIComponent(mbid)}/front-${size}`);
-}
-
-/** Resolves to null when `promise` rejects or takes longer than `ms`. */
-function settleWithin<T>(promise: Promise<T>, ms: number): Promise<T | null> {
-	return new Promise((resolve) => {
-		const timer = window.setTimeout(() => resolve(null), ms);
-		promise.then(
-			(value) => {
-				window.clearTimeout(timer);
-				resolve(value);
-			},
-			() => {
-				window.clearTimeout(timer);
-				resolve(null);
-			},
-		);
-	});
 }
 
 /**

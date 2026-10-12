@@ -1,7 +1,7 @@
 /**
  * Tiny, deterministic YAML writer for new notes. It reproduces the style of
- * the existing catalog (`title: "…"`, `rating:` for null, dates and URLs
- * unquoted, `tags: [entertainment]`), which stringifyYaml does not. Only flat
+ * the existing catalog (`title: "…"`, `aliases: ["…"]`, `rating:` for null,
+ * dates and URLs unquoted, `tags: [entertainment]`), which stringifyYaml does not. Only flat
  * `key: value` lines; updates to existing notes go through processFrontMatter.
  */
 
@@ -11,7 +11,7 @@ export type YamlValue =
 	| { type: 'number'; value: number }
 	| { type: 'boolean'; value: boolean }
 	| { type: 'null' }
-	| { type: 'list'; items: readonly string[] };
+	| { type: 'list'; items: readonly string[]; quoted?: boolean };
 
 export type YamlEntry = readonly [key: string, value: YamlValue];
 
@@ -28,6 +28,8 @@ export const yaml = {
 	null: (): YamlValue => ({ type: 'null' }),
 	/** Flow list: `[entertainment]`. */
 	list: (items: readonly string[]): YamlValue => ({ type: 'list', items }),
+	/** Flow list of double-quoted items: `["Interstellar", "Interestelar"]` (aliases). */
+	quotedList: (items: readonly string[]): YamlValue => ({ type: 'list', items, quoted: true }),
 };
 
 const ESCAPES: Record<string, string> = { '\\': '\\\\', '"': '\\"', '\n': '\\n', '\r': '\\r', '\t': '\\t' };
@@ -75,7 +77,7 @@ function renderValue(value: YamlValue): string {
 		case 'null':
 			return '';
 		case 'list':
-			return `[${value.items.map(listItem).join(', ')}]`;
+			return `[${value.items.map(value.quoted ? quote : listItem).join(', ')}]`;
 	}
 }
 

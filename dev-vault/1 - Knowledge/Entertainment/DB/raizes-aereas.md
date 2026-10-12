@@ -1,6 +1,7 @@
 ---
 kind: album
 title: "Raízes Aéreas"
+aliases: ["Raízes Aéreas"]
 author: "Coletivo Orvalho"
 year: 2023
 tracks: 4

@@ -1,6 +1,6 @@
 {
 	"name": "media-catalog",
-	"version": "0.3.0",
+	"version": "0.4.0",
 	"private": true,
 	"description": "Search movies, series, games, books and albums online and file them as catalog notes.",
 	"main": "dist/main.js",
@@ -8,7 +8,8 @@
 		"dev": "node ../../scripts/esbuild.mjs",
 		"build": "tsc --noEmit && node ../../scripts/esbuild.mjs --production",
 		"typecheck": "tsc --noEmit",
-		"lint": "eslint src"
+		"lint": "eslint src",
+		"test": "node ../../scripts/test.mjs"
 	},
 	"dependencies": {
 		"@obsidian-plugins/i18n": "workspace:*"

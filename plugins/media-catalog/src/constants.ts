@@ -11,11 +11,11 @@ export const ALBUM_SOURCES = ['musicbrainz', 'itunes'] as const;
 
 /** Frontmatter keys per kind, in the order the catalog notes use. Keys not listed are never written. */
 export const FRONTMATTER_KEYS = {
-	movie: ['kind', 'title', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'cover', 'tags'],
-	series: ['kind', 'title', 'season', 'episodes', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'cover', 'tags'],
-	game: ['kind', 'title', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'hours', 'cover', 'tags'],
-	book: ['kind', 'title', 'author', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'pages', 'reference', 'cover', 'tags'],
-	album: ['kind', 'title', 'author', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'cover', 'tags'],
+	movie: ['kind', 'title', 'aliases', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'cover', 'tags'],
+	series: ['kind', 'title', 'aliases', 'season', 'episodes', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'cover', 'tags'],
+	game: ['kind', 'title', 'aliases', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'hours', 'cover', 'tags'],
+	book: ['kind', 'title', 'aliases', 'author', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'pages', 'reference', 'cover', 'tags'],
+	album: ['kind', 'title', 'aliases', 'author', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'cover', 'tags'],
 } as const;
 
 export const CATALOG_TAG = 'entertainment';
@@ -42,6 +42,7 @@ export const IMPRESSIONS_HEADING = '## Impressões';
 /** Hosts the plugin may call. Anything else is refused by providers/http.ts. */
 export const API_HOSTS = [
 	'v3.sg.media-imdb.com',
+	'caching.graphql.imdb.com',
 	'api.tvmaze.com',
 	'www.googleapis.com',
 	'openlibrary.org',
@@ -76,6 +77,52 @@ export const IMAGE_HOSTS = [
  */
 export const IMAGE_HOST_SUFFIXES = ['.archive.org'] as const;
 
+/**
+ * Countries offered for the alternative title (ISO 3166-1 alpha-2), with the
+ * language the title is asked in. IMDb picks the title by country and writes
+ * it in this language (Japan without "ja-JP" answers the romanized title).
+ */
+export const ALIAS_COUNTRIES = {
+	AR: 'es-AR',
+	AT: 'de-AT',
+	AU: 'en-AU',
+	BR: 'pt-BR',
+	CA: 'en-CA',
+	CL: 'es-CL',
+	CN: 'zh-CN',
+	CO: 'es-CO',
+	CZ: 'cs-CZ',
+	DE: 'de-DE',
+	DK: 'da-DK',
+	ES: 'es-ES',
+	FI: 'fi-FI',
+	FR: 'fr-FR',
+	GB: 'en-GB',
+	GR: 'el-GR',
+	HU: 'hu-HU',
+	IT: 'it-IT',
+	JP: 'ja-JP',
+	KR: 'ko-KR',
+	MX: 'es-MX',
+	NL: 'nl-NL',
+	NO: 'nb-NO',
+	PL: 'pl-PL',
+	PT: 'pt-PT',
+	RO: 'ro-RO',
+	RU: 'ru-RU',
+	SE: 'sv-SE',
+	TR: 'tr-TR',
+	TW: 'zh-TW',
+	UA: 'uk-UA',
+	US: 'en-US',
+} as const;
+export type AliasCountry = keyof typeof ALIAS_COUNTRIES;
+export const ALIAS_COUNTRY_CODES = Object.keys(ALIAS_COUNTRIES) as AliasCountry[];
+/** Kinds whose sources know titles by country. Books and albums keep the title only. */
+export const LOCALIZED_KINDS = ['movie', 'series', 'game'] as const;
+/** Past this, the alternative title is given up and the note is written without it. */
+export const LOCALIZED_TITLE_TIMEOUT_MS = 8_000;
+
 /** MusicBrainz allows about one request per second per client. */
 export const MUSICBRAINZ_INTERVAL_MS = 1100;
 
@@ -94,6 +141,7 @@ export const COMMAND_IDS = {
 	changeCover: 'change-cover',
 	markFinished: 'mark-finished',
 	updateTracks: 'update-tracks',
+	updateAliases: 'update-aliases',
 } as const;
 
 export const SETTINGS_ICON = 'clapperboard';

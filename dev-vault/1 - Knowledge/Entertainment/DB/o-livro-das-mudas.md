@@ -1,6 +1,7 @@
 ---
 kind: book
 title: "O Livro das Mudas"
+aliases: ["O Livro das Mudas"]
 author: "Otávio Musgo"
 year: 2012
 status: backlog

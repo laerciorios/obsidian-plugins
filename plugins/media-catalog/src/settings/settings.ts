@@ -1,5 +1,6 @@
 import { normalizePath } from 'obsidian';
-import { ALBUM_SOURCES, BOOK_SOURCES, DEFAULT_FOLDER, KINDS, STATUSES } from '../constants';
+import { ALBUM_SOURCES, ALIAS_COUNTRY_CODES, BOOK_SOURCES, DEFAULT_FOLDER, KINDS, STATUSES } from '../constants';
+import type { AliasCountry } from '../constants';
 import { isRecord } from '../providers/guards';
 import type { CatalogSettings } from '../types';
 
@@ -23,6 +24,7 @@ export function defaultSettings(): CatalogSettings {
 		albumItunesFallback: true,
 		albumTracklist: true,
 		albumTracksProperty: false,
+		aliasCountry: '',
 		lastKind: 'movie',
 		igdbClientId: '',
 		igdbClientSecret: '',
@@ -40,6 +42,13 @@ export function flag(value: unknown, fallback: boolean): boolean {
 
 export function oneOf<T extends string>(value: unknown, options: readonly T[], fallback: T): T {
 	return options.find((option) => option === value) ?? fallback;
+}
+
+/** Country of the alternative title: one of ALIAS_COUNTRIES, or "" (none). Lowercase codes are accepted. */
+export function aliasCountry(value: unknown, fallback: AliasCountry | ''): AliasCountry | '' {
+	if (value === '') return '';
+	const code = typeof value === 'string' ? value.trim().toUpperCase() : '';
+	return ALIAS_COUNTRY_CODES.find((country) => country === code) ?? fallback;
 }
 
 /** A vault path setting: trimmed and normalized; "" stays "" (the template: "use the default"). */
@@ -74,6 +83,7 @@ export function normalizeSettings(raw: unknown): CatalogSettings {
 		albumItunesFallback: flag(raw.albumItunesFallback, defaults.albumItunesFallback),
 		albumTracklist: flag(raw.albumTracklist, defaults.albumTracklist),
 		albumTracksProperty: flag(raw.albumTracksProperty, defaults.albumTracksProperty),
+		aliasCountry: aliasCountry(raw.aliasCountry, defaults.aliasCountry),
 		lastKind: oneOf(raw.lastKind, KINDS, defaults.lastKind),
 		igdbClientId: text(raw.igdbClientId, defaults.igdbClientId),
 		igdbClientSecret: text(raw.igdbClientSecret, defaults.igdbClientSecret),

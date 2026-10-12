@@ -27,7 +27,7 @@ export function createSearchState(context: CatalogContext, options: CatalogModal
 	return {
 		kind,
 		providerId: defaultProvider(context, kind, options)?.id ?? null,
-		// Cover and tracks modes search the note as soon as the modal opens.
+		// Cover, tracks and aliases modes search the note as soon as the modal opens.
 		query: note ? coverQuery(context.app, note) : '',
 		phase: 'idle',
 		searched: null,
@@ -38,7 +38,7 @@ export function createSearchState(context: CatalogContext, options: CatalogModal
 }
 
 /**
- * What cover and tracks modes search: the note title; albums add the artist, since
+ * What cover, tracks and aliases modes search: the note title; albums add the artist, since
  * albums of different artists often share a title. A self-titled album
  * searches its title once. Series search the series name, without the season
  * of the title ("Horta Selvagem (S02)" → "Horta Selvagem"): the season step
@@ -75,10 +75,12 @@ export function rememberSource(settings: CatalogSettings, kind: MediaKind, id: P
 	return false;
 }
 
-/** Sources the search offers for a kind. Tracks mode: only the ones that list tracks. */
+/** Sources the search offers for a kind. Tracks mode: only the ones that list tracks; aliases mode: titles by country. */
 export function sourcesFor(context: CatalogContext, kind: MediaKind, options?: CatalogModalOptions): Provider[] {
 	const providers = providersFor(context.providers, kind);
-	return options?.mode === 'tracks' ? providers.filter((provider) => typeof provider.tracks === 'function') : providers;
+	if (options?.mode === 'tracks') return providers.filter((provider) => typeof provider.tracks === 'function');
+	if (options?.mode === 'aliases') return providers.filter((provider) => typeof provider.localizedTitle === 'function');
+	return providers;
 }
 
 export function defaultProvider(context: CatalogContext, kind: MediaKind, options?: CatalogModalOptions): Provider | undefined {
@@ -91,7 +93,7 @@ export function defaultProvider(context: CatalogContext, kind: MediaKind, option
 export interface SearchPlan {
 	/** Text sent to the provider. */
 	text: string;
-	/** Year to highlight: the note's (cover and tracks modes) or the one typed at the end of the query. */
+	/** Year to highlight: the note's (cover, tracks and aliases modes) or the one typed at the end of the query. */
 	year: number | null;
 	/** Year typed: the whole query, in case it is a title that ends in a number ("Fern Road 1984"). */
 	fullTitle: string | null;

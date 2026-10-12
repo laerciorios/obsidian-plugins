@@ -1,4 +1,5 @@
 import { MAX_RESULTS, TOKEN_MARGIN_MS } from '../constants';
+import type { AliasCountry } from '../constants';
 import type { Provider, SearchResult } from '../types';
 import { HttpError, MissingCredentialsError, UnexpectedResponseError } from './errors';
 import { isRecord, num, records, str } from './guards';
@@ -8,6 +9,8 @@ import { cleanQuery, credentialRefused, finalize, imageUrl, joinNames } from './
 /**
  * Games from IGDB (Twitch). The app token comes from the client credentials
  * flow and lives only in memory, renewed before it expires or after a 401.
+ * The name of a game in a country comes from its `game_localizations`, asked
+ * apart from the search (one call, after the pick).
  */
 
 export interface IgdbCredentials {
@@ -20,6 +23,54 @@ const TOKEN_URL = 'https://id.twitch.tv/oauth2/token';
 const GAMES_URL = 'https://api.igdb.com/v4/games';
 const IMAGE_URL = 'https://images.igdb.com/igdb/image/upload';
 const FIELDS = 'name,slug,first_release_date,cover.image_id,platforms.name,involved_companies.company.name,involved_companies.developer';
+const LOCALIZATION_FIELDS = 'game_localizations.name,game_localizations.region.identifier,game_localizations.region.name';
+
+/**
+ * IGDB regions of a country, the most specific first: the country's own
+ * region (a "locale"), then its continent. IGDB has locales only for these
+ * countries (and New Zealand); North America and Europe stand in for the
+ * others there. Countries in neither keep the title only.
+ */
+const LOCALE_REGIONS: Partial<Record<AliasCountry, string>> = {
+	AU: 'australia',
+	BR: 'brazil',
+	CN: 'china',
+	JP: 'japan',
+	KR: 'korea',
+};
+const CONTINENT_REGIONS: Partial<Record<AliasCountry, string>> = {
+	CA: 'north_america',
+	MX: 'north_america',
+	US: 'north_america',
+	AT: 'europe',
+	CZ: 'europe',
+	DE: 'europe',
+	DK: 'europe',
+	ES: 'europe',
+	FI: 'europe',
+	FR: 'europe',
+	GB: 'europe',
+	GR: 'europe',
+	HU: 'europe',
+	IT: 'europe',
+	NL: 'europe',
+	NO: 'europe',
+	PL: 'europe',
+	PT: 'europe',
+	RO: 'europe',
+	RU: 'europe',
+	SE: 'europe',
+	TR: 'europe',
+	UA: 'europe',
+	TW: 'asia',
+};
+
+/** A game's name in one IGDB region. */
+export interface GameLocalization {
+	name: string;
+	/** Keys of the region (its identifier and name, see regionKey). */
+	regions: string[];
+}
 
 interface Token {
 	clientId: string;
@@ -77,6 +128,47 @@ export function parseIgdb(json: unknown): SearchResult[] {
 	return finalize(results);
 }
 
+/** Regions to look for, in order, for `country`. */
+export function igdbRegions(country: AliasCountry): string[] {
+	return [LOCALE_REGIONS[country], CONTINENT_REGIONS[country]].filter((region): region is string => region !== undefined);
+}
+
+/** "North America", "north_america" or "north-america" → "north_america". */
+export function regionKey(text: string): string {
+	return text
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, '_')
+		.replace(/^_+|_+$/g, '');
+}
+
+/** Body asking the localizations of one game (`id` is a checked number). */
+export function localizationsQuery(id: string): string {
+	return `fields ${LOCALIZATION_FIELDS}; where id = ${id};`;
+}
+
+/** `game_localizations` of the first game of the answer. */
+export function parseLocalizations(json: unknown): GameLocalization[] {
+	const game = records(json)[0];
+	if (!game) return [];
+	const localizations: GameLocalization[] = [];
+	for (const entry of records(game.game_localizations)) {
+		const name = str(entry.name);
+		const region = isRecord(entry.region) ? entry.region : null;
+		const keys = region ? [str(region.identifier), str(region.name)].filter((key): key is string => key !== undefined).map(regionKey) : [];
+		if (name && keys.length > 0) localizations.push({ name, regions: keys });
+	}
+	return localizations;
+}
+
+/** Name in the first of `regions` the game has a localization for, or null. */
+export function pickLocalization(localizations: readonly GameLocalization[], regions: readonly string[]): string | null {
+	for (const region of regions) {
+		const found = localizations.find((localization) => localization.regions.includes(region));
+		if (found) return found.name;
+	}
+	return null;
+}
+
 export function createIgdb(credentials: () => IgdbCredentials | null): Provider {
 	let token: Token | null = null;
 	let pending: Promise<Token> | null = null;
@@ -109,13 +201,28 @@ export function createIgdb(credentials: () => IgdbCredentials | null): Provider 
 		return token.value;
 	}
 
-	async function searchGames(creds: IgdbCredentials, body: string): Promise<unknown> {
+	async function queryGames(creds: IgdbCredentials, body: string): Promise<unknown> {
 		const headers = {
 			'Client-ID': creds.clientId,
 			Authorization: `Bearer ${await currentToken(creds)}`,
 			Accept: 'application/json',
 		};
 		return postJson(GAMES_URL, body, 'text/plain', headers);
+	}
+
+	/** POST to /games with the configured credentials; a 401 gets a new token and one more try. */
+	async function games(body: string): Promise<unknown> {
+		const raw = credentials();
+		const creds = raw ? { clientId: raw.clientId.trim(), clientSecret: raw.clientSecret.trim() } : null;
+		if (!creds?.clientId || !creds.clientSecret) throw new MissingCredentialsError(NAME);
+		try {
+			return await queryGames(creds, body);
+		} catch (error) {
+			// Token revoked or expired early: get a new one and try once more.
+			if (!(error instanceof HttpError) || error.status !== 401 || error.host !== 'api.igdb.com') throw error;
+			token = null;
+			return queryGames(creds, body);
+		}
 	}
 
 	return {
@@ -125,18 +232,12 @@ export function createIgdb(credentials: () => IgdbCredentials | null): Provider 
 		async search(query: string): Promise<SearchResult[]> {
 			const cleaned = cleanQuery(query);
 			if (cleaned === null) return [];
-			const raw = credentials();
-			const creds = raw ? { clientId: raw.clientId.trim(), clientSecret: raw.clientSecret.trim() } : null;
-			if (!creds?.clientId || !creds.clientSecret) throw new MissingCredentialsError(NAME);
-			const body = gamesQuery(cleaned);
-			try {
-				return parseIgdb(await searchGames(creds, body));
-			} catch (error) {
-				// Token revoked or expired early: get a new one and try once more.
-				if (!(error instanceof HttpError) || error.status !== 401 || error.host !== 'api.igdb.com') throw error;
-				token = null;
-				return parseIgdb(await searchGames(creds, body));
-			}
+			return parseIgdb(await games(gamesQuery(cleaned)));
+		},
+		async localizedTitle(result: SearchResult, country: AliasCountry): Promise<string | null> {
+			const regions = igdbRegions(country);
+			if (regions.length === 0 || !/^\d+$/.test(result.externalId)) return null;
+			return pickLocalization(parseLocalizations(await games(localizationsQuery(result.externalId))), regions);
 		},
 	};
 }

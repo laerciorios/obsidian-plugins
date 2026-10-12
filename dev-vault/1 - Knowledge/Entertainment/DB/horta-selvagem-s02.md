@@ -1,6 +1,7 @@
 ---
 kind: series
 title: "Horta Selvagem (S02)"
+aliases: ["Horta Selvagem (S02)"]
 season: 2
 episodes: 10
 year: 2025

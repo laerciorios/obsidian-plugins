@@ -11,20 +11,21 @@ O plugin busca filmes, séries, livros, jogos e álbuns na internet e cria notas
 |---|---|
 | `DB/` (filmes) | [[girassois-em-marte\|Girassóis em Marte]] (done, nota 8, capa local), [[samambaia-o-retorno\|Samambaia: O Retorno]] (backlog, título com `:`) |
 | `DB/` (série) | [[horta-selvagem-s01\|Horta Selvagem T1]] (done) e [[horta-selvagem-s02\|T2]] (in-progress): uma nota por temporada, `title` com a temporada (`Horta Selvagem (S01)`) |
-| `DB/` (jogos) | [[semente-eterna\|Semente Eterna]] (done, 42 horas), [[jardineiro-espacial\|Jardineiro Espacial]] (dropped) |
+| `DB/` (jogos) | [[semente-eterna\|Semente Eterna]] (done, 42 horas, **sem** `aliases`), [[jardineiro-espacial\|Jardineiro Espacial]] (dropped, com o alias `JE` adicionado à mão) |
 | `DB/` (livros) | [[refatorando-canteiros\|Refatorando Canteiros]] (técnico, com `reference`), [[o-livro-das-mudas\|O Livro das Mudas]] (backlog) |
 | `DB/` (álbuns) | [[os-samambaias\|Os Samambaias]] (homônimo da banda Os Samambaias, done, vinil, `## Faixas` com dois discos), [[mare-de-musgo\|Maré de Musgo]] (Lia Broto, in-progress, Spotify, **sem** `## Faixas`), [[raizes-aereas\|Raízes Aéreas]] (EP do Coletivo Orvalho, backlog, `## Faixas` com uma faixa sem duração e outra de mais de uma hora, `tracks: 4`) |
 | `Attachments/` | `girassois-em-marte-cover.png`, capa local (retângulo verde 200×300) |
 | `Software Development/_References/Books/` | [[1 - Knowledge/Software Development/_References/Books/refatorando-canteiros\|referência]] do livro técnico |
 | `Game Dev/_References/Books/` | só um `index.md`: segunda área para o campo **Área** |
 | `_Templates/media.md` | template do catálogo (pasta de templates: `_Templates`) |
+| `aliases` | Todas as notas de `DB/` têm `aliases` logo depois de `title`, começando pelo `title`, exceto [[semente-eterna]] |
 | [[entertainment.base]] | views **Todos** (tabela), **Galeria** (cards com a capa) e **Álbuns** (tabela com artista e **Faixas**, ordenada por **Concluído**) |
 
 ## Preparação
 
 - [ ] Na raiz do repo, `pnpm --filter media-catalog dev`. Confira **Media Catalog** ativo em Plugins da comunidade.
-- [ ] Em Configurações → Media Catalog: **Pasta do catálogo** `1 - Knowledge/Entertainment/DB`, **Template** vazio, **Link para a fonte** ligado, **Status padrão** "Em andamento", **Fonte de livros** Open Library, **Fonte de álbuns** MusicBrainz, **Incluir EPs** ligado, **Incluir coletâneas e álbuns ao vivo** desligado, **Capas do iTunes** ligado, **Incluir lista de faixas em álbuns** ligado, **Propriedade com o número de faixas** desligado.
-- [ ] A paleta de comandos mostra **Adicionar ao catálogo**. **Trocar capa** e **Terminei** só aparecem com uma nota do catálogo aberta (abra [[semente-eterna]] e depois este índice para comparar). **Atualizar faixas do álbum** só aparece com uma nota de álbum aberta ([[raizes-aereas]] sim, [[semente-eterna]] não).
+- [ ] Em Configurações → Media Catalog: **Pasta do catálogo** `1 - Knowledge/Entertainment/DB`, **Template** vazio, **Link para a fonte** ligado, **Status padrão** "Em andamento", **Fonte de livros** Open Library, **Fonte de álbuns** MusicBrainz, **Incluir EPs** ligado, **Incluir coletâneas e álbuns ao vivo** desligado, **Capas do iTunes** ligado, **Incluir lista de faixas em álbuns** ligado, **Propriedade com o número de faixas** desligado, **País do título alternativo** Nenhum.
+- [ ] A paleta de comandos mostra **Adicionar ao catálogo**. **Trocar capa** e **Terminei** só aparecem com uma nota do catálogo aberta (abra [[semente-eterna]] e depois este índice para comparar). **Atualizar faixas do álbum** só aparece com uma nota de álbum aberta ([[raizes-aereas]] sim, [[semente-eterna]] não). **Atualizar aliases da nota atual** aparece com qualquer nota do catálogo aberta.
 
 ## Filmes (IMDb)
 
@@ -37,7 +38,7 @@ O plugin busca filmes, séries, livros, jogos e álbuns na internet e cria notas
 - [ ] O formulário vem preenchido: título, ano, status "Em andamento" e **Início** com hoje. Com "Concluído" aparecem **Fim** (hoje) e **Nota**.
 - [ ] Com "Abandonado" aparece só **Nota** (sem **Fim**). Com nota 4, a nota criada tem `status: dropped`, `rating: 4` e `finished` vazio. Volte a "Em andamento": **Nota** some e não é gravada.
 - [ ] **Início** preenchido pelo formulário: mude para "Na fila" e o campo fica vazio; volte a "Em andamento" e ele volta com hoje. Digite outra data em **Início** e mude para "Na fila": a data digitada fica e é gravada.
-- [ ] **Criar nota** cria `DB/the-matrix.md`. No modo fonte, a ordem é `kind, title, year, status, rating, started, finished, platform, cover, tags`, com `title: "The Matrix"`, `cover:` com a URL sem aspas (termina em `_V1_SX500.jpg`) e `tags: [entertainment]`.
+- [ ] **Criar nota** cria `DB/the-matrix.md`. No modo fonte, a ordem é `kind, title, aliases, year, status, rating, started, finished, platform, cover, tags`, com `title: "The Matrix"`, `aliases: ["The Matrix"]`, `cover:` com a URL sem aspas (termina em `_V1_SX500.jpg`) e `tags: [entertainment]`.
 - [ ] O corpo é o do template (`## Impressões`) seguido de `- IMDb: https://www.imdb.com/title/tt0133093/`.
 - [ ] Título com `:`: `mission impossible` grava `title: "Mission: Impossible"` no arquivo `mission-impossible.md`.
 - [ ] Nas ferramentas de desenvolvedor (aba Network), as miniaturas carregam sem 403.
@@ -48,7 +49,7 @@ O plugin busca filmes, séries, livros, jogos e álbuns na internet e cria notas
 - [ ] **Voltar** devolve a busca com o texto e os resultados de antes.
 - [ ] Na grade de temporadas, ↑↓←→ movem o destaque sem clicar antes.
 - [ ] No formulário da temporada 2, **Título** vem `Breaking Bad`, e a descrição diz que o título da nota termina em "(S02)".
-- [ ] Temporada 2 → `DB/breaking-bad-s02.md` com `title: "Breaking Bad (S02)"`, `season: 2`, `episodes: 13`, `year: 2009` e o pôster da temporada.
+- [ ] Temporada 2 → `DB/breaking-bad-s02.md` com `title: "Breaking Bad (S02)"`, `aliases: ["Breaking Bad (S02)"]`, `season: 2`, `episodes: 13`, `year: 2009` e o pôster da temporada.
 - [ ] Temporada digitada no título: escolha a temporada 3 e mude **Título** para `Breaking Bad (S03)`. A nota é `breaking-bad-s03.md` com `title: "Breaking Bad (S03)"`, sem repetir a temporada. Apague a nota depois.
 - [ ] Na confirmação da temporada 2, abaixo dos dados aparecem **Pôster da temporada** (pressionado) e **Pôster da série**. Clique em **Pôster da série**: a capa grande muda, e a nota criada grava o pôster da série. Com Tab até os botões, Enter e espaço também escolhem.
 - [ ] `doctor who` (o de 2005): a temporada 13 vem com 6 episódios, contados porque o TVmaze não informa o total.
@@ -83,7 +84,7 @@ O plugin busca filmes, séries, livros, jogos e álbuns na internet e cria notas
 - [ ] Limite do MusicBrainz: digite `clube da esquina` letra por letra, rápido, e depois aperte Enter várias vezes: só a última busca é respondida, sem mensagem de limite de requisições.
 - [ ] Ao escolher um resultado do MusicBrainz, o modal mostra o álbum com "Procurando a capa…" e depois o formulário. **Voltar** durante a espera volta para a busca, e o formulário não aparece depois; Esc fecha sem abrir nada. Voltar do formulário e escolher o mesmo álbum de novo vai direto ao formulário.
 - [ ] O formulário tem **Artista** preenchido, sem **Páginas** nem **Livro técnico**. **Início**, **Fim** e **Onde** falam de primeira audição, audição completa e Spotify, YouTube Music, vinil.
-- [ ] **Criar nota** para OK Computer cria `DB/ok-computer.md` com `kind: album`, `title: "OK Computer"`, `author: "Radiohead"`, `year: 1997`, a ordem `kind, title, author, year, status, rating, started, finished, platform, cover, tags`, e termina com `- MusicBrainz: https://musicbrainz.org/release-group/<id>`.
+- [ ] **Criar nota** para OK Computer cria `DB/ok-computer.md` com `kind: album`, `title: "OK Computer"`, `author: "Radiohead"`, `year: 1997`, a ordem `kind, title, aliases, author, year, status, rating, started, finished, platform, cover, tags`, e termina com `- MusicBrainz: https://musicbrainz.org/release-group/<id>`.
 - [ ] Álbum homônimo: `weezer` traz os álbuns da banda chamados "Weezer" (1994, 2001, 2008…). Crie o de 1994 (`weezer.md`) e depois o de 2001: não é duplicata e vira `weezer-2001.md`, sem repetir o nome da banda.
 - [ ] Duplicata já no vault: com `ok-computer.md` criada, escolha OK Computer de novo: "Já está no catálogo: ok-computer", com **Abrir nota**, e **Criar nota** desativado. O mesmo com o Weezer de 1994. Mude **Artista** para `Os Samambaias`: o aviso some, e a nota criada é `ok-computer-os-samambaias.md` (apague-a depois).
 - [ ] EPs e singles: `my iron lung` mostra o EP com "EP". Com **Incluir EPs** desligado, ele some. Singles não aparecem em nenhum caso.
@@ -122,6 +123,35 @@ Os álbuns do dev-vault são fictícios: para buscar, troque temporariamente `ti
 - [ ] Fonte iTunes no modal: a **Edição** aparece como texto (o álbum da loja), sem menu.
 - [ ] Voltar e Esc: **Voltar** no último passo volta para a busca; escolher o mesmo álbum de novo não recarrega as edições. Esc fecha sem gravar nada.
 - [ ] Sem rede depois da busca: escolher o álbum mostra o erro da fonte com **Tentar de novo**, e **Atualizar faixas** fica desativado.
+
+## Aliases e título alternativo
+
+Os títulos por país vêm do IMDb (filmes), do TVmaze (séries) e da IGDB (jogos). Depois de cada teste, apague a nota criada ou restaure a nota com `git checkout -- "dev-vault/1 - Knowledge/Entertainment/DB/<nota>.md"`.
+
+- [ ] **País do título alternativo** lista "Nenhum" e os países pelo nome, com o código (`Brasil (BR)`, `Japão (JP)`), em ordem alfabética. Em inglês, os nomes vêm em inglês (`Brazil (BR)`).
+- [ ] Com "Nenhum": `interstellar` cria `aliases: ["Interstellar"]` logo depois de `title`.
+- [ ] Com **Brasil (BR)**: `interstellar` cria `aliases: ["Interstellar", "Interestelar"]`, e `matrix` cria `aliases: ["The Matrix", "Matrix"]`.
+- [ ] Com **Portugal (PT)**: `interstellar` cria só `aliases: ["Interstellar"]` (o título em Portugal é o mesmo).
+- [ ] Com **Japão (JP)**: `spirited away` cria `aliases: ["Spirited Away", "千と千尋の神隠し"]`.
+- [ ] Série com **Brasil (BR)**: `lost`, temporada 1 → `title: "Lost (S01)"` e `aliases: ["Lost (S01)", "Perdidos (S01)"]`. Com **Portugal (PT)**, `breaking bad` temporada 2 → `aliases: ["Breaking Bad (S02)", "Ruptura Total (S02)"]`.
+- [ ] Série sem nome no país: com **Brasil (BR)**, `breaking bad` → só `aliases: ["Breaking Bad (S02)"]`.
+- [ ] Jogo com **Japão (JP)** (IGDB configurada): um jogo com nome japonês na IGDB (`resident evil` de 1996, "Biohazard") ganha o segundo alias; um jogo sem localização do Japão fica só com o título. Anote o resultado.
+- [ ] Livro e álbum com **Brasil (BR)**: só o título em `aliases`, sem consulta (aba Network: nada para `caching.graphql.imdb.com`).
+- [ ] Sem rede no fim: faça a busca, escolha o filme, desligue a internet e **Criar nota**. A nota sai com `aliases: ["<título>"]`, sem erro nem aviso (no máximo 8 segundos de espera). Religue a internet.
+- [ ] Na aba Network, a chamada para `caching.graphql.imdb.com` é um POST com `x-imdb-user-country`, `x-imdb-user-language`, `Origin: https://www.imdb.com` e `Referer: https://www.imdb.com/`, e responde 200.
+
+### Atualizar aliases da nota atual
+
+O Obsidian regrava o frontmatter inteiro ao atualizar (`processFrontMatter`): as aspas somem e as listas viram listas em bloco (`- item`). Os valores ficam iguais.
+
+- [ ] País "Nenhum", em [[jardineiro-espacial]]: o comando não abre modal e avisa que a nota já tem esses aliases. `JE` continua.
+- [ ] País "Nenhum", em [[semente-eterna]] (sem `aliases`): o comando grava `aliases` com `Semente Eterna` logo depois de `title`, e o resto do frontmatter fica na mesma ordem. Restaure a nota.
+- [ ] País **Brasil (BR)**, em [[samambaia-o-retorno]]: troque `title` por `Interstellar` e `year` por `2014`. O comando abre **Atualizar aliases** com o tipo Filme travado, a busca `Interstellar` já rodando e o de 2014 destacado. Escolha o resultado: "Procurando o título alternativo (Brasil (BR))…", depois **Título alternativo** `Interestelar`, **Aliases agora** `Samambaia: O Retorno` e **Aliases depois** `Interstellar · Interestelar · Samambaia: O Retorno`. **Atualizar aliases** (ou ⌘↵) grava essa lista e mostra o aviso. Restaure a nota.
+- [ ] Rode o comando de novo na mesma nota, antes de restaurar: **Atualizar aliases** fica desativado com "A nota já tem esses aliases.".
+- [ ] Série: em [[horta-selvagem-s02]], troque `title` por `Lost (S02)`. A busca é `Lost`, não há passo de temporada, e **Aliases depois** mostra `Lost (S02) · Perdidos (S02) · Horta Selvagem (S02)`. Restaure a nota.
+- [ ] Nada encontrado: com **Argentina (AR)** em [[samambaia-o-retorno]] (título `Interstellar` temporário), **Título alternativo** mostra o título se o IMDb tiver um para a Argentina, ou "Nenhum encontrado."/"Igual ao título."; nenhum alias é apagado.
+- [ ] Livro ([[o-livro-das-mudas]]) e álbum ([[os-samambaias]]) com **Brasil (BR)**: o comando não abre modal, só avisa.
+- [ ] **Voltar** no último passo volta para a busca; Esc fecha sem gravar.
 
 ## Duplicatas e colisão de nome
 
@@ -175,7 +205,7 @@ Os álbuns do dev-vault são fictícios: para buscar, troque temporariamente `ti
 
 ## Idiomas
 
-- [ ] Obsidian em inglês (Configurações → Geral → Idioma, reinicia o app): comandos **Add to catalog**, **Change cover**, **Mark as finished** e **Update album tracks**, e modal, formulário, avisos e configurações em inglês.
+- [ ] Obsidian em inglês (Configurações → Geral → Idioma, reinicia o app): comandos **Add to catalog**, **Change cover**, **Mark as finished**, **Update album tracks** e **Update aliases of the current note**, e modal, formulário, avisos e configurações em inglês.
 - [ ] Em inglês, as notas continuam com os mesmos valores (`status: done`, `kind: movie`), e a nota de referência continua com `Leitura:`, **Resumo** e **Notas pessoais**.
 - [ ] De volta ao português, tudo volta a aparecer em português.
 

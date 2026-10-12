@@ -1,5 +1,5 @@
 import type { App, TFile } from 'obsidian';
-import type { ALBUM_SOURCES, BOOK_SOURCES, KINDS, PROVIDER_IDS, STATUSES } from './constants';
+import type { ALBUM_SOURCES, AliasCountry, BOOK_SOURCES, KINDS, PROVIDER_IDS, STATUSES } from './constants';
 
 export type MediaKind = (typeof KINDS)[number];
 export type Status = (typeof STATUSES)[number];
@@ -96,6 +96,12 @@ export interface Provider {
 	 * rejects on network errors.
 	 */
 	tracks?(result: SearchResult, edition?: Edition): Promise<Track[]>;
+	/**
+	 * Optional (movies, series, games). Title of the result as released in
+	 * `country`, or null when the source has none for it. Series give the
+	 * name of the show, without a season. Rejects on network errors.
+	 */
+	localizedTitle?(result: SearchResult, country: AliasCountry): Promise<string | null>;
 }
 
 export interface SeasonProvider extends Provider {
@@ -127,6 +133,12 @@ export interface CatalogDraft {
 	source: { provider: ProviderId; name: string; url: string | null };
 	/** Albums: tracklist written in `## Faixas`; null when disabled, unavailable or not an album. */
 	tracks: Track[] | null;
+	/**
+	 * Title released in the alias country (settings), written as the second
+	 * alias when it differs from the title. Null: no country set, a kind
+	 * without localized titles, nothing found, or the lookup failed.
+	 */
+	localizedTitle: string | null;
 }
 
 export interface CatalogSettings {
@@ -150,6 +162,8 @@ export interface CatalogSettings {
 	albumTracklist: boolean;
 	/** Albums: also write `tracks` (number of tracks) after `year`. */
 	albumTracksProperty: boolean;
+	/** Country of the alternative title written as the second alias; "" for none (the title only). */
+	aliasCountry: AliasCountry | '';
 	/** Kind picked in the last search, so the modal reopens on it. */
 	lastKind: MediaKind;
 	/** Ids of secrets in Obsidian's secret storage (never the secret values). */

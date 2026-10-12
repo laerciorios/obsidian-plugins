@@ -6,6 +6,7 @@ import type { CreateResult } from '../catalog/note-writer';
 import { CLS, SEARCH_DEBOUNCE_MS } from '../constants';
 import { t } from '../i18n';
 import { CatalogError } from '../providers/errors';
+import { findLocalizedTitle } from '../providers/localized-title';
 import { modEnterLabel, renderInstructions } from '../ui/instructions';
 import { renderChosenPreview } from './chosen-preview';
 import { ConfirmForm } from './confirm-fields';
@@ -14,7 +15,11 @@ import type { ConfirmInput } from './confirm-values';
 import { isSubmitKey } from './steps';
 import type { Step, StepHost } from './steps';
 
-/** Create mode: large cover, duplicate banner, the form, and "Create note". */
+/**
+ * Create mode: large cover, duplicate banner, the form, and "Create note".
+ * The alternative title (alias country) is looked up as soon as the step
+ * opens, out of sight, and awaited by "Create note".
+ */
 export class ConfirmStep implements Step {
 	readonly title = t('modal.confirm.title');
 	private readonly form: ConfirmForm;
@@ -24,6 +29,8 @@ export class ConfirmStep implements Step {
 	private saving = false;
 	private active = true;
 	private readonly recheck = debounce(() => this.checkDuplicate(), SEARCH_DEBOUNCE_MS, true);
+	/** Never rejects: null without a country, an answer, or one in time. */
+	private readonly localizedTitle: Promise<string | null>;
 
 	constructor(
 		private readonly host: StepHost,
@@ -31,6 +38,7 @@ export class ConfirmStep implements Step {
 	) {
 		const { app, settings } = host.context;
 		this.form = new ConfirmForm(app, settings, input, () => this.recheck());
+		this.localizedTitle = findLocalizedTitle(input.provider, input.result, settings.aliasCountry);
 	}
 
 	render(el: HTMLElement): void {
@@ -114,7 +122,9 @@ export class ConfirmStep implements Step {
 		this.updateButton();
 		let result: CreateResult;
 		try {
-			result = await createCatalogNote(app, settings, draft);
+			// The note gets the title alone when the alternative title is not there in time.
+			const localizedTitle = await this.localizedTitle;
+			result = await createCatalogNote(app, settings, { ...draft, localizedTitle });
 		} catch (error) {
 			// Expected failures (the folder setting points to a file) come with their own notice.
 			if (!(error instanceof CatalogError)) {

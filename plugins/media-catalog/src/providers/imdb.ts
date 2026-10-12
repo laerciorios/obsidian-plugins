@@ -1,15 +1,25 @@
+import { ALIAS_COUNTRIES } from '../constants';
+import type { AliasCountry } from '../constants';
 import type { Provider, SearchResult } from '../types';
 import { isRecord, num, records, str } from './guards';
-import { getJson } from './http';
+import { getJson, postJson } from './http';
 import { cleanQuery, finalize, imageUrl } from './results';
 
 /**
  * Movies from IMDb's public suggestion endpoint (the one behind imdb.com's
  * search box; no key). It answers at most 8 items, mixing titles, people and
- * franchises.
+ * franchises. The title of a country comes from IMDb's GraphQL API (also
+ * behind imdb.com), asked with the country and its language.
  */
 
 const SUGGESTION_URL = 'https://v3.sg.media-imdb.com/suggestion';
+const GRAPHQL_URL = 'https://caching.graphql.imdb.com/';
+/**
+ * The GraphQL API answers 403 without the Origin and Referer of imdb.com
+ * (the User-Agent does not matter). Its answers say the data is for limited,
+ * non-commercial personal use: see the README.
+ */
+const GRAPHQL_HEADERS = { Origin: 'https://www.imdb.com', Referer: 'https://www.imdb.com/' };
 
 /** `qid` values kept for the movie kind (others: tvSeries, tvMiniSeries, video, tvShort, videoGame…). */
 const MOVIE_TYPES: ReadonlySet<string> = new Set(['movie', 'tvMovie', 'short']);
@@ -62,6 +72,27 @@ export function parseImdb(json: unknown): SearchResult[] {
 	return finalize(results);
 }
 
+/** GraphQL body asking the title of `id`, a checked "tt…" id (it goes into the query as is). */
+export function titleQuery(id: string): string {
+	return JSON.stringify({ query: `{ title(id:"${id}") { titleText { text } } }` });
+}
+
+/**
+ * `data.title.titleText.text`, or null: an unknown id answers `titleText:
+ * null`, a malformed one `title: null` plus `errors`.
+ */
+export function parseImdbTitle(json: unknown): string | null {
+	const data = isRecord(json) && isRecord(json.data) ? json.data : null;
+	const title = data && isRecord(data.title) ? data.title : null;
+	const text = title && isRecord(title.titleText) ? str(title.titleText.text) : undefined;
+	return text ?? null;
+}
+
+/** Headers that make the GraphQL API answer with the title of `country`, in its language. */
+export function titleHeaders(country: AliasCountry): Record<string, string> {
+	return { ...GRAPHQL_HEADERS, 'x-imdb-user-country': country, 'x-imdb-user-language': ALIAS_COUNTRIES[country] };
+}
+
 export function createImdb(): Provider {
 	return {
 		id: 'imdb',
@@ -71,6 +102,11 @@ export function createImdb(): Provider {
 			const cleaned = cleanQuery(query);
 			if (cleaned === null) return [];
 			return parseImdb(await getJson(suggestionUrl(cleaned)));
+		},
+		async localizedTitle(result: SearchResult, country: AliasCountry): Promise<string | null> {
+			const id = result.externalId;
+			if (!TITLE_ID.test(id)) return null;
+			return parseImdbTitle(await postJson(GRAPHQL_URL, titleQuery(id), 'application/json', titleHeaders(country)));
 		},
 	};
 }

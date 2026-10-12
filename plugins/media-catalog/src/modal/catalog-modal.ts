@@ -2,6 +2,7 @@ import { Modal } from 'obsidian';
 import { CLS } from '../constants';
 import { hasSeasons } from '../providers';
 import type { CatalogContext, Provider, SearchResult, SeasonInfo, Track } from '../types';
+import { AliasesStep } from './aliases-step';
 import { ConfirmStep } from './confirm-step';
 import { CoverStep } from './cover-step';
 import { ResolveStep } from './resolve-step';
@@ -22,7 +23,8 @@ const NAV_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'] as
 /**
  * One modal, a few steps: search → (resolve, for sources that finish a result
  * once picked, and the tracklist of albums) → season (series only) → confirm.
- * "Update album tracks" goes search → tracks. The state that must survive
+ * "Update album tracks" goes search → tracks, "Update aliases" search →
+ * aliases (series too: the season is the note's). The state that must survive
  * going back (query, results, selection, seasons, resolved results, tracks)
  * lives here; each step only draws it. Keys reach the step on screen through
  * the modal scope. Closing destroys the step, which cancels its timers and
@@ -103,13 +105,19 @@ export class CatalogModal extends Modal {
 	}
 
 	/**
-	 * A result was picked. Tracks mode: its tracks. Otherwise resolve it and
+	 * A result was picked. Tracks mode: its tracks; aliases mode: its title in
+	 * the alias country. Otherwise resolve it and
 	 * fetch the tracklist of an album first (whatever is not known yet, both
 	 * at once), then seasons or confirm.
 	 */
 	private chooseResult(result: SearchResult, provider: Provider): void {
 		if (this.launch.mode === 'tracks') {
 			this.showTracks({ result, provider });
+			return;
+		}
+		if (this.launch.mode === 'aliases') {
+			this.atConfirm = true;
+			this.show(new AliasesStep(this.host, this.launch.note, { result, provider }, this.launch.country));
 			return;
 		}
 		const key = resultKey(result, provider);

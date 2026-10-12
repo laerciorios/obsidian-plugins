@@ -1,17 +1,21 @@
 import { Keymap } from 'obsidian';
+import type { AliasCountry } from '../constants';
 import type { MessageKey } from '../i18n';
 import type { CatalogContext, CatalogNoteInfo, Provider, SearchResult, SeasonInfo, Track } from '../types';
 
 /**
  * create: a new note. cover: "Change cover" of `note`. tracks: "Update album
- * tracks" of `note` (an album). The last two search the note and lock its kind.
+ * tracks" of `note` (an album). aliases: "Update aliases" of `note` (a movie,
+ * series or game) with the title of `country`. The last three search the
+ * note and lock its kind.
  */
 export type CatalogModalOptions =
 	| { mode: 'create' }
 	| { mode: 'cover'; note: CatalogNoteInfo }
-	| { mode: 'tracks'; note: CatalogNoteInfo };
+	| { mode: 'tracks'; note: CatalogNoteInfo }
+	| { mode: 'aliases'; note: CatalogNoteInfo; country: AliasCountry };
 
-/** The note a cover or tracks modal works on; null when creating. */
+/** The note a cover, tracks or aliases modal works on; null when creating. */
 export function noteOf(options: CatalogModalOptions): CatalogNoteInfo | null {
 	return options.mode === 'create' ? null : options.note;
 }
@@ -21,6 +25,7 @@ export const MODE_TITLES: Record<CatalogModalOptions['mode'], MessageKey> = {
 	create: 'modal.add.title',
 	cover: 'modal.cover.title',
 	tracks: 'modal.tracks.title',
+	aliases: 'modal.aliases.title',
 };
 
 /** One screen of the catalog modal. The modal owns the state that survives going back. */

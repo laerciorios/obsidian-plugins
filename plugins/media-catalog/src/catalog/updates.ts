@@ -1,5 +1,7 @@
 import type { App, TFile } from 'obsidian';
-import type { Status } from '../types';
+import type { MediaKind, Status } from '../types';
+import { aliasesChanged, nextAliases, placeAliases } from './aliases';
+import { frontmatterOf } from './catalog-note';
 import { todayIso } from './dates';
 
 const DONE: Status = 'done';
@@ -23,4 +25,18 @@ export async function markFinished(app: App, file: TFile, rating: number | null)
 		frontmatter.finished = todayIso();
 		if (rating !== null) frontmatter.rating = rating;
 	});
+}
+
+/**
+ * `aliases` becomes the title, the alternative title (when it differs) and
+ * every alias the note had (nextAliases); a note without the key gets it
+ * right after `title`. False when nothing would change: the file is not written.
+ */
+export async function updateAliases(app: App, file: TFile, kind: MediaKind, localized: string | null): Promise<boolean> {
+	const cached = frontmatterOf(app, file) ?? {};
+	if (!aliasesChanged(cached.aliases, nextAliases(cached, kind, localized))) return false;
+	await app.fileManager.processFrontMatter(file, (frontmatter: Record<string, unknown>) => {
+		placeAliases(frontmatter, nextAliases(frontmatter, kind, localized));
+	});
+	return true;
 }

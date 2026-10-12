@@ -11,6 +11,7 @@ export const en = {
 	'command.changeCover': 'Change cover',
 	'command.markFinished': 'Mark as finished',
 	'command.updateTracks': 'Update album tracks',
+	'command.updateAliases': 'Update aliases of the current note',
 
 	// ---- kinds and statuses (labels only; notes store the English values) --
 	'kind.movie': 'Movie',
@@ -27,6 +28,7 @@ export const en = {
 	'modal.add.title': 'Add to catalog',
 	'modal.cover.title': 'Change cover',
 	'modal.tracks.title': 'Update album tracks',
+	'modal.aliases.title': 'Update aliases',
 	'modal.season.title': 'Choose the season',
 	'modal.confirm.title': 'Check the details',
 	'modal.back': 'Back',
@@ -67,6 +69,18 @@ export const en = {
 	'tracks.list': 'Tracks',
 	'tracks.hint': 'Only the "{heading}" section of the note changes. When the note has none, it is created before "{impressions}", or at the end.',
 	'tracks.update': 'Update tracks',
+
+	// ---- "Update aliases" ---------------------------------------------------
+	'aliases.loading': 'Looking for the alternative title ({country})…',
+	'aliases.localized': 'Alternative title',
+	'aliases.notFound': 'None found.',
+	'aliases.sameAsTitle': 'Same as the title.',
+	'aliases.current': 'Aliases now',
+	'aliases.next': 'Aliases after',
+	'aliases.none': '(none)',
+	'aliases.hint': 'Only "aliases" changes in the note. Aliases you added stay; only repeats are removed.',
+	'aliases.unchanged': 'The note already has these aliases.',
+	'aliases.update': 'Update aliases',
 
 	// ---- season step --------------------------------------------------------
 	'season.loading': 'Loading seasons…',
@@ -169,6 +183,9 @@ export const en = {
 	'notice.tracksMissing': 'Media Catalog: tracklist unavailable, the note was created without it.',
 	'notice.tracksUpdated': 'Media Catalog: tracks of "{name}" updated.',
 	'notice.tracksFailed': 'Media Catalog: could not update the tracks of "{name}".',
+	'notice.aliasesUpdated': 'Media Catalog: aliases of "{name}" updated.',
+	'notice.aliasesUnchanged': 'Media Catalog: "{name}" already has these aliases.',
+	'notice.aliasesFailed': 'Media Catalog: could not update the aliases of "{name}".',
 	'notice.folderIsFile': 'Media Catalog: "{path}" is a file, not a folder. Check the catalog folder setting.',
 
 	// ---- settings -----------------------------------------------------------
@@ -182,6 +199,10 @@ export const en = {
 	'settings.addSourceLink.desc': 'Adds a line like "- IMDb: <link>" at the end of the note.',
 	'settings.defaultStatus.name': 'Default status',
 	'settings.defaultStatus.desc': 'Status suggested in the form. Started is filled with today unless the status is backlog.',
+	'settings.aliasCountry.name': 'Alternative title country',
+	'settings.aliasCountry.desc':
+		'New movie, series and game notes also get the title released in this country as their second alias, when it differs from the title. None: the title is the only alias.',
+	'settings.aliasCountry.none': 'None',
 	'settings.covers.heading': 'Covers',
 	'settings.downloadCovers.name': 'Download covers by default',
 	'settings.downloadCovers.desc':

@@ -5,6 +5,7 @@ import { COMMAND_IDS, SAVE_DEBOUNCE_MS } from './constants';
 import { t } from './i18n';
 import { CatalogModal } from './modal/catalog-modal';
 import { askRating } from './modal/rating-modal';
+import { updateNoteAliases } from './modal/update-aliases';
 import { createProviders, userAgentFor } from './providers';
 import { googleBooksKey, igdbCredentials } from './settings/secrets';
 import { defaultSettings, normalizeSettings } from './settings/settings';
@@ -55,6 +56,17 @@ export default class MediaCatalogPlugin extends Plugin implements CatalogContext
 				const note = this.activeNote();
 				if (note?.kind !== 'album') return false;
 				if (!checking) new CatalogModal(this, { mode: 'tracks', note }).open();
+				return true;
+			},
+		});
+		this.addCommand({
+			id: COMMAND_IDS.updateAliases,
+			name: t('command.updateAliases'),
+			icon: 'tags',
+			checkCallback: (checking) => {
+				const note = this.activeNote();
+				if (!note) return false;
+				if (!checking) updateNoteAliases(this, note);
 				return true;
 			},
 		});

@@ -1,6 +1,6 @@
 import { ALBUM_SOURCES, BOOK_SOURCES, STATUSES } from '../constants';
 import type { CatalogSettings } from '../types';
-import { catalogFolder, flag, oneOf, vaultPath } from './settings';
+import { aliasCountry, catalogFolder, flag, oneOf, vaultPath } from './settings';
 
 /**
  * Settings edited through declarative controls. The keys are the settings
@@ -20,6 +20,7 @@ export const CONTROL_KEYS = [
 	'albumItunesFallback',
 	'albumTracklist',
 	'albumTracksProperty',
+	'aliasCountry',
 ] as const;
 export type ControlKey = (typeof CONTROL_KEYS)[number];
 
@@ -66,6 +67,9 @@ const WRITERS: { [K in ControlKey]: (settings: CatalogSettings, value: unknown) 
 	},
 	albumTracksProperty: (settings, value) => {
 		settings.albumTracksProperty = flag(value, settings.albumTracksProperty);
+	},
+	aliasCountry: (settings, value) => {
+		settings.aliasCountry = aliasCountry(value, settings.aliasCountry);
 	},
 };
 

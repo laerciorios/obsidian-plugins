@@ -8,6 +8,7 @@ Monorepo of personal Obsidian plugins by Laercio Rios. Planning and specs live i
 - `packages/<name>/` — shared code. Create only when a second plugin needs the same code; consume with `"workspace:*"` (esbuild bundles it).
   - `packages/i18n/` (`@obsidian-plugins/i18n`) — translation helper used by every plugin: `createI18n({ en, 'pt-BR': ptBR })` returns `t(key, params)`, following the Obsidian app language (`getLanguage()`) and falling back to English.
   - `packages/core-plugins/` (`@obsidian-plugins/core-plugins`) — behave like the core plugins without internal APIs: Daily notes settings (`readDailyNotesSettings`, `dailyNotePath`, `dailyNoteDate`), creating a daily note from its template (`createDailyNote`) and Templates variables (`fillTemplate`). Used by Shortcuts, Vault Structure, Daily Work Log and Daily Calendar.
+- `scripts/test.mjs` — unit tests: each `plugins/<id>/test/**/*.test.ts` is bundled by esbuild with `obsidian` swapped for `scripts/test-obsidian.mjs` (extend the stub when a tested module imports something new), then run by `node:test`. A plugin opts in with `"test": "node ../../scripts/test.mjs"` and `test/**/*.ts` in its tsconfig `include`. Put tested logic in modules that need no app APIs.
 - `scripts/esbuild.mjs` — the shared build. Output `plugins/<id>/dist/{main.js,manifest.json,styles.css}`, then copied to `dev-vault/.obsidian/plugins/<id>/` and to every vault listed in `.dev-targets.json` (git-ignored, managed by `pnpm link-plugin`). Dev mode writes `.hotreload` in the targets.
 - `templates/plugin/` — scaffold used by `pnpm new-plugin`. Placeholders: `__ID__`, `__NAME__`, `__CLASS__`, `__DESCRIPTION__`.
 - `dev-vault/` — committed test vault with fake data. Its `.obsidian/plugins/` is generated and git-ignored.
@@ -15,7 +16,7 @@ Monorepo of personal Obsidian plugins by Laercio Rios. Planning and specs live i
 ## Commands
 
 - `pnpm install` once at the root (all tooling is hoisted there).
-- `pnpm --filter <id> dev` / `pnpm build` / `pnpm check` (typecheck + lint).
+- `pnpm --filter <id> dev` / `pnpm build` / `pnpm check` (typecheck + lint + test).
 - `pnpm new-plugin <id> "Name" ["description"]`, `pnpm link-plugin <id> <vault>`, `pnpm bump <id> <x.y.z>`, `pnpm setup:dev-vault`.
 
 ## Rules

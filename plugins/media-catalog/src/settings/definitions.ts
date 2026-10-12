@@ -2,6 +2,7 @@ import type { App, SettingDefinitionItem, TFile } from 'obsidian';
 import { DEFAULT_FOLDER, DEFAULT_TEMPLATE_NAME, IMPRESSIONS_HEADING, STATUSES } from '../constants';
 import { t } from '../i18n';
 import type { AlbumSource, BookSource, CatalogSettings, Status } from '../types';
+import { countriesByName } from '../ui/countries';
 import type { ControlKey } from './bindings';
 import { secretRow } from './secrets';
 
@@ -26,6 +27,11 @@ export interface DefinitionContext {
 /** Labels are translated; the values stay the English data values written to notes. */
 function statusOptions(): Record<string, string> {
 	return Object.fromEntries(STATUSES.map((status: Status) => [status, t(`status.${status}`)]));
+}
+
+/** "None" first, then the countries by name in the UI language ("Brasil (BR)"); the value is the ISO code. */
+function countryOptions(): Record<string, string> {
+	return Object.fromEntries([['', t('settings.aliasCountry.none')], ...countriesByName()]);
 }
 
 export function settingDefinitions(context: DefinitionContext): SettingDefinitionItem<ControlKey>[] {
@@ -59,6 +65,11 @@ export function settingDefinitions(context: DefinitionContext): SettingDefinitio
 					name: t('settings.defaultStatus.name'),
 					desc: t('settings.defaultStatus.desc'),
 					control: { type: 'dropdown', key: 'defaultStatus', options: statusOptions() },
+				},
+				{
+					name: t('settings.aliasCountry.name'),
+					desc: t('settings.aliasCountry.desc'),
+					control: { type: 'dropdown', key: 'aliasCountry', options: countryOptions() },
 				},
 			],
 		},

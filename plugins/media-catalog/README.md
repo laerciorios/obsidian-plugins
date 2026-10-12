@@ -1,6 +1,6 @@
 # Media Catalog
 
-Cadastra filmes, séries (uma nota por temporada), jogos, livros e álbuns de música no catálogo de entretenimento. O plugin busca título, ano e capa numa fonte online, você confere os dados num formulário e a nota é criada na pasta do catálogo, com o corpo do template `media`. Também troca a capa de notas que já existem, marca uma obra como terminada e põe a lista de faixas nos álbuns.
+Cadastra filmes, séries (uma nota por temporada), jogos, livros e álbuns de música no catálogo de entretenimento. O plugin busca título, ano e capa numa fonte online, você confere os dados num formulário e a nota é criada na pasta do catálogo, com o corpo do template `media`. Também troca a capa de notas que já existem, marca uma obra como terminada, põe a lista de faixas nos álbuns e grava `aliases` com o título e, opcionalmente, o título lançado num país à sua escolha.
 
 Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/media-catalog-spec.md`.
 
@@ -12,6 +12,7 @@ Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/
 | **Trocar capa** | com uma nota do catálogo aberta | Busca a mesma obra e troca só a propriedade `cover`. |
 | **Terminei** | com uma nota do catálogo aberta | Pede uma nota de 1 a 10 e grava `status: done`, `finished` com a data de hoje e `rating`. |
 | **Atualizar faixas do álbum** | com uma nota de álbum aberta (`kind: album`) | Busca o mesmo álbum, você confirma a edição e só a seção `## Faixas` da nota é trocada (ou criada). |
+| **Atualizar aliases da nota atual** | com uma nota do catálogo aberta | Busca de novo o título lançado no país configurado e regrava `aliases`, mantendo os aliases que você adicionou. |
 
 Uma nota é do catálogo quando o frontmatter tem `kind` igual a `movie`, `series`, `game`, `book` ou `album`, em qualquer pasta.
 
@@ -60,6 +61,38 @@ Ao escolher o álbum, o último passo mostra:
 
 O frontmatter (inclusive `tracks`), `## Impressões` e todo o resto da nota ficam como estavam, byte a byte. Títulos dentro de blocos de código não contam. Um aviso confirma a troca; se a gravação falha, um aviso diz que as faixas não foram atualizadas e o modal continua aberto.
 
+### Aliases e título alternativo
+
+Toda nota nova ganha `aliases` logo depois de `title`, em todos os tipos. O primeiro alias é sempre o `title` (em séries, com a temporada: `"Horta Selvagem (S02)"`).
+
+Com **País do título alternativo** num país (padrão: **Nenhum**), filmes, séries e jogos ganham também o título lançado nesse país, como segundo alias, quando ele é diferente do título (maiúsculas e espaços não contam; acentos e pontuação contam):
+
+```yaml
+title: "Fern Road"
+aliases: ["Fern Road", "Estrada das Samambaias"]
+```
+
+- **Filmes** (IMDb): o título que o IMDb mostra para o país, no idioma dele (o Japão vem em japonês, não romanizado). Ver [Rede e privacidade](#rede-e-privacidade) sobre a API usada.
+- **Séries** (TVmaze): o primeiro nome alternativo da série com o código do país (`/shows/{id}/akas`). O alias leva a mesma temporada do título: `"Horta Brava (S02)"`. Os nomes do TVmaze são editados pela comunidade: confira os que parecerem estranhos.
+- **Jogos** (IGDB): o nome da localização do jogo na região do país. A IGDB tem regiões próprias para Brasil, Japão, Coreia, China e Austrália; Estados Unidos, Canadá e México usam a América do Norte; os países europeus da lista, a Europa; Taiwan, a Ásia. Os outros países ficam só com o título.
+- **Livros e álbuns**: só o título. O título do livro já é o da edição lida, e o do álbum é o do lançamento.
+
+A consulta começa assim que o formulário abre e não aparece na tela; **Criar nota** espera por ela no máximo 8 segundos. Se ela falha, demora demais ou não acha nada, a nota é criada normalmente, só com o título em `aliases`, sem erro nem aviso.
+
+### Atualizar aliases da nota atual
+
+Em filmes, séries e jogos com um país configurado, o modal abre com o tipo travado e o `title` da nota já buscado, como no **Trocar capa** (em séries, a busca é o nome sem a temporada, e não há passo de temporada: vale a `season` da nota). Ao escolher o resultado, o último passo mostra:
+
+- **Título alternativo**: o título do país (com o país abaixo do nome), "Nenhum encontrado." ou "Igual ao título.".
+- **Aliases agora** e **Aliases depois**: a lista atual e a que vai ser gravada.
+- **Atualizar aliases** (ou Mod+Enter), desativado quando a nota já tem exatamente essa lista.
+
+A lista nova é: o `title`, o título do país (quando é diferente) e depois todos os aliases que a nota já tinha, na mesma ordem. Só saem os repetidos (comparados sem maiúsculas e espaços; fica o primeiro). Nenhum alias que você adicionou à mão é apagado, nem o de um país configurado antes. Uma nota sem `aliases` ganha a chave logo depois de `title`.
+
+Em livros e álbuns, ou sem país configurado, o comando não abre o modal: grava na hora a lista com o `title` primeiro e os outros aliases depois, e um aviso confirma (ou diz que nada mudou).
+
+A gravação usa `processFrontMatter`. O Obsidian regrava o frontmatter inteiro: as aspas somem e as listas viram listas em bloco (`- item`), como já acontece no **Trocar capa** e no **Terminei**. Os valores e a ordem das chaves ficam iguais.
+
 ### Terminei
 
 Um clique num botão de 1 a 10 (ou uma tecla de 0 a 9) grava e fecha. O foco começa no grupo de botões, não no 1: Enter e espaço não dão nota sem querer. **Terminar sem nota** grava `status` e `finished` e deixa `rating` como estava. **Cancelar** e Esc não gravam nada.
@@ -81,11 +114,11 @@ Um clique num botão de 1 a 10 (ou uma tecla de 0 a 9) grava e fecha. O foco com
 
 | Tipo | Fonte | Chave | O que traz |
 |---|---|---|---|
-| Filme | IMDb (sugestões da busca do site) | não | Título, ano, elenco e capa. Só filmes, telefilmes e curtas; séries, pessoas e franquias ficam de fora. |
-| Série | TVmaze | não | Série com canal e anos; por temporada, episódios, ano de estreia e pôster (sem pôster, usa o da série). |
+| Filme | IMDb (sugestões da busca do site) | não | Título, ano, elenco e capa. Só filmes, telefilmes e curtas; séries, pessoas e franquias ficam de fora. O título por país vem da API GraphQL do site. |
+| Série | TVmaze | não | Série com canal e anos; por temporada, episódios, ano de estreia e pôster (sem pôster, usa o da série). Nomes por país (`akas`). |
 | Livro | Open Library | não | Uma obra por resultado: autores, ano da primeira publicação, páginas (mediana das edições) e capa. |
 | Livro | Google Books | sim | Edições, inclusive brasileiras: autores, ano da edição, páginas e capa. |
-| Jogo | IGDB | sim (app da Twitch) | Ano de lançamento, estúdio, plataformas e capa. |
+| Jogo | IGDB | sim (app da Twitch) | Ano de lançamento, estúdio, plataformas e capa. Nomes por região (`game_localizations`). |
 | Álbum | MusicBrainz | não | Um resultado por álbum (o grupo de lançamentos, não cada edição): artista, ano do lançamento original e tipo. A capa vem do Cover Art Archive. Faixas com duração, da edição representativa ou da escolhida. |
 | Álbum | iTunes | não | Artista, ano, número de faixas e capa 600×600. Faixas com duração, do álbum da loja. Também é a fonte da capa quando o Cover Art Archive não tem a do álbum. |
 
@@ -137,16 +170,17 @@ Cada tipo grava só as suas chaves, nesta ordem (álbuns podem ter também `trac
 
 | `kind` | Chaves |
 |---|---|
-| `movie` | `kind, title, year, status, rating, started, finished, platform, cover, tags` |
-| `series` | `kind, title, season, episodes, year, status, rating, started, finished, platform, cover, tags` |
-| `game` | `kind, title, year, status, rating, started, finished, platform, hours, cover, tags` |
-| `book` | `kind, title, author, year, status, rating, started, finished, platform, pages, reference, cover, tags` |
-| `album` | `kind, title, author, year, status, rating, started, finished, platform, cover, tags` |
+| `movie` | `kind, title, aliases, year, status, rating, started, finished, platform, cover, tags` |
+| `series` | `kind, title, aliases, season, episodes, year, status, rating, started, finished, platform, cover, tags` |
+| `game` | `kind, title, aliases, year, status, rating, started, finished, platform, hours, cover, tags` |
+| `book` | `kind, title, aliases, author, year, status, rating, started, finished, platform, pages, reference, cover, tags` |
+| `album` | `kind, title, aliases, author, year, status, rating, started, finished, platform, cover, tags` |
 
 | Valor | Formato |
 |---|---|
 | `kind`, `status` | Sem aspas, sempre em inglês: `movie`, `series`, `game`, `book`, `album`; `backlog`, `in-progress`, `done`, `dropped`. |
 | `title`, `author`, `platform`, `reference` | Sempre entre aspas duplas, `""` quando vazios. Vários autores ficam separados por vírgula. Em álbuns, `author` é o artista ou a banda. Em séries, `title` é o nome da série seguido da temporada com dois dígitos: `"Horta Selvagem (S02)"`. |
+| `aliases` | Lista com itens entre aspas duplas: o `title` e, quando há e é diferente, o título do país configurado (ver [Aliases e título alternativo](#aliases-e-título-alternativo)). |
 | `year`, `season`, `episodes`, `rating`, `hours`, `pages` | Número. Vazio vira `rating:` sem valor. |
 | `started`, `finished` | `AAAA-MM-DD` sem aspas, ou vazio. |
 | `cover` | URL `https://` sem aspas, `"[[<nota>-cover.<ext>]]"` quando baixada, `""` sem capa. |
@@ -159,6 +193,7 @@ Exemplo, com a série fictícia do dev-vault:
 ---
 kind: series
 title: "Horta Selvagem (S02)"
+aliases: ["Horta Selvagem (S02)", "Horta Brava (S02)"]
 season: 2
 episodes: 10
 year: 2025
@@ -181,6 +216,7 @@ Um álbum, com a banda fictícia do dev-vault:
 ---
 kind: album
 title: "Os Samambaias"
+aliases: ["Os Samambaias"]
 author: "Os Samambaias"
 year: 1994
 status: done
@@ -278,6 +314,7 @@ A nota do catálogo recebe `reference: "[[1 - Knowledge/Software Development/_Re
 | Template | vazio | Nota cujo corpo entra em cada nota nova. Vazio: `media.md` na pasta de templates do Obsidian. |
 | Link para a fonte | ligado | Adiciona a linha `- <Fonte>: <link>` no fim da nota. |
 | Status padrão | Em andamento | Status que o formulário sugere. |
+| País do título alternativo | Nenhum | País (código ISO 3166-1, como `BR`, `PT`, `ES`, `FR`, `JP`) cujo título entra como segundo alias de filmes, séries e jogos. A lista mostra os países pelo nome, no idioma do Obsidian. Nenhum: o único alias é o título. |
 | Baixar capas por padrão | desligado | Deixa **Baixar para os anexos** selecionado no formulário e no **Trocar capa**. |
 | Fonte de livros | Open Library | Fonte selecionada primeiro na busca de livros. Trocar a fonte no modal também muda esta opção. |
 | Fonte de álbuns | MusicBrainz | Fonte selecionada primeiro na busca de álbuns. Trocar a fonte no modal também muda esta opção. |
@@ -298,21 +335,23 @@ O plugin também guarda no `data.json` o último tipo buscado (`lastKind`), para
 
 | Uso | Hosts |
 |---|---|
-| APIs | `v3.sg.media-imdb.com`, `api.tvmaze.com`, `www.googleapis.com`, `openlibrary.org`, `covers.openlibrary.org`, `id.twitch.tv`, `api.igdb.com`, `musicbrainz.org`, `itunes.apple.com` |
+| APIs | `v3.sg.media-imdb.com`, `caching.graphql.imdb.com`, `api.tvmaze.com`, `www.googleapis.com`, `openlibrary.org`, `covers.openlibrary.org`, `id.twitch.tv`, `api.igdb.com`, `musicbrainz.org`, `itunes.apple.com` |
 | Imagens (mostrar e baixar capas) | `m.media-amazon.com`, `static.tvmaze.com`, `books.google.com`, `books.googleusercontent.com`, `images.igdb.com`, `covers.openlibrary.org`, `coverartarchive.org`, `archive.org` e qualquer host terminado em `.archive.org`, `is1-ssl.mzstatic.com` a `is5-ssl.mzstatic.com` |
 
-- A rede só é usada quando um comando roda: busca, lista de temporadas, consulta da capa e da lista de faixas de um álbum escolhido, edições e faixas no **Atualizar faixas do álbum**, capas mostradas no modal e download de capa. Carregar o plugin não faz nenhuma requisição.
+- A rede só é usada quando um comando roda: busca, lista de temporadas, consulta da capa e da lista de faixas de um álbum escolhido, edições e faixas no **Atualizar faixas do álbum**, título do país (no formulário e no **Atualizar aliases da nota atual**, só com um país configurado), capas mostradas no modal e download de capa. Carregar o plugin não faz nenhuma requisição.
 - O modal só mostra imagens `https://` dos hosts de imagem, sem enviar referrer. A exceção é a capa **Atual** do **Trocar capa**: ela é mostrada de onde a nota aponta (qualquer `https://`), só para exibir. Downloads continuam limitados aos hosts de imagem.
 - A lista vale para cada endereço que o plugin pede. Os redirecionamentos, o Obsidian segue sozinho: o `requestUrl` roda no processo principal com `redirect: "follow"`, e um plugin não vê nem interrompe os saltos. O `<img>` também segue. Por isso os saltos não passam pela lista um a um. As cadeias conhecidas terminam em hosts da lista: as capas do Open Library redirecionam para `archive.org`, e as do Cover Art Archive para `archive.org` e depois para um servidor de armazenamento com nome variável (`ia800123.us.archive.org`, `dn720706.ca.archive.org`), aceito pelo sufixo `.archive.org`, que vale só para imagens. O plugin nunca pede uma URL tirada de um redirecionamento.
 - Cada fonte recebe o texto da busca. Na consulta da capa de um álbum do MusicBrainz, o Cover Art Archive recebe o id do álbum e, sem capa lá, o iTunes recebe artista e título. Para as faixas, o MusicBrainz recebe o id do álbum e o da edição, e o iTunes o id do álbum na loja. O iTunes recebe também o país da loja, tirado do idioma do Obsidian. O MusicBrainz e o Cover Art Archive recebem o `User-Agent` com a versão do plugin e `https://laerciorios.com`. A chave do Google Books vai para `www.googleapis.com`; o client id e o client secret da Twitch vão para `id.twitch.tv`, que devolve o token usado em `api.igdb.com`.
+- Título do país: o IMDb recebe o id do filme, o país e o idioma; o TVmaze, o id da série; a IGDB, o id do jogo.
+- **API GraphQL do IMDb** (`caching.graphql.imdb.com`): é a API que o próprio imdb.com usa, sem chave. Ela responde 403 sem os cabeçalhos `Origin: https://www.imdb.com` e `Referer: https://www.imdb.com/`, então o plugin os envia (o `User-Agent` é o do Obsidian). Cada resposta traz um aviso de que o uso público, comercial ou não pessoal dos dados não é permitido, e de que o uso limitado e não comercial segue as regras do IMDb ([Can I use IMDb data in my software?](https://help.imdb.com/article/imdb/general-information/can-i-use-imdb-data-in-my-software/G5JTRESSHJBBHTGX)). O plugin é para uso pessoal e faz uma consulta por nota criada ou atualizada; não use essa parte num contexto comercial. A API não é documentada e pode mudar: se ela falhar, a nota sai só com o título.
 - O token do IGDB fica só em memória: é renovado antes de expirar ou depois de um 401, e nunca é gravado.
 - Sem telemetria.
 
 ## Idiomas
 
-A interface segue o idioma do Obsidian (**Settings → General → Language**). Há inglês e português (Brasil). Outros idiomas usam inglês. Em inglês, os comandos são **Add to catalog**, **Change cover**, **Mark as finished** e **Update album tracks**.
+A interface segue o idioma do Obsidian (**Settings → General → Language**). Há inglês e português (Brasil). Outros idiomas usam inglês. Em inglês, os comandos são **Add to catalog**, **Change cover**, **Mark as finished**, **Update album tracks** e **Update aliases of the current note**. Na lista de países, os nomes vêm do `Intl` do sistema, no idioma da interface.
 
-Os valores gravados nas notas são dados e não são traduzidos: `kind` (o formulário mostra "Álbum" e grava `album`), `status` (o formulário mostra "Em andamento" e grava `in-progress`), `tags`, `tracks` e o texto da nota de referência (`Leitura:`, **Resumo**, **Notas pessoais** e os aliases `referência` e `leitura`). Nomes das fontes (IMDb, TVmaze, Open Library, Google Books, IGDB, MusicBrainz, iTunes, Cover Art Archive) e os títulos das faixas também ficam como estão. A exceção são os títulos da lista de faixas: `## Faixas` e `### Disco N` são escritos no idioma do Obsidian quando a nota é criada ou atualizada (`## Tracks` e `### Disc N` em inglês).
+Os valores gravados nas notas são dados e não são traduzidos: `kind` (o formulário mostra "Álbum" e grava `album`), `status` (o formulário mostra "Em andamento" e grava `in-progress`), `tags`, `tracks`, os aliases (o título do país vem como a fonte escreve) e o texto da nota de referência (`Leitura:`, **Resumo**, **Notas pessoais** e os aliases `referência` e `leitura`). Nomes das fontes (IMDb, TVmaze, Open Library, Google Books, IGDB, MusicBrainz, iTunes, Cover Art Archive) e os títulos das faixas também ficam como estão. A exceção são os títulos da lista de faixas: `## Faixas` e `### Disco N` são escritos no idioma do Obsidian quando a nota é criada ou atualizada (`## Tracks` e `### Disc N` em inglês).
 
 Um idioma novo é um arquivo novo em `src/i18n/`, com todas as chaves de `src/i18n/en.ts`, mais uma entrada em `src/i18n/index.ts`.
 
@@ -320,11 +359,12 @@ Um idioma novo é um arquivo novo em `src/i18n/`, com todas as chaves de `src/i1
 
 | Arquivo | Papel |
 |---|---|
-| `src/main.ts` | Carrega as configurações, cria as fontes e registra os quatro comandos e a aba de configurações. |
+| `src/main.ts` | Carrega as configurações, cria as fontes e registra os cinco comandos e a aba de configurações. |
 | `src/constants.ts` | Tipos, status, ordem das chaves por tipo, pasta padrão, hosts permitidos e textos da nota de referência. |
 | `src/providers/http.ts` | O único módulo que acessa a rede: `requestUrl`, só `https://`, só hosts da lista. |
 | `src/providers/imdb.ts`, `tvmaze.ts`, `open-library.ts`, `google-books.ts`, `igdb.ts`, `musicbrainz.ts`, `itunes.ts` | Uma fonte por arquivo: monta a requisição e converte a resposta em resultados. O MusicBrainz também completa o resultado escolhido (`resolve`: capa no Cover Art Archive ou no iTunes). |
 | `src/providers/guards.ts`, `results.ts`, `errors.ts` | Leitura defensiva do JSON, helpers comuns, erros e suas mensagens. |
+| `src/providers/localized-title.ts`, `settle.ts` | Título do país configurado (`localizedTitle` de IMDb, TVmaze e IGDB) com tempo-limite, sem nunca falhar; respostas guardadas por 10 minutos. |
 | `src/modal/catalog-modal.ts` | Modal único com os passos busca → capa e faixas (álbuns) → temporada → confirmação, e busca → faixas no **Atualizar faixas do álbum**. Guarda o estado que sobrevive ao **Voltar**, inclusive os resultados já completados, as listas de faixas e as edições. |
 | `src/modal/resolve-step.ts` | "Procurando capa e faixas…" entre a escolha e o formulário (capa e faixas ao mesmo tempo); descarta as respostas se você sair do passo ou fechar o modal. |
 | `src/modal/tracks-step.ts` | Último passo do **Atualizar faixas do álbum**: edição, lista de faixas e a troca da seção com `vault.process`. |
@@ -332,13 +372,16 @@ Um idioma novo é um arquivo novo em `src/i18n/`, com todas as chaves de `src/i1
 | `src/modal/confirm-step.ts`, `confirm-fields.ts`, `confirm-values.ts`, `text-fields.ts` | Formulário por tipo, validação, banner de duplicata e criação da nota. |
 | `src/modal/chosen-preview.ts` | Capa grande e a escolha entre pôster da temporada e da série. |
 | `src/modal/cover-step.ts`, `rating-modal.ts` | Último passo do **Trocar capa** (capa atual e nova); pergunta da nota do **Terminei**. |
+| `src/modal/aliases-step.ts`, `update-aliases.ts` | Último passo e entrada do **Atualizar aliases da nota atual** (modal, ou gravação direta em livros, álbuns e sem país). |
 | `src/catalog/note-writer.ts` | Cria a nota: pasta, nome livre, capa, nota de referência, corpo e um único `vault.create`. |
 | `src/catalog/slug.ts`, `duplicates.ts` | Nome do arquivo; busca de duplicatas no cache de metadados, sem ler arquivos (álbuns comparam também o artista). |
 | `src/catalog/frontmatter.ts`, `yaml.ts` | Chaves na ordem do tipo e YAML no estilo do catálogo. |
+| `src/catalog/aliases.ts` | Regras puras dos aliases: quando o segundo entra, a lista do **Atualizar aliases** e a posição da chave. |
 | `src/catalog/template.ts` | Corpo do template, variáveis, lista de faixas e linha da fonte. |
 | `src/catalog/tracklist.ts` | Funções puras da lista de faixas: duração, resumo, texto da seção e onde ela entra na nota (`replaceTracklistSection`). |
 | `src/catalog/cover-download.ts`, `reference-note.ts` | Download da capa para os anexos; nota de referência do livro técnico. |
-| `src/catalog/updates.ts`, `catalog-note.ts` | **Trocar capa** e **Terminei** via `processFrontMatter`; leitura de uma nota do catálogo. |
+| `src/catalog/updates.ts`, `catalog-note.ts` | **Trocar capa**, **Terminei** e **Atualizar aliases** via `processFrontMatter`; leitura de uma nota do catálogo. |
+| `test/` | Testes de unidade (`pnpm --filter media-catalog test`): resposta do IMDb, akas do TVmaze, localizações da IGDB, regra dos aliases e a opção do país. |
 | `src/ui/` | Peças do modal: card de resultado, capa com placeholder, capa atual da nota, botões de pôster, lista com teclado, estados de carregando, vazio e erro, linhas de formulário, lista de faixas e rótulo das edições. |
 | `src/settings/` | Configurações declarativas do Obsidian 1.13, normalização do `data.json` e linhas de segredo com `SecretComponent`. |
 | `src/i18n/` | Catálogos de texto da interface (inglês e português). |
@@ -349,6 +392,12 @@ Notas novas são criadas uma vez, com `vault.create`, e capas com `vault.createB
 
 ```bash
 pnpm --filter media-catalog dev
+```
+
+Testes de unidade (Node `node:test`, sem dependências; o `obsidian` é trocado por um stub):
+
+```bash
+pnpm --filter media-catalog test
 ```
 
 Teste no `dev-vault/` do repositório: `1 - Knowledge/Entertainment/index.md` lista os casos de teste, e `DB/` tem duas notas fictícias por tipo (três álbuns: um homônimo com dois discos em `## Faixas`, um EP com `## Faixas` e `tracks`, e um sem `## Faixas`, para o **Atualizar faixas do álbum** criar a seção), com uma capa local em `Attachments/` e um livro técnico com nota de referência. A view `entertainment.base` mostra o catálogo em tabela e galeria, e os álbuns numa tabela própria.
@@ -370,6 +419,7 @@ Requer Obsidian 1.13.0 ou superior, por causa das configurações declarativas.
 - Os redirecionamentos não passam pela lista de hosts um a um (ver **Rede e privacidade**).
 - Álbuns não guardam o tipo (álbum ou EP) na nota. O número de faixas só vai para a nota com **Propriedade com o número de faixas** ligada, na criação; **Atualizar faixas do álbum** não atualiza `tracks`.
 - A lista de faixas de uma nota nova é a da edição representativa do MusicBrainz, que pode não ser a que você ouviu. Troque a edição com **Atualizar faixas do álbum**.
+- O título do país depende de cada fonte: os nomes do TVmaze são da comunidade, a IGDB só tem algumas regiões, e a API do IMDb não é documentada. **Atualizar aliases da nota atual** nunca apaga um alias, então um título de país que ficou errado sai à mão.
 - **Atualizar faixas do álbum** substitui tudo entre `## Faixas` e o próximo título de nível 1 ou 2: um comentário seu escrito dentro da seção, sem título próprio, é substituído junto. Num template sem `## Impressões`, a seção vem no começo do corpo; se o texto seguinte do template não começar com um título `#` ou `##`, ele fica dentro da seção e seria trocado numa atualização.
 - A seção é reescrita no idioma atual do Obsidian: uma nota com `## Tracks` passa a ter `## Faixas` quando atualizada em português.
 - **Terminei**, **Trocar capa** e a limpeza do `reference` quando a nota de referência falha usam `processFrontMatter`, que reescreve o YAML no estilo do Obsidian: aspas e valores vazios podem mudar de formato. O Bases lê os dois.

@@ -1,6 +1,7 @@
 ---
 kind: book
 title: "Refatorando Canteiros"
+aliases: ["Refatorando Canteiros"]
 author: "Íris Capim"
 year: 2020
 status: in-progress

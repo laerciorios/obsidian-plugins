@@ -1,6 +1,7 @@
 ---
 kind: album
 title: "Maré de Musgo"
+aliases: ["Maré de Musgo"]
 author: "Lia Broto"
 year: 2019
 status: in-progress
