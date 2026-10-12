@@ -1,6 +1,7 @@
 // Shared build for every plugin. Run from the plugin folder (cwd = plugins/<id>):
 //   node ../../scripts/esbuild.mjs               -> watch mode (dev), writes .hotreload
 //   node ../../scripts/esbuild.mjs --production  -> single minified build
+//   add --no-link                                -> dist/ and dev-vault only, never the linked vaults
 //
 // Output goes to <plugin>/dist/ (main.js + manifest.json + styles.css) and is then
 // copied into every target vault: dev-vault/.obsidian/plugins/<id>/ plus whatever
@@ -14,6 +15,7 @@ import process from 'node:process';
 import { readJson, targetsFor } from './lib.mjs';
 
 const prod = process.argv.includes('--production');
+const linked = !process.argv.includes('--no-link');
 const cwd = process.cwd();
 const manifest = readJson(join(cwd, 'manifest.json'));
 if (!manifest?.id) {
@@ -30,12 +32,15 @@ Source: obsidian-plugins/plugins/${manifest.id}
 
 const ARTIFACTS = ['main.js', 'manifest.json', 'styles.css'];
 
+/** The dev vault first, then the vaults of `pnpm link-plugin` (skipped with --no-link). */
+const targets = () => (linked ? targetsFor(manifest.id) : targetsFor(manifest.id).slice(0, 1));
+
 function publish() {
 	copyFileSync(join(cwd, 'manifest.json'), join(distDir, 'manifest.json'));
 	const styles = join(cwd, 'styles.css');
 	if (existsSync(styles)) copyFileSync(styles, join(distDir, 'styles.css'));
 
-	for (const target of targetsFor(manifest.id)) {
+	for (const target of targets()) {
 		mkdirSync(target, { recursive: true });
 		for (const file of ARTIFACTS) {
 			const from = join(distDir, file);
@@ -54,7 +59,7 @@ const copyPlugin = {
 			if (result.errors.length > 0) return;
 			publish();
 			const time = new Date().toLocaleTimeString();
-			console.log(`[${time}] ${manifest.id}: build ok → ${targetsFor(manifest.id).length} vault(s)`);
+			console.log(`[${time}] ${manifest.id}: build ok → ${targets().length} vault(s)`);
 		});
 	},
 };
