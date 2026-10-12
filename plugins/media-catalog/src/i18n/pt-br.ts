@@ -8,6 +8,7 @@ export const ptBR: Translation<typeof en> = {
 	'command.markFinished': 'Terminei',
 	'command.updateTracks': 'Atualizar faixas do álbum',
 	'command.updateAliases': 'Atualizar aliases da nota atual',
+	'command.newRun': 'Novo registro (rejogar / reassistir / reler)',
 
 	// ---- kinds and statuses -------------------------------------------------
 	'kind.movie': 'Filme',
@@ -28,6 +29,7 @@ export const ptBR: Translation<typeof en> = {
 	'modal.season.title': 'Escolha a temporada',
 	'modal.confirm.title': 'Confira os dados',
 	'modal.back': 'Voltar',
+	'modal.cancel': 'Cancelar',
 	'modal.instructions.navigate': 'para navegar',
 	'modal.instructions.choose': 'para escolher',
 	'modal.instructions.close': 'para fechar',
@@ -130,7 +132,8 @@ export const ptBR: Translation<typeof en> = {
 	'field.cover.download': 'Baixar para os anexos',
 	'field.cover.none': 'Nenhuma capa encontrada. A nota é criada sem capa.',
 	'confirm.duplicate': 'Já está no catálogo: {name}.',
-	'confirm.open': 'Abrir nota',
+	'confirm.open': 'Abrir nota existente',
+	'confirm.registerAgain': 'Registrar de novo',
 	'confirm.create': 'Criar nota',
 	'confirm.updateCover': 'Atualizar capa',
 	'confirm.saving': 'Salvando…',
@@ -146,11 +149,20 @@ export const ptBR: Translation<typeof en> = {
 	'rating.skip': 'Terminar sem nota',
 	'rating.cancel': 'Cancelar',
 
+	// ---- "Novo registro" ----------------------------------------------------
+	'newRun.title': 'Novo registro',
+	'newRun.desc': '"{title}" começa de novo: o registro atual vai para o topo do histórico, e a nota volta a ficar em andamento.',
+	'newRun.history': 'Linha do histórico',
+	'newRun.listed': 'O histórico já tem este registro: nada é acrescentado lá.',
+	'newRun.started.desc': 'Início do novo registro (AAAA-MM-DD).',
+	'newRun.submit': 'Iniciar registro',
+
 	// ---- validation ---------------------------------------------------------
 	'validation.title': 'O título não pode ficar vazio.',
 	'validation.year': 'Use um ano com quatro dígitos.',
 	'validation.rating': 'Use um número inteiro de 1 a 10.',
 	'validation.date': 'Use o formato AAAA-MM-DD.',
+	'validation.dateRequired': 'Digite uma data no formato AAAA-MM-DD.',
 	'validation.number': 'Use um número, zero ou maior.',
 
 	// ---- errors (search, download) -----------------------------------------
@@ -173,6 +185,9 @@ export const ptBR: Translation<typeof en> = {
 	'notice.downloadFailed': 'Media Catalog: não foi possível baixar a capa; a nota fica com o link.',
 	'notice.finished': 'Media Catalog: "{name}" marcada como concluída.',
 	'notice.finishFailed': 'Media Catalog: não foi possível atualizar "{name}".',
+	'notice.newRun': 'Media Catalog: novo registro de "{name}" iniciado.',
+	'notice.newRunFailed': 'Media Catalog: não foi possível iniciar um novo registro de "{name}".',
+	'notice.newRunNotDone': 'Media Catalog: "{name}" não está concluída. Um novo registro começa depois que o atual termina.',
 	'notice.referenceCreated': 'Media Catalog: nota de referência "{name}" criada.',
 	'notice.referenceExists': 'Media Catalog: a nota de referência "{name}" já existia e foi ligada.',
 	'notice.referenceFailed': 'Media Catalog: a nota foi criada, mas a nota de referência não.',

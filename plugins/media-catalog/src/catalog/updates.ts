@@ -1,14 +1,16 @@
 import type { App, TFile } from 'obsidian';
-import type { MediaKind, Status } from '../types';
+import type { MediaKind } from '../types';
 import { aliasesChanged, nextAliases, placeAliases } from './aliases';
 import { frontmatterOf } from './catalog-note';
 import { todayIso } from './dates';
-
-const DONE: Status = 'done';
+import { addToHistory } from './history';
+import { applyFinished, applyNewRun, currentRun } from './runs';
+import type { NewRunChoice } from './runs';
 
 /**
  * Changes to existing catalog notes. One processFrontMatter call each, which
- * keeps the rest of the note and of the YAML as it is.
+ * keeps the rest of the note and of the YAML as it is; "New run" also adds
+ * one line to the body with vault.process.
  */
 
 /** `cover` becomes a URL, `[[<name>-cover.jpg]]` or "". */
@@ -18,12 +20,28 @@ export async function setCover(app: App, file: TFile, cover: string): Promise<vo
 	});
 }
 
-/** status: done, finished: today; rating set when not null, left untouched when null. */
+/**
+ * status: done, finished: today; rating set when not null, left untouched
+ * when null. Today also joins `finished_dates` when the note has it (see applyFinished).
+ */
 export async function markFinished(app: App, file: TFile, rating: number | null): Promise<void> {
+	const today = todayIso();
 	await app.fileManager.processFrontMatter(file, (frontmatter: Record<string, unknown>) => {
-		frontmatter.status = DONE;
-		frontmatter.finished = todayIso();
-		if (rating !== null) frontmatter.rating = rating;
+		applyFinished(frontmatter, today, rating);
+	});
+}
+
+/**
+ * "New run": the current run goes first in `## Histórico` (one line added,
+ * none when the section already lists it), then the properties start the
+ * new run (see applyNewRun). The body goes first: if the second write fails,
+ * running the command again does not repeat the line.
+ */
+export async function startNewRun(app: App, file: TFile, choice: NewRunChoice): Promise<void> {
+	const run = currentRun(frontmatterOf(app, file) ?? {});
+	await app.vault.process(file, (content) => addToHistory(content, run));
+	await app.fileManager.processFrontMatter(file, (frontmatter: Record<string, unknown>) => {
+		applyNewRun(frontmatter, choice);
 	});
 }
 

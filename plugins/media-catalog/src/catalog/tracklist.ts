@@ -1,7 +1,8 @@
-import { IMPRESSIONS_HEADING } from '../constants';
+import { HISTORY_HEADING, IMPRESSIONS_HEADING } from '../constants';
 import { inEveryLocale } from '../i18n';
 import type { MessageKey } from '../i18n';
 import type { Track } from '../types';
+import { eolOf, fold, frontmatterEnd, headingKey, headingsOf, spaced, splitLines } from './markdown';
 
 /**
  * The `## Faixas` section of album notes: text of the section, and where it
@@ -99,80 +100,18 @@ export function renderTracklist(tracks: readonly Track[], t: Translate): string 
 
 // ---- where the section goes -------------------------------------------------
 
-interface Heading {
-	/** Line index in the body. */
-	index: number;
-	level: number;
-	/** Text without the `#` marks, trimmed and folded for comparison. */
-	key: string;
-}
-
-function fold(text: string): string {
-	return text.normalize('NFC').toLowerCase();
-}
-
-/** ATX heading of one line (`## Faixas`, `## Faixas ##`), or null. */
-function parseHeading(line: string): { level: number; key: string } | null {
-	const match = /^ {0,3}(#{1,6})(?:[ \t]+(.*?))?[ \t]*$/.exec(line);
-	if (!match) return null;
-	const text = (match[2] ?? '').replace(/(?:^|[ \t]+)#+$/, '').trim();
-	return { level: (match[1] ?? '').length, key: fold(text) };
-}
-
-const IMPRESSIONS_KEY = parseHeading(IMPRESSIONS_HEADING)?.key ?? '';
+/** The tracklist goes before the history, which stays right before `## Impressões`. */
+const ANCHOR_KEYS: ReadonlySet<string> = new Set([headingKey(HISTORY_HEADING), headingKey(IMPRESSIONS_HEADING)]);
 
 /** Tracklist headings in every language: a note keeps the heading it was created with. */
 function tracklistKeys(): ReadonlySet<string> {
 	return new Set(inEveryLocale('note.tracks.heading').map(fold));
 }
 
-/** Lines of `text`, each with its own line ending (the last one may have none). */
-function splitLines(text: string): string[] {
-	return text.match(/[^\n]*\n|[^\n]+$/g) ?? [];
-}
-
-/** Headings outside fenced code blocks. */
-function headingsOf(lines: readonly string[]): Heading[] {
-	const headings: Heading[] = [];
-	let fence: { char: string; length: number } | null = null;
-	lines.forEach((raw, index) => {
-		const line = raw.replace(/\r?\n$/, '');
-		const marks = /^ {0,3}(`{3,}|~{3,})/.exec(line)?.[1];
-		if (fence) {
-			if (marks?.startsWith(fence.char) && marks.length >= fence.length && line.trim() === marks) fence = null;
-			return;
-		}
-		if (marks) {
-			fence = { char: marks.charAt(0), length: marks.length };
-			return;
-		}
-		const heading = parseHeading(line);
-		if (heading) headings.push({ index, ...heading });
-	});
-	return headings;
-}
-
-/** Length of the frontmatter block (`---` … `---` at the very start), 0 without one. */
-export function frontmatterEnd(content: string): number {
-	const match = /^---[ \t]*\r?\n(?:[\s\S]*?\r?\n)?---[ \t]*(?:\r?\n|$)/.exec(content);
-	return match ? match[0].length : 0;
-}
-
-/** True when `text` ends in a blank line (or is empty): the next block can start right away. */
-function endsWithBlankLine(text: string): boolean {
-	return text === '' || /\n[ \t]*\r?\n$/.test(text) || /^[ \t]*\r?\n$/.test(text);
-}
-
-/** `before` followed by what makes one blank line before the next block. */
-function spaced(before: string, eol: string): string {
-	if (endsWithBlankLine(before)) return before;
-	return before.endsWith('\n') ? before + eol : before + eol + eol;
-}
-
 type Fallback = 'start' | 'end';
 
 function placeSection(content: string, section: string, from: number, fallback: Fallback): string {
-	const eol = content.includes('\r\n') ? '\r\n' : '\n';
+	const eol = eolOf(content);
 	let head = content.slice(0, from);
 	if (head && !head.endsWith('\n')) head += eol;
 	const lines = splitLines(content.slice(from));
@@ -188,9 +127,9 @@ function placeSection(content: string, section: string, from: number, fallback: 
 		const before = text(0, current.index);
 		return next ? head + before + block + eol + eol + text(next.index) : head + before + block + eol;
 	}
-	const impressions = headings.find((heading) => heading.level === 2 && heading.key === IMPRESSIONS_KEY);
-	if (impressions) {
-		return head + spaced(text(0, impressions.index), eol) + block + eol + eol + text(impressions.index);
+	const anchor = headings.find((heading) => heading.level === 2 && ANCHOR_KEYS.has(heading.key));
+	if (anchor) {
+		return head + spaced(text(0, anchor.index), eol) + block + eol + eol + text(anchor.index);
 	}
 	const body = text(0);
 	if (fallback === 'start') {
@@ -204,8 +143,8 @@ function placeSection(content: string, section: string, from: number, fallback: 
  * "Update album tracks": the whole file (as vault.process hands it) with the
  * tracklist section replaced, from its heading (`## Faixas` or `## Tracks`,
  * whatever the language now) to the next heading of level 1 or 2. Without
- * one, the section goes right before `## Impressões`; without that, at the
- * end. The frontmatter and every other line stay byte for byte; the section
+ * one, the section goes right before `## Histórico` or `## Impressões`
+ * (whichever comes first); without either, at the end. The frontmatter and every other line stay byte for byte; the section
  * is followed by exactly one blank line.
  */
 export function replaceTracklistSection(content: string, section: string): string {

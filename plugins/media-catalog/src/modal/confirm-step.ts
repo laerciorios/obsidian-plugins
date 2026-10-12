@@ -12,13 +12,16 @@ import { renderChosenPreview } from './chosen-preview';
 import { ConfirmForm } from './confirm-fields';
 import { tracklistOf } from './confirm-values';
 import type { ConfirmInput } from './confirm-values';
+import { newRun } from './new-run';
 import { isSubmitKey } from './steps';
 import type { Step, StepHost } from './steps';
 
 /**
  * Create mode: large cover, duplicate banner, the form, and "Create note".
  * The alternative title (alias country) is looked up as soon as the step
- * opens, out of sight, and awaited by "Create note".
+ * opens, out of sight, and awaited by "Create note". The banner of a note
+ * already in the catalog offers a new run in it ("Register again") instead
+ * of a second note.
  */
 export class ConfirmStep implements Step {
 	readonly title = t('modal.confirm.title');
@@ -95,10 +98,22 @@ export class ConfirmStep implements Step {
 			el.toggle(file !== null);
 			if (file) {
 				el.createSpan({ text: t('confirm.duplicate', { name: file.basename }) });
-				new ButtonComponent(el).setButtonText(t('confirm.open')).onClick(() => this.open(file));
+				const actions = el.createDiv({ cls: CLS.duplicateActions });
+				new ButtonComponent(actions).setButtonText(t('confirm.registerAgain')).onClick(() => void this.registerAgain(file));
+				new ButtonComponent(actions).setButtonText(t('confirm.open')).onClick(() => this.open(file));
 			}
 		}
 		this.updateButton();
+	}
+
+	/**
+	 * The "New run" of the existing note, over this modal, with the platform
+	 * (and start date) of the form. Once written, the note opens; cancelled,
+	 * the form is still here.
+	 */
+	private async registerAgain(file: TFile): Promise<void> {
+		const written = await newRun(this.host.context, file, { platform: this.form.platform, started: this.form.started });
+		if (written) this.open(file);
 	}
 
 	private open(file: TFile): void {

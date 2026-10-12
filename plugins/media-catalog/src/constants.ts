@@ -39,6 +39,20 @@ export const ALBUM_TRACKS_KEY = 'tracks';
 /** Albums: the tracklist section goes right before this heading of the template body (note content, as in the vault). */
 export const IMPRESSIONS_HEADING = '## Impressões';
 
+/**
+ * Re-entries (replay, rewatch, reread) stay in the same note. The runs before
+ * the current one are listed in this section, right before `## Impressões`,
+ * newest first (note content, as in the vault).
+ */
+export const HISTORY_HEADING = '## Histórico';
+/** Every known completion date of a note with more than one run, ascending, the current one included. */
+export const FINISHED_DATES_KEY = 'finished_dates';
+/**
+ * Parts of a history line (note content, as in the vault):
+ * `- 2024-11-03 → 2024-11-23 · Nintendo Switch · 42,7 h · nota 10`.
+ */
+export const HISTORY_TEXT = { separator: ' · ', range: ' → ', open: '?', hours: 'h', rating: 'nota' } as const;
+
 /** Hosts the plugin may call. Anything else is refused by providers/http.ts. */
 export const API_HOSTS = [
 	'v3.sg.media-imdb.com',
@@ -142,6 +156,7 @@ export const COMMAND_IDS = {
 	markFinished: 'mark-finished',
 	updateTracks: 'update-tracks',
 	updateAliases: 'update-aliases',
+	newRun: 'new-run',
 } as const;
 
 export const SETTINGS_ICON = 'clapperboard';
@@ -173,6 +188,9 @@ export const CLS = {
 	posters: 'mc-posters',
 	poster: 'mc-poster',
 	duplicate: 'mc-duplicate',
+	duplicateActions: 'mc-duplicate-actions',
+	newRun: 'mc-new-run',
+	historyLine: 'mc-history-line',
 	actions: 'mc-actions',
 	hint: 'mc-hint',
 	rating: 'mc-rating',

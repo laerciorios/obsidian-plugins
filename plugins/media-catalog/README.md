@@ -1,6 +1,6 @@
 # Media Catalog
 
-Cadastra filmes, séries (uma nota por temporada), jogos, livros e álbuns de música no catálogo de entretenimento. O plugin busca título, ano e capa numa fonte online, você confere os dados num formulário e a nota é criada na pasta do catálogo, com o corpo do template `media`. Também troca a capa de notas que já existem, marca uma obra como terminada, põe a lista de faixas nos álbuns e grava `aliases` com o título e, opcionalmente, o título lançado num país à sua escolha.
+Cadastra filmes, séries (uma nota por temporada), jogos, livros e álbuns de música no catálogo de entretenimento. O plugin busca título, ano e capa numa fonte online, você confere os dados num formulário e a nota é criada na pasta do catálogo, com o corpo do template `media`. Também troca a capa de notas que já existem, marca uma obra como terminada, começa um novo registro na mesma nota (rejogar, reassistir, reler), põe a lista de faixas nos álbuns e grava `aliases` com o título e, opcionalmente, o título lançado num país à sua escolha.
 
 Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/media-catalog-spec.md`.
 
@@ -10,7 +10,8 @@ Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/
 |---|---|---|
 | **Adicionar ao catálogo** | sempre | Busca uma obra e cria uma nota nova. |
 | **Trocar capa** | com uma nota do catálogo aberta | Busca a mesma obra e troca só a propriedade `cover`. |
-| **Terminei** | com uma nota do catálogo aberta | Pede uma nota de 1 a 10 e grava `status: done`, `finished` com a data de hoje e `rating`. |
+| **Terminei** | com uma nota do catálogo aberta | Pede uma nota de 1 a 10 e grava `status: done`, `finished` com a data de hoje e `rating` (e a data em `finished_dates`, quando a nota tem essa lista). |
+| **Novo registro (rejogar / reassistir / reler)** | com uma nota do catálogo aberta | Só em notas concluídas: guarda o registro atual em `## Histórico` e `finished_dates` e começa outro na mesma nota. |
 | **Atualizar faixas do álbum** | com uma nota de álbum aberta (`kind: album`) | Busca o mesmo álbum, você confirma a edição e só a seção `## Faixas` da nota é trocada (ou criada). |
 | **Atualizar aliases da nota atual** | com uma nota do catálogo aberta | Busca de novo o título lançado no país configurado e regrava `aliases`, mantendo os aliases que você adicionou. |
 
@@ -35,7 +36,9 @@ Na confirmação, o plugin procura na pasta do catálogo (subpastas incluídas) 
 
 Em álbuns, conta também o artista (`author`, comparado como o título): o mesmo título de outro artista não é duplicata. O ano vale como nos filmes, porque uma banda pode lançar vários álbuns com o próprio nome: "Os Samambaias" de 1994 e "Os Samambaias" de 2001 são duas notas, e o de 1994 de novo é duplicata. Quando um dos dois lados não tem artista, o artista não decide. A nota que já ocupa o nome da nova (`<slug>.md`) segue a mesma regra.
 
-Quando acha, o formulário mostra "Já está no catálogo: <nota>" com **Abrir nota**, e **Criar nota** fica desativado. A busca se repete enquanto você edita título, ano e, em álbuns, artista, e de novo ao salvar.
+Quando acha, o formulário mostra "Já está no catálogo: <nota>" com **Registrar de novo** e **Abrir nota existente**, e **Criar nota** fica desativado. A busca se repete enquanto você edita título, ano e, em álbuns, artista, e de novo ao salvar.
+
+**Registrar de novo** é o [Novo registro](#novo-registro-rejogar--reassistir--reler) da nota que já existe, em vez de uma segunda nota: a janela abre por cima do formulário com **Onde** do formulário (vazio: o da nota) e **Início** do formulário (vazio: hoje). Ao gravar, o modal fecha e a nota abre; **Cancelar** volta ao formulário. Numa nota que não está concluída, só aparece o aviso, como no comando.
 
 ### Trocar capa
 
@@ -56,7 +59,7 @@ Ao escolher o álbum, o último passo mostra:
 **Atualizar faixas** muda só a seção de faixas, com `vault.process`:
 
 - Se a nota tem `## Faixas` (ou `## Tracks`, de uma nota criada com o Obsidian em inglês), a seção é substituída do título até o próximo título de nível 1 ou 2 (`#` ou `##`), ou até o fim da nota. Os `### Disco N` ficam dentro da seção.
-- Sem essa seção, ela é criada logo antes de `## Impressões`, com uma linha em branco antes e depois.
+- Sem essa seção, ela é criada logo antes de `## Impressões`, com uma linha em branco antes e depois. Numa nota com `## Histórico`, ela entra antes do histórico, que continua logo antes de `## Impressões`.
 - Sem `## Impressões`, a seção vai para o fim da nota.
 
 O frontmatter (inclusive `tracks`), `## Impressões` e todo o resto da nota ficam como estavam, byte a byte. Títulos dentro de blocos de código não contam. Um aviso confirma a troca; se a gravação falha, um aviso diz que as faixas não foram atualizadas e o modal continua aberto.
@@ -97,6 +100,26 @@ A gravação usa `processFrontMatter`. O Obsidian regrava o frontmatter inteiro:
 
 Um clique num botão de 1 a 10 (ou uma tecla de 0 a 9) grava e fecha. O foco começa no grupo de botões, não no 1: Enter e espaço não dão nota sem querer. **Terminar sem nota** grava `status` e `finished` e deixa `rating` como estava. **Cancelar** e Esc não gravam nada.
 
+Numa nota com `finished_dates` (mais de um registro), a data de hoje entra também na lista, em ordem e sem repetir. Rodar **Terminei** de novo numa nota já concluída troca a conclusão: a data antiga de `finished` sai da lista. Sem `finished_dates`, nada mais muda.
+
+### Novo registro (rejogar / reassistir / reler)
+
+Para jogar, ver ou ler de novo uma obra que já está no catálogo, na mesma nota. Segue o formato do vault (CLAUDE.md do vault, §6): `started`, `finished`, `status`, `platform` e `hours` são sempre do registro atual, `rating` é a opinião atual, `finished_dates` lista todas as conclusões conhecidas em ordem crescente (a atual incluída) e `## Histórico`, logo antes de `## Impressões`, tem uma linha por registro, do mais novo para o mais antigo.
+
+Só vale para nota com `status: done`. Em outro status, um aviso diz que a nota não está concluída e nada muda.
+
+A janela mostra a linha que o registro atual deixa no histórico e pede:
+
+- **Início**: data do novo registro (`AAAA-MM-DD`, obrigatória). Padrão: hoje.
+- **Onde**: padrão, a `platform` atual da nota.
+
+**Iniciar registro** (ou Mod+Enter) grava, nesta ordem:
+
+1. O registro atual vai para o topo de `## Histórico`, com `vault.process`. Os campos ficam separados por ` · ` e os vazios são omitidos: `- 2024-11-03 → 2024-11-23 · Console Verde · 42,7 h · nota 10`; uma data só quando início e fim são o mesmo dia (`- 2026-09-01 · Cinema · nota 6`); `- 2025-07-01 → ? · PC` sem data de fim. Horas com vírgula decimal. Sem a seção, ela é criada logo antes de `## Impressões` (sem `## Impressões`, no fim da nota). Se o histórico já tem uma linha com as mesmas datas (o registro atual já estava lá, como nas notas do vault), nada é acrescentado e a janela avisa. As linhas que já existem (com links, edição do livro, `- Antes: data não registrada`) nunca são reescritas.
+2. As propriedades, com `processFrontMatter`: `finished` entra em `finished_dates` (sem repetir e em ordem; a lista é criada logo depois de `finished` quando não existe), `started` vira a data escolhida, `finished` e `hours` ficam vazios, `status: in-progress` e `platform` a escolhida. `rating` fica.
+
+O corpo é gravado antes do frontmatter: se a segunda gravação falhar, rodar o comando de novo não repete a linha. Quando o novo registro termina, **Terminei** grava `finished` e acrescenta a data em `finished_dates`.
+
 ### Teclado
 
 | Tecla | Onde | O que faz |
@@ -106,6 +129,7 @@ Um clique num botão de 1 a 10 (ou uma tecla de 0 a 9) grava e fecha. O foco com
 | Enter | busca | Busca na hora se o texto mudou; senão escolhe o resultado destacado. |
 | Enter | temporadas | Escolhe a temporada destacada. |
 | Mod+Enter (⌘↵ no macOS, Ctrl↵ no resto) | confirmação | **Criar nota**, **Atualizar capa** ou **Atualizar faixas**. |
+| Mod+Enter | Novo registro | **Iniciar registro**. |
 | Tab, depois Enter ou espaço | confirmação (séries) | Escolhe **Pôster da temporada** ou **Pôster da série**. |
 | 1–9, 0 | Terminei | Nota de 1 a 9; 0 vale 10. |
 | Esc | qualquer passo | Fecha sem gravar. |
@@ -183,6 +207,7 @@ Cada tipo grava só as suas chaves, nesta ordem (álbuns podem ter também `trac
 | `aliases` | Lista com itens entre aspas duplas: o `title` e, quando há e é diferente, o título do país configurado (ver [Aliases e título alternativo](#aliases-e-título-alternativo)). |
 | `year`, `season`, `episodes`, `rating`, `hours`, `pages` | Número. Vazio vira `rating:` sem valor. |
 | `started`, `finished` | `AAAA-MM-DD` sem aspas, ou vazio. |
+| `finished_dates` | Não existe em notas novas: só o **Novo registro** cria, logo depois de `finished` (ver [Novo registro](#novo-registro-rejogar--reassistir--reler)). |
 | `cover` | URL `https://` sem aspas, `"[[<nota>-cover.<ext>]]"` quando baixada, `""` sem capa. |
 | `tags` | `[entertainment]` |
 | `tracks` | Só álbuns, só com **Propriedade com o número de faixas** ligada e a lista de faixas conhecida: o número de faixas (todos os discos), logo depois de `year`. |
@@ -240,7 +265,7 @@ Com **Propriedade com o número de faixas** ligada, o mesmo álbum ganha `tracks
 
 O corpo vem do **Template** das configurações ou, com o campo vazio, de `media.md` na pasta do plugin Templates do Obsidian (no dev-vault, `_Templates/media.md`). Só o texto depois do frontmatter do template é usado: as propriedades são sempre as da tabela acima. As variáveis do plugin Templates são expandidas: `{{title}}` vira o nome do arquivo da nota (`horta-selvagem-s02`), e `{{date}}`, `{{time}}`, `{{date:FMT}}` e `{{time:FMT}}` usam os formatos configurados nele. Template inexistente: corpo vazio.
 
-Em álbuns com lista de faixas, a seção `## Faixas` entra no corpo logo antes de `## Impressões` (ver [Lista de faixas](#lista-de-faixas)). Um template sem `## Impressões` recebe a seção no começo do corpo; um template que já tem `## Faixas` tem essa seção substituída pela lista.
+Em álbuns com lista de faixas, a seção `## Faixas` entra no corpo logo antes de `## Impressões` (ou de `## Histórico`, que fica logo antes de `## Impressões`) (ver [Lista de faixas](#lista-de-faixas)). Um template sem `## Impressões` recebe a seção no começo do corpo; um template que já tem `## Faixas` tem essa seção substituída pela lista.
 
 Com **Link para a fonte** ligado, o corpo termina, depois de uma linha em branco, com a página da obra na fonte (sempre por último, depois da lista de faixas): `- IMDb: …`, `- TVmaze: …`, `- Open Library: …`, `- Google Books: …`, `- IGDB: …`, `- MusicBrainz: …` ou `- iTunes: …`. Um álbum do MusicBrainz com a capa do iTunes continua com a linha do MusicBrainz.
 
@@ -349,9 +374,9 @@ O plugin também guarda no `data.json` o último tipo buscado (`lastKind`), para
 
 ## Idiomas
 
-A interface segue o idioma do Obsidian (**Settings → General → Language**). Há inglês e português (Brasil). Outros idiomas usam inglês. Em inglês, os comandos são **Add to catalog**, **Change cover**, **Mark as finished**, **Update album tracks** e **Update aliases of the current note**. Na lista de países, os nomes vêm do `Intl` do sistema, no idioma da interface.
+A interface segue o idioma do Obsidian (**Settings → General → Language**). Há inglês e português (Brasil). Outros idiomas usam inglês. Em inglês, os comandos são **Add to catalog**, **Change cover**, **Mark as finished**, **Update album tracks**, **Update aliases of the current note** e **New run (replay / rewatch / reread)**. Na lista de países, os nomes vêm do `Intl` do sistema, no idioma da interface.
 
-Os valores gravados nas notas são dados e não são traduzidos: `kind` (o formulário mostra "Álbum" e grava `album`), `status` (o formulário mostra "Em andamento" e grava `in-progress`), `tags`, `tracks`, os aliases (o título do país vem como a fonte escreve) e o texto da nota de referência (`Leitura:`, **Resumo**, **Notas pessoais** e os aliases `referência` e `leitura`). Nomes das fontes (IMDb, TVmaze, Open Library, Google Books, IGDB, MusicBrainz, iTunes, Cover Art Archive) e os títulos das faixas também ficam como estão. A exceção são os títulos da lista de faixas: `## Faixas` e `### Disco N` são escritos no idioma do Obsidian quando a nota é criada ou atualizada (`## Tracks` e `### Disc N` em inglês).
+Os valores gravados nas notas são dados e não são traduzidos: `kind` (o formulário mostra "Álbum" e grava `album`), `status` (o formulário mostra "Em andamento" e grava `in-progress`), `tags`, `tracks`, os aliases (o título do país vem como a fonte escreve) e o texto da nota de referência (`Leitura:`, **Resumo**, **Notas pessoais** e os aliases `referência` e `leitura`). Nomes das fontes (IMDb, TVmaze, Open Library, Google Books, IGDB, MusicBrainz, iTunes, Cover Art Archive) e os títulos das faixas também ficam como estão. O histórico também é dado: `## Histórico` e as linhas (`nota 10`, `42,7 h`, a vírgula decimal) seguem o formato do vault em qualquer idioma. A exceção são os títulos da lista de faixas: `## Faixas` e `### Disco N` são escritos no idioma do Obsidian quando a nota é criada ou atualizada (`## Tracks` e `### Disc N` em inglês).
 
 Um idioma novo é um arquivo novo em `src/i18n/`, com todas as chaves de `src/i18n/en.ts`, mais uma entrada em `src/i18n/index.ts`.
 
@@ -359,7 +384,7 @@ Um idioma novo é um arquivo novo em `src/i18n/`, com todas as chaves de `src/i1
 
 | Arquivo | Papel |
 |---|---|
-| `src/main.ts` | Carrega as configurações, cria as fontes e registra os cinco comandos e a aba de configurações. |
+| `src/main.ts` | Carrega as configurações, cria as fontes e registra os seis comandos e a aba de configurações. |
 | `src/constants.ts` | Tipos, status, ordem das chaves por tipo, pasta padrão, hosts permitidos e textos da nota de referência. |
 | `src/providers/http.ts` | O único módulo que acessa a rede: `requestUrl`, só `https://`, só hosts da lista. |
 | `src/providers/imdb.ts`, `tvmaze.ts`, `open-library.ts`, `google-books.ts`, `igdb.ts`, `musicbrainz.ts`, `itunes.ts` | Uma fonte por arquivo: monta a requisição e converte a resposta em resultados. O MusicBrainz também completa o resultado escolhido (`resolve`: capa no Cover Art Archive ou no iTunes). |
@@ -372,6 +397,7 @@ Um idioma novo é um arquivo novo em `src/i18n/`, com todas as chaves de `src/i1
 | `src/modal/confirm-step.ts`, `confirm-fields.ts`, `confirm-values.ts`, `text-fields.ts` | Formulário por tipo, validação, banner de duplicata e criação da nota. |
 | `src/modal/chosen-preview.ts` | Capa grande e a escolha entre pôster da temporada e da série. |
 | `src/modal/cover-step.ts`, `rating-modal.ts` | Último passo do **Trocar capa** (capa atual e nova); pergunta da nota do **Terminei**. |
+| `src/modal/new-run.ts`, `new-run-modal.ts` | **Novo registro**: confere se a nota está concluída, pede início e onde (com a linha que vai para o histórico) e grava; usado pelo comando e pelo **Registrar de novo** do banner de duplicata. |
 | `src/modal/aliases-step.ts`, `update-aliases.ts` | Último passo e entrada do **Atualizar aliases da nota atual** (modal, ou gravação direta em livros, álbuns e sem país). |
 | `src/catalog/note-writer.ts` | Cria a nota: pasta, nome livre, capa, nota de referência, corpo e um único `vault.create`. |
 | `src/catalog/slug.ts`, `duplicates.ts` | Nome do arquivo; busca de duplicatas no cache de metadados, sem ler arquivos (álbuns comparam também o artista). |
@@ -379,14 +405,16 @@ Um idioma novo é um arquivo novo em `src/i18n/`, com todas as chaves de `src/i1
 | `src/catalog/aliases.ts` | Regras puras dos aliases: quando o segundo entra, a lista do **Atualizar aliases** e a posição da chave. |
 | `src/catalog/template.ts` | Corpo do template, variáveis, lista de faixas e linha da fonte. |
 | `src/catalog/tracklist.ts` | Funções puras da lista de faixas: duração, resumo, texto da seção e onde ela entra na nota (`replaceTracklistSection`). |
+| `src/catalog/history.ts`, `runs.ts` | Funções puras dos registros: linha do histórico (texto e leitura), onde ela entra na nota (`addToHistory`), `finished_dates` e as propriedades do **Novo registro** e do **Terminei**. |
+| `src/catalog/markdown.ts` | Linhas e títulos das seções que o plugin escreve (`## Faixas`, `## Histórico`), fora de blocos de código. |
 | `src/catalog/cover-download.ts`, `reference-note.ts` | Download da capa para os anexos; nota de referência do livro técnico. |
-| `src/catalog/updates.ts`, `catalog-note.ts` | **Trocar capa**, **Terminei** e **Atualizar aliases** via `processFrontMatter`; leitura de uma nota do catálogo. |
-| `test/` | Testes de unidade (`pnpm --filter media-catalog test`): resposta do IMDb, akas do TVmaze, localizações da IGDB, regra dos aliases e a opção do país. |
+| `src/catalog/updates.ts`, `catalog-note.ts` | **Trocar capa**, **Terminei**, **Atualizar aliases** e **Novo registro** via `processFrontMatter` (e `vault.process` para a linha do histórico); leitura de uma nota do catálogo. |
+| `test/` | Testes de unidade (`pnpm --filter media-catalog test`): resposta do IMDb, akas do TVmaze, localizações da IGDB, regra dos aliases e a opção do país, linha e seção do histórico, `finished_dates` e propriedades do **Novo registro** e do **Terminei**. |
 | `src/ui/` | Peças do modal: card de resultado, capa com placeholder, capa atual da nota, botões de pôster, lista com teclado, estados de carregando, vazio e erro, linhas de formulário, lista de faixas e rótulo das edições. |
 | `src/settings/` | Configurações declarativas do Obsidian 1.13, normalização do `data.json` e linhas de segredo com `SecretComponent`. |
 | `src/i18n/` | Catálogos de texto da interface (inglês e português). |
 
-Notas novas são criadas uma vez, com `vault.create`, e capas com `vault.createBinary`. Notas existentes só mudam por `processFrontMatter` (frontmatter) e, no **Atualizar faixas do álbum**, por `vault.process` (só a seção de faixas).
+Notas novas são criadas uma vez, com `vault.create`, e capas com `vault.createBinary`. Notas existentes só mudam por `processFrontMatter` (frontmatter) e por `vault.process` no **Atualizar faixas do álbum** (só a seção de faixas) e no **Novo registro** (só a linha nova do histórico).
 
 ## Desenvolvimento
 

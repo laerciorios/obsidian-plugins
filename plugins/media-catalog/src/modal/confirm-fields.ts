@@ -1,5 +1,5 @@
 import type { App, Setting } from 'obsidian';
-import { todayIso } from '../catalog/dates';
+import { isIsoDate, todayIso } from '../catalog/dates';
 import { listAreas } from '../catalog/reference-note';
 import { RATING_MAX, RATING_MIN, STATUSES } from '../constants';
 import { t } from '../i18n';
@@ -72,6 +72,17 @@ export class ConfirmForm {
 	/** Books and albums: the author or artist as typed, trimmed. */
 	get author(): string {
 		return this.values.author.trim();
+	}
+
+	/** Where, as typed, trimmed. */
+	get platform(): string {
+		return this.values.platform.trim();
+	}
+
+	/** Started as typed, or null while empty or not a YYYY-MM-DD date. */
+	get started(): string | null {
+		const started = this.values.started.trim();
+		return isIsoDate(started) ? started : null;
 	}
 
 	/** The year as typed, or null while empty or not four digits. */

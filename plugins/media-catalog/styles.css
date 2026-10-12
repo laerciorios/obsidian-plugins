@@ -303,6 +303,12 @@ body:not(.is-phone) .mc-modal {
 	color: var(--text-error);
 }
 
+.mc-duplicate-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--size-4-2);
+}
+
 .mc-form .setting-item:first-child {
 	border-top: none;
 }
@@ -390,6 +396,26 @@ body:not(.is-phone) .mc-modal {
 .mc-rating-buttons button {
 	padding-inline: 0;
 	font-variant-numeric: tabular-nums;
+}
+
+/* ---- "New run" ---------------------------------------------------------- */
+
+.mc-history-line {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-1);
+	padding: var(--size-4-2) var(--size-4-3);
+	border-radius: var(--radius-m);
+	background-color: var(--background-secondary);
+}
+
+.mc-history-line code {
+	overflow-wrap: anywhere;
+	white-space: pre-wrap;
+}
+
+.mc-new-run .mc-form {
+	margin-top: var(--size-4-2);
 }
 
 /* ---- narrow screens ----------------------------------------------------- */

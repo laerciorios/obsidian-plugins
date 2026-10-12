@@ -9,7 +9,7 @@ O plugin busca filmes, séries, livros, jogos e álbuns na internet e cria notas
 
 | Onde | O que tem |
 |---|---|
-| `DB/` (filmes) | [[girassois-em-marte\|Girassóis em Marte]] (done, nota 8, capa local), [[samambaia-o-retorno\|Samambaia: O Retorno]] (backlog, título com `:`) |
+| `DB/` (filmes) | [[girassois-em-marte\|Girassóis em Marte]] (done, nota 8, capa local), [[samambaia-o-retorno\|Samambaia: O Retorno]] (backlog, título com `:`), [[pomar-de-neon\|Pomar de Neon]] (done, visto várias vezes: `finished_dates` e `## Histórico` com o registro atual, um link e `- Antes: data não registrada`) |
 | `DB/` (série) | [[horta-selvagem-s01\|Horta Selvagem T1]] (done) e [[horta-selvagem-s02\|T2]] (in-progress): uma nota por temporada, `title` com a temporada (`Horta Selvagem (S01)`) |
 | `DB/` (jogos) | [[semente-eterna\|Semente Eterna]] (done, 42 horas, **sem** `aliases`), [[jardineiro-espacial\|Jardineiro Espacial]] (dropped, com o alias `JE` adicionado à mão) |
 | `DB/` (livros) | [[refatorando-canteiros\|Refatorando Canteiros]] (técnico, com `reference`), [[o-livro-das-mudas\|O Livro das Mudas]] (backlog) |
@@ -25,7 +25,7 @@ O plugin busca filmes, séries, livros, jogos e álbuns na internet e cria notas
 
 - [ ] Na raiz do repo, `pnpm --filter media-catalog dev`. Confira **Media Catalog** ativo em Plugins da comunidade.
 - [ ] Em Configurações → Media Catalog: **Pasta do catálogo** `1 - Knowledge/Entertainment/DB`, **Template** vazio, **Link para a fonte** ligado, **Status padrão** "Em andamento", **Fonte de livros** Open Library, **Fonte de álbuns** MusicBrainz, **Incluir EPs** ligado, **Incluir coletâneas e álbuns ao vivo** desligado, **Capas do iTunes** ligado, **Incluir lista de faixas em álbuns** ligado, **Propriedade com o número de faixas** desligado, **País do título alternativo** Nenhum.
-- [ ] A paleta de comandos mostra **Adicionar ao catálogo**. **Trocar capa** e **Terminei** só aparecem com uma nota do catálogo aberta (abra [[semente-eterna]] e depois este índice para comparar). **Atualizar faixas do álbum** só aparece com uma nota de álbum aberta ([[raizes-aereas]] sim, [[semente-eterna]] não). **Atualizar aliases da nota atual** aparece com qualquer nota do catálogo aberta.
+- [ ] A paleta de comandos mostra **Adicionar ao catálogo**. **Trocar capa** e **Terminei** só aparecem com uma nota do catálogo aberta (abra [[semente-eterna]] e depois este índice para comparar). **Atualizar faixas do álbum** só aparece com uma nota de álbum aberta ([[raizes-aereas]] sim, [[semente-eterna]] não). **Atualizar aliases da nota atual** e **Novo registro (rejogar / reassistir / reler)** aparecem com qualquer nota do catálogo aberta.
 
 ## Filmes (IMDb)
 
@@ -86,7 +86,7 @@ O plugin busca filmes, séries, livros, jogos e álbuns na internet e cria notas
 - [ ] O formulário tem **Artista** preenchido, sem **Páginas** nem **Livro técnico**. **Início**, **Fim** e **Onde** falam de primeira audição, audição completa e Spotify, YouTube Music, vinil.
 - [ ] **Criar nota** para OK Computer cria `DB/ok-computer.md` com `kind: album`, `title: "OK Computer"`, `author: "Radiohead"`, `year: 1997`, a ordem `kind, title, aliases, author, year, status, rating, started, finished, platform, cover, tags`, e termina com `- MusicBrainz: https://musicbrainz.org/release-group/<id>`.
 - [ ] Álbum homônimo: `weezer` traz os álbuns da banda chamados "Weezer" (1994, 2001, 2008…). Crie o de 1994 (`weezer.md`) e depois o de 2001: não é duplicata e vira `weezer-2001.md`, sem repetir o nome da banda.
-- [ ] Duplicata já no vault: com `ok-computer.md` criada, escolha OK Computer de novo: "Já está no catálogo: ok-computer", com **Abrir nota**, e **Criar nota** desativado. O mesmo com o Weezer de 1994. Mude **Artista** para `Os Samambaias`: o aviso some, e a nota criada é `ok-computer-os-samambaias.md` (apague-a depois).
+- [ ] Duplicata já no vault: com `ok-computer.md` criada, escolha OK Computer de novo: "Já está no catálogo: ok-computer", com **Registrar de novo** e **Abrir nota existente**, e **Criar nota** desativado. O mesmo com o Weezer de 1994. Mude **Artista** para `Os Samambaias`: o aviso some, e a nota criada é `ok-computer-os-samambaias.md` (apague-a depois).
 - [ ] EPs e singles: `my iron lung` mostra o EP com "EP". Com **Incluir EPs** desligado, ele some. Singles não aparecem em nenhum caso.
 - [ ] Coletâneas e ao vivo: `radiohead` não lista coletâneas nem álbuns ao vivo. Com **Incluir coletâneas e álbuns ao vivo** ligado, eles aparecem (só no MusicBrainz). Trilhas sonoras aparecem com a opção desligada ou ligada.
 - [ ] Sem capa no Cover Art Archive: escolha um resultado do MusicBrainz cujo card veio sem miniatura (ícone de imagem ausente). Depois de "Procurando a capa…", o formulário mostra a capa do iTunes (URL em `isN-ssl.mzstatic.com`, 600×600). Com **Capas do iTunes** desligado, feche e abra o modal e escolha o mesmo álbum: o formulário avisa que a nota é criada sem capa.
@@ -153,9 +153,25 @@ O Obsidian regrava o frontmatter inteiro ao atualizar (`processFrontMatter`): as
 - [ ] Livro ([[o-livro-das-mudas]]) e álbum ([[os-samambaias]]) com **Brasil (BR)**: o comando não abre modal, só avisa.
 - [ ] **Voltar** no último passo volta para a busca; Esc fecha sem gravar.
 
+## Novo registro
+
+Depois de cada teste, restaure a nota com `git checkout -- "dev-vault/1 - Knowledge/Entertainment/DB/<nota>.md"`. O Obsidian regrava o frontmatter inteiro (`processFrontMatter`): as aspas somem e as listas viram listas em bloco (`- item`).
+
+- [ ] Em [[horta-selvagem-s02]] (in-progress), **Novo registro (rejogar / reassistir / reler)** só mostra o aviso "não está concluída" e nada muda (`git diff` vazio). O mesmo em [[jardineiro-espacial]] (dropped).
+- [ ] Em [[semente-eterna]] (jogo done, 42 horas, sem histórico): a janela **Novo registro** mostra a linha `- 2026-03-05 → 2026-04-18 · PC · 42 h · nota 9`, **Início** com hoje (com o foco) e **Onde** `PC`.
+- [ ] Apague **Início** e clique em **Iniciar registro**: aparece "Digite uma data no formato AAAA-MM-DD." e nada é gravado. Preencha de novo: a mensagem some.
+- [ ] Mude **Onde** para `Console Verde` e grave com ⌘↵: aviso "novo registro de "Semente Eterna" iniciado". A nota ganha `## Histórico` com a linha acima logo antes de `## Impressões` (uma linha em branco antes de `## Impressões`), `finished_dates` com `2026-04-18` logo depois de `finished`, `started` com hoje, `finished` e `hours` vazios, `status: in-progress`, `platform: Console Verde` e `rating: 9`. `## Impressões` e o texto ficam iguais.
+- [ ] Na mesma nota, **Terminei** com nota 10: `status: done`, `finished` com hoje e `finished_dates` com `2026-04-18` e hoje, em ordem. **Novo registro** de novo: a linha nova (`- <hoje> · Console Verde · nota 10`) entra no topo do histórico, acima da de 2026-04-18, e `finished_dates` não repete hoje.
+- [ ] Em [[pomar-de-neon]] (o registro atual já está no histórico): a janela diz que o histórico já tem este registro. Ao gravar, `git diff` não mostra nada abaixo do frontmatter (as quatro linhas ficam como estão), `finished_dates` continua com três datas, `started` vira a data escolhida, `finished` fica vazio e `status: in-progress`. A nota não tem `hours`: a chave não aparece.
+- [ ] **Cancelar** e Esc não gravam nada.
+- [ ] Nota sem `## Impressões`: em [[girassois-em-marte]], apague a linha `## Impressões` e rode o comando: `## Histórico` vai para o fim da nota, com uma linha em branco antes.
+- [ ] **Registrar de novo** no **Adicionar ao catálogo**: com uma nota done criada nos testes (`the-matrix.md` com status Concluído), busque `matrix` de novo, escolha The Matrix e digite `streaming` em **Onde**. O banner mostra "Já está no catálogo: the-matrix" com **Registrar de novo** e **Abrir nota existente**. **Registrar de novo** abre a janela por cima do formulário com **Onde** `streaming`; **Cancelar** volta ao formulário. Grave: o modal fecha, `the-matrix.md` abre com `## Histórico` e `status: in-progress`, e nenhuma nota nova é criada.
+- [ ] **Registrar de novo** com a duplicata em andamento (rode o teste anterior de novo, com `the-matrix.md` já em `in-progress`): só o aviso "não está concluída"; o formulário continua aberto.
+- [ ] **Abrir nota existente** fecha o modal e abre a nota.
+
 ## Duplicatas e colisão de nome
 
-- [ ] Com `the-matrix.md` já criada, busque `matrix` e escolha The Matrix de novo: o formulário mostra "Já está no catálogo: the-matrix", com **Abrir nota**, e **Criar nota** fica desativado.
+- [ ] Com `the-matrix.md` já criada, busque `matrix` e escolha The Matrix de novo: o formulário mostra "Já está no catálogo: the-matrix", com **Registrar de novo** e **Abrir nota existente**, e **Criar nota** fica desativado.
 - [ ] Série: `breaking bad` temporada 2 de novo é duplicata; a temporada 3 não é.
 - [ ] Série com outro nome de arquivo: renomeie `breaking-bad-s02.md` para `bb-dois.md` (o `title` continua `Breaking Bad (S02)`). A temporada 2 de novo mostra "Já está no catálogo: bb-dois". Apague a nota depois.
 - [ ] Mesmo título, outro ano: em **Filme**, crie `dune` de 2021 e depois o de 1984. O segundo não é duplicata e vira `dune-1984.md`.
@@ -179,6 +195,8 @@ O Obsidian regrava o frontmatter inteiro ao atualizar (`processFrontMatter`): as
 - [ ] Ao abrir **Terminei**, Enter e espaço não gravam nada: o foco fica no grupo dos botões, não no 1. Tab chega ao 1, e as teclas 0–9 continuam valendo.
 - [ ] **Terminar sem nota** grava `status` e `finished`, e deixa `rating` como estava.
 - [ ] Esc ou **Cancelar** não gravam nada.
+- [ ] Em [[pomar-de-neon]] (com `finished_dates`), **Terminei**: `finished` e `finished_dates` ganham hoje; a data antiga de `finished` (2026-08-24) sai da lista, porque a nota já estava concluída. Restaure a nota.
+- [ ] Sem `finished_dates` ([[girassois-em-marte]]), **Terminei** não cria a lista.
 
 ## Baixar capa
 
@@ -205,7 +223,8 @@ O Obsidian regrava o frontmatter inteiro ao atualizar (`processFrontMatter`): as
 
 ## Idiomas
 
-- [ ] Obsidian em inglês (Configurações → Geral → Idioma, reinicia o app): comandos **Add to catalog**, **Change cover**, **Mark as finished**, **Update album tracks** e **Update aliases of the current note**, e modal, formulário, avisos e configurações em inglês.
+- [ ] Obsidian em inglês (Configurações → Geral → Idioma, reinicia o app): comandos **Add to catalog**, **Change cover**, **Mark as finished**, **Update album tracks**, **Update aliases of the current note** e **New run (replay / rewatch / reread)**, e modal, formulário, avisos e configurações em inglês.
+- [ ] Em inglês, o **New run** continua gravando `## Histórico` e linhas como `- 2026-03-05 → 2026-04-18 · PC · 42 h · nota 9` (formato do vault).
 - [ ] Em inglês, as notas continuam com os mesmos valores (`status: done`, `kind: movie`), e a nota de referência continua com `Leitura:`, **Resumo** e **Notas pessoais**.
 - [ ] De volta ao português, tudo volta a aparecer em português.
 

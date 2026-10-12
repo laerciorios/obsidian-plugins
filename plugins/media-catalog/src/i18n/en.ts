@@ -12,6 +12,7 @@ export const en = {
 	'command.markFinished': 'Mark as finished',
 	'command.updateTracks': 'Update album tracks',
 	'command.updateAliases': 'Update aliases of the current note',
+	'command.newRun': 'New run (replay / rewatch / reread)',
 
 	// ---- kinds and statuses (labels only; notes store the English values) --
 	'kind.movie': 'Movie',
@@ -32,6 +33,7 @@ export const en = {
 	'modal.season.title': 'Choose the season',
 	'modal.confirm.title': 'Check the details',
 	'modal.back': 'Back',
+	'modal.cancel': 'Cancel',
 	'modal.instructions.navigate': 'to navigate',
 	'modal.instructions.choose': 'to choose',
 	'modal.instructions.close': 'to close',
@@ -134,7 +136,8 @@ export const en = {
 	'field.cover.download': 'Download to attachments',
 	'field.cover.none': 'No cover found. The note is created without one.',
 	'confirm.duplicate': 'Already in the catalog: {name}.',
-	'confirm.open': 'Open note',
+	'confirm.open': 'Open existing note',
+	'confirm.registerAgain': 'Register again',
 	'confirm.create': 'Create note',
 	'confirm.updateCover': 'Update cover',
 	'confirm.saving': 'Saving…',
@@ -150,11 +153,20 @@ export const en = {
 	'rating.skip': 'Finish without rating',
 	'rating.cancel': 'Cancel',
 
+	// ---- "New run" ----------------------------------------------------------
+	'newRun.title': 'New run',
+	'newRun.desc': '"{title}" starts again: the current run goes to the top of the history, and the note is in progress again.',
+	'newRun.history': 'Line in the history',
+	'newRun.listed': 'The history already lists this run: nothing is added there.',
+	'newRun.started.desc': 'Start of the new run (YYYY-MM-DD).',
+	'newRun.submit': 'Start new run',
+
 	// ---- validation ---------------------------------------------------------
 	'validation.title': 'The title cannot be empty.',
 	'validation.year': 'Use a four-digit year.',
 	'validation.rating': 'Use a whole number from 1 to 10.',
 	'validation.date': 'Use the YYYY-MM-DD format.',
+	'validation.dateRequired': 'Enter a date in the YYYY-MM-DD format.',
 	'validation.number': 'Use a number, zero or more.',
 
 	// ---- errors (search, download) -----------------------------------------
@@ -177,6 +189,9 @@ export const en = {
 	'notice.downloadFailed': 'Media Catalog: could not download the cover, the note keeps the link.',
 	'notice.finished': 'Media Catalog: "{name}" marked as done.',
 	'notice.finishFailed': 'Media Catalog: could not update "{name}".',
+	'notice.newRun': 'Media Catalog: new run of "{name}" started.',
+	'notice.newRunFailed': 'Media Catalog: could not start a new run of "{name}".',
+	'notice.newRunNotDone': 'Media Catalog: "{name}" is not done. A new run starts once the current one is finished.',
 	'notice.referenceCreated': 'Media Catalog: reference note "{name}" created.',
 	'notice.referenceExists': 'Media Catalog: reference note "{name}" already existed and was linked.',
 	'notice.referenceFailed': 'Media Catalog: the note was created, but not the reference note.',

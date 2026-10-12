@@ -4,6 +4,7 @@ import { markFinished } from './catalog/updates';
 import { COMMAND_IDS, SAVE_DEBOUNCE_MS } from './constants';
 import { t } from './i18n';
 import { CatalogModal } from './modal/catalog-modal';
+import { newRun } from './modal/new-run';
 import { askRating } from './modal/rating-modal';
 import { updateNoteAliases } from './modal/update-aliases';
 import { createProviders, userAgentFor } from './providers';
@@ -78,6 +79,18 @@ export default class MediaCatalogPlugin extends Plugin implements CatalogContext
 				const note = this.activeNote();
 				if (!note) return false;
 				if (!checking) void this.finish(note);
+				return true;
+			},
+		});
+		this.addCommand({
+			id: COMMAND_IDS.newRun,
+			name: t('command.newRun'),
+			icon: 'repeat',
+			checkCallback: (checking) => {
+				const note = this.activeNote();
+				if (!note) return false;
+				// Only done notes start a new run: the others get a notice (see newRun).
+				if (!checking) void newRun(this, note.file);
 				return true;
 			},
 		});
