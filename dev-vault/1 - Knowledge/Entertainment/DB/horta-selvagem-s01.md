@@ -1,6 +1,6 @@
 ---
 kind: series
-title: "Horta Selvagem"
+title: "Horta Selvagem (S01)"
 season: 1
 episodes: 8
 year: 2023

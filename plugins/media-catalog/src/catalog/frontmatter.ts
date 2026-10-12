@@ -1,6 +1,7 @@
 import { ALBUM_TRACKS_KEY, CATALOG_TAG, FRONTMATTER_KEYS } from '../constants';
 import type { CatalogDraft, MediaKind } from '../types';
 import { isIsoDate } from './dates';
+import { noteTitle } from './series-title';
 import { isPlainSafe, renderFrontmatterBlock, yaml } from './yaml';
 import type { YamlEntry, YamlValue } from './yaml';
 
@@ -34,12 +35,13 @@ function coverValue(cover: string): YamlValue {
 /**
  * Frontmatter entries of a new catalog note, in the order of
  * FRONTMATTER_KEYS[kind]. Keys the kind does not use are never written;
- * albums may add `tracks` after `year` (see ResolvedValues.tracks).
+ * series titles end in the season (see noteTitle); albums may add `tracks`
+ * after `year` (see ResolvedValues.tracks).
  */
 export function catalogEntries(draft: CatalogDraft, resolved: ResolvedValues): YamlEntry[] {
 	const values: Record<FrontmatterKey, YamlValue> = {
 		kind: yaml.plain(draft.kind),
-		title: yaml.quoted(draft.title.trim()),
+		title: yaml.quoted(noteTitle(draft.kind, draft.title, draft.season)),
 		author: yaml.quoted(draft.author.trim()),
 		season: yaml.number(draft.season),
 		episodes: yaml.number(draft.episodes),

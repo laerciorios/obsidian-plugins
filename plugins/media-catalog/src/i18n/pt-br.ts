@@ -77,6 +77,7 @@ export const ptBR: Translation<typeof en> = {
 	'field.title.desc': 'Título original ou em inglês, como no resto do catálogo.',
 	'field.title.descBook': 'Título da edição que você leu.',
 	'field.title.descAlbum': 'Título como foi lançado.',
+	'field.title.descSeries': 'Nome original ou em inglês da série, sem a temporada: o título da nota termina em "({tag})".',
 	'field.year.name': 'Ano',
 	'field.year.desc': 'Ano de lançamento.',
 	'field.year.descSeries': 'Ano de estreia da temporada.',

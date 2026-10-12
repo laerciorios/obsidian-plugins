@@ -10,7 +10,7 @@ O plugin busca filmes, séries, livros, jogos e álbuns na internet e cria notas
 | Onde | O que tem |
 |---|---|
 | `DB/` (filmes) | [[girassois-em-marte\|Girassóis em Marte]] (done, nota 8, capa local), [[samambaia-o-retorno\|Samambaia: O Retorno]] (backlog, título com `:`) |
-| `DB/` (série) | [[horta-selvagem-s01\|Horta Selvagem T1]] (done) e [[horta-selvagem-s02\|T2]] (in-progress): uma nota por temporada |
+| `DB/` (série) | [[horta-selvagem-s01\|Horta Selvagem T1]] (done) e [[horta-selvagem-s02\|T2]] (in-progress): uma nota por temporada, `title` com a temporada (`Horta Selvagem (S01)`) |
 | `DB/` (jogos) | [[semente-eterna\|Semente Eterna]] (done, 42 horas), [[jardineiro-espacial\|Jardineiro Espacial]] (dropped) |
 | `DB/` (livros) | [[refatorando-canteiros\|Refatorando Canteiros]] (técnico, com `reference`), [[o-livro-das-mudas\|O Livro das Mudas]] (backlog) |
 | `DB/` (álbuns) | [[os-samambaias\|Os Samambaias]] (homônimo da banda Os Samambaias, done, vinil, `## Faixas` com dois discos), [[mare-de-musgo\|Maré de Musgo]] (Lia Broto, in-progress, Spotify, **sem** `## Faixas`), [[raizes-aereas\|Raízes Aéreas]] (EP do Coletivo Orvalho, backlog, `## Faixas` com uma faixa sem duração e outra de mais de uma hora, `tracks: 4`) |
@@ -47,7 +47,9 @@ O plugin busca filmes, séries, livros, jogos e álbuns na internet e cria notas
 - [ ] Tipo **Série**, `breaking bad`: resultados com canal e anos ("AMC · 2008–2019"). Escolher abre **Escolha a temporada** com 5 temporadas, pôster, episódios e ano de cada uma.
 - [ ] **Voltar** devolve a busca com o texto e os resultados de antes.
 - [ ] Na grade de temporadas, ↑↓←→ movem o destaque sem clicar antes.
-- [ ] Temporada 2 → `DB/breaking-bad-s02.md` com `season: 2`, `episodes: 13`, `year: 2009` e o pôster da temporada.
+- [ ] No formulário da temporada 2, **Título** vem `Breaking Bad`, e a descrição diz que o título da nota termina em "(S02)".
+- [ ] Temporada 2 → `DB/breaking-bad-s02.md` com `title: "Breaking Bad (S02)"`, `season: 2`, `episodes: 13`, `year: 2009` e o pôster da temporada.
+- [ ] Temporada digitada no título: escolha a temporada 3 e mude **Título** para `Breaking Bad (S03)`. A nota é `breaking-bad-s03.md` com `title: "Breaking Bad (S03)"`, sem repetir a temporada. Apague a nota depois.
 - [ ] Na confirmação da temporada 2, abaixo dos dados aparecem **Pôster da temporada** (pressionado) e **Pôster da série**. Clique em **Pôster da série**: a capa grande muda, e a nota criada grava o pôster da série. Com Tab até os botões, Enter e espaço também escolhem.
 - [ ] `doctor who` (o de 2005): a temporada 13 vem com 6 episódios, contados porque o TVmaze não informa o total.
 - [ ] `doctor who` (o de 2023): as temporadas sem pôster usam o pôster da série, e a confirmação não mostra os botões de pôster.
@@ -125,6 +127,7 @@ Os álbuns do dev-vault são fictícios: para buscar, troque temporariamente `ti
 
 - [ ] Com `the-matrix.md` já criada, busque `matrix` e escolha The Matrix de novo: o formulário mostra "Já está no catálogo: the-matrix", com **Abrir nota**, e **Criar nota** fica desativado.
 - [ ] Série: `breaking bad` temporada 2 de novo é duplicata; a temporada 3 não é.
+- [ ] Série com outro nome de arquivo: renomeie `breaking-bad-s02.md` para `bb-dois.md` (o `title` continua `Breaking Bad (S02)`). A temporada 2 de novo mostra "Já está no catálogo: bb-dois". Apague a nota depois.
 - [ ] Mesmo título, outro ano: em **Filme**, crie `dune` de 2021 e depois o de 1984. O segundo não é duplicata e vira `dune-1984.md`.
 - [ ] Livro não olha o ano: crie `dune` em **Livro** (Open Library, 1965). Busque de novo e, no formulário, mude **Ano** para 2017 (o ano de uma edição no Google Books): continua "Já está no catálogo". Em **Filme**, mudar o ano tira o aviso.
 
@@ -136,13 +139,13 @@ Os álbuns do dev-vault são fictícios: para buscar, troque temporariamente `ti
 - [ ] O foco começa em **Atualizar capa**. Aplique uma capa com **Manter o link** e rode **Trocar capa** de novo com o mesmo resultado: **Atualizar capa** fica desativado, com o aviso "A nota já usa esta capa.", e o foco vai para **Capa**. **Baixar para os anexos** reativa o botão. Restaure `cover: ""`.
 - [ ] Ano da nota e capas: troque temporariamente `title` e `year` de [[samambaia-o-retorno]] por `Dune` e `1984`. **Trocar capa** destaca o Dune de 1984 (o último da lista), sem escolher. Com `Cidade de Deus` (e `year: 2002`), os resultados sem capa ficam no fim da lista. Restaure `title: "Samambaia: O Retorno"` e `year: 1994`.
 - [ ] Escolha qualquer resultado com capa: só `cover` muda no frontmatter. Restaure `cover: ""` depois (os dados fictícios não guardam URLs reais).
-- [ ] Em [[horta-selvagem-s02]], a busca é do tipo Série e a temporada 2 vem pré-selecionada.
-- [ ] Série com pôster de temporada: troque temporariamente `title` de [[horta-selvagem-s02]] por `Breaking Bad`. No último passo aparecem **Pôster da temporada** e **Pôster da série**, e **Nova** acompanha a escolha. Restaure o título e `cover: ""`.
+- [ ] Em [[horta-selvagem-s02]], a busca é do tipo Série com `Horta Selvagem`, sem o `(S02)` do título, e a temporada 2 vem pré-selecionada.
+- [ ] Série com pôster de temporada: troque temporariamente `title` de [[horta-selvagem-s02]] por `Breaking Bad (S02)`. A busca é `Breaking Bad`; no último passo aparecem **Pôster da temporada** e **Pôster da série**, e **Nova** acompanha a escolha. Restaure `title: "Horta Selvagem (S02)"` e `cover: ""`.
 - [ ] Uma nota com `kind: movie` fora de `DB/` também aceita o comando.
 
 ## Terminei
 
-- [ ] Em [[horta-selvagem-s02]], **Terminei** pede a nota. Escolha 8: `status: done`, `finished` com hoje e `rating: 8`. Restaure a nota depois (`in-progress`, `rating` e `finished` vazios).
+- [ ] Em [[horta-selvagem-s02]], **Terminei** pede a nota de "Horta Selvagem (S02)". Escolha 8: `status: done`, `finished` com hoje e `rating: 8`. Restaure a nota depois (`in-progress`, `rating` e `finished` vazios).
 - [ ] Ao abrir **Terminei**, Enter e espaço não gravam nada: o foco fica no grupo dos botões, não no 1. Tab chega ao 1, e as teclas 0–9 continuam valendo.
 - [ ] **Terminar sem nota** grava `status` e `finished`, e deixa `rating` como estava.
 - [ ] Esc ou **Cancelar** não gravam nada.

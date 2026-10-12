@@ -1,4 +1,5 @@
 import { isIsoDate, todayIso } from '../catalog/dates';
+import { seasonTag } from '../catalog/series-title';
 import { FRONTMATTER_KEYS, RATING_MAX, RATING_MIN } from '../constants';
 import { t } from '../i18n';
 import type { MessageKey } from '../i18n';
@@ -75,6 +76,12 @@ export function dateDescOf(kind: MediaKind, key: 'started' | 'finished'): Messag
 export function hasAuthor(kind: MediaKind): boolean {
 	const keys: readonly string[] = FRONTMATTER_KEYS[kind];
 	return keys.includes('author');
+}
+
+/** Description of **Title**. A series season says how the note title ends ("(S02)"). */
+export function titleDescOf({ result, season }: ConfirmInput): string {
+	if (result.kind === 'series' && season) return t('field.title.descSeries', { tag: seasonTag(season.number) });
+	return t(TITLE_DESC[result.kind]);
 }
 
 /** Year description of the form: Google Books gives the year of the edition, not of the first publication. */

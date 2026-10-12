@@ -3,10 +3,12 @@ import type { App } from 'obsidian';
 import type { MediaKind } from '../types';
 import { frontmatterOf, numberOf, textOf } from './catalog-note';
 import { folderAt, joinPath } from './paths';
+import { bareTitle } from './series-title';
 import { hasSlug, seasonSuffix, slugify } from './slug';
 
 export interface DuplicateQuery {
 	kind: MediaKind;
+	/** Series: the series name; a season at the end ("(S02)") is ignored. */
 	title: string;
 	season: number | null;
 	/**
@@ -25,9 +27,13 @@ export interface DuplicateQuery {
 	author?: string | null;
 }
 
-/** Base name (no extension) a new note for this item gets before collisions: `<slug>` or `<slug>-sNN`. */
+/**
+ * Base name (no extension) a new note for this item gets before collisions:
+ * `<slug>` or `<slug>-sNN`. Series slug the series name, never the season of
+ * the title: "Horta Selvagem (S02)" and "Horta Selvagem" both give `horta-selvagem-s02`.
+ */
 export function baseName(kind: MediaKind, title: string, season: number | null): string {
-	const slug = slugify(title);
+	const slug = slugify(bareTitle(kind, title));
 	return kind === 'series' && season !== null ? `${slug}${seasonSuffix(season)}` : slug;
 }
 
@@ -48,8 +54,9 @@ function sameEntry(frontmatter: Record<string, unknown>, query: DuplicateQuery, 
 		if (wanted !== null && year !== null && year !== wanted) return false;
 	}
 	if (!checkTitle) return true;
+	// Series notes keep the season in the title ("Horta Selvagem (S02)"); the season was compared above.
 	const title = textOf(frontmatter.title);
-	return title !== null && slugify(title) === slugify(query.title);
+	return title !== null && slugify(bareTitle(query.kind, title)) === slugify(bareTitle(query.kind, query.title));
 }
 
 /**

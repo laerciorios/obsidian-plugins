@@ -81,6 +81,7 @@ export const en = {
 	'field.title.desc': 'Original or English title, as in the rest of the catalog.',
 	'field.title.descBook': 'Title of the edition you read.',
 	'field.title.descAlbum': 'Title as released.',
+	'field.title.descSeries': 'Original or English name of the series, without the season: the note title ends in "({tag})".',
 	'field.year.name': 'Year',
 	'field.year.desc': 'Release year.',
 	'field.year.descSeries': 'Year the season premiered.',

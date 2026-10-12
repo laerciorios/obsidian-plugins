@@ -1,5 +1,6 @@
 import type { App } from 'obsidian';
 import { frontmatterOf, textOf } from '../catalog/catalog-note';
+import { seriesName } from '../catalog/series-title';
 import { slugify } from '../catalog/slug';
 import { ALBUM_SOURCES, BOOK_SOURCES, MIN_QUERY_LENGTH } from '../constants';
 import { providersFor } from '../providers';
@@ -39,9 +40,12 @@ export function createSearchState(context: CatalogContext, options: CatalogModal
 /**
  * What cover and tracks modes search: the note title; albums add the artist, since
  * albums of different artists often share a title. A self-titled album
- * searches its title once.
+ * searches its title once. Series search the series name, without the season
+ * of the title ("Horta Selvagem (S02)" → "Horta Selvagem"): the season step
+ * preselects it.
  */
 export function coverQuery(app: App, note: CatalogNoteInfo): string {
+	if (note.kind === 'series') return seriesName(note.title);
 	if (note.kind !== 'album') return note.title;
 	const artist = textOf(frontmatterOf(app, note.file)?.author);
 	return artist && slugify(artist) !== slugify(note.title) ? `${note.title} ${artist}` : note.title;

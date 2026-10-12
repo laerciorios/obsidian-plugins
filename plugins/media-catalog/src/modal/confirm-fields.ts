@@ -8,7 +8,6 @@ import { coverChoiceRow, noCoverRow } from '../ui/cover-row';
 import { dropdownRow, infoRow, toggleRow } from '../ui/form';
 import {
 	PLATFORM_DESC,
-	TITLE_DESC,
 	checkDate,
 	checkNumber,
 	checkRating,
@@ -19,6 +18,7 @@ import {
 	hasAuthor,
 	hasRating,
 	initialValues,
+	titleDescOf,
 	toNumber,
 	tracklistOf,
 	yearDescOf,
@@ -93,7 +93,7 @@ export class ConfirmForm {
 		const { result, season } = this.input;
 		const { kind } = result;
 		const fields = this.fields;
-		fields.add(el, 'title', { name: t('field.title.name'), desc: t(TITLE_DESC[kind]) }, checkTitle, this.onIdentityChange);
+		fields.add(el, 'title', { name: t('field.title.name'), desc: titleDescOf(this.input) }, checkTitle, this.onIdentityChange);
 		const year = { name: t('field.year.name'), desc: t(yearDescOf(result)), type: 'number', min: 1000, max: 9999 } as const;
 		fields.add(el, 'year', year, checkYear, this.onIdentityChange);
 		if (kind === 'series' && season) {

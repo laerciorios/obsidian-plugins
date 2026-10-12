@@ -24,13 +24,13 @@ Uma nota é do catálogo quando o frontmatter tem `kind` igual a `movie`, `serie
 5. **Temporada** (só séries): grade com pôster, número de episódios e ano de cada temporada.
 6. **Confirmar**: o formulário vem preenchido com o resultado, e a capa aparece grande ao lado do título. Quando a temporada tem pôster próprio, diferente do da série, dois botões abaixo dos dados escolhem entre **Pôster da temporada** (o padrão) e **Pôster da série**; a capa grande e a nota seguem a escolha. Em álbuns, a linha do tipo mostra o número de faixas e a duração total da lista que vai para a nota (`Álbum · 10 faixas · 42:39`; com mais de um disco, `Álbum · 23 faixas · 2 discos · 1:31:05`; sem nenhuma duração conhecida, só o número). Quando a lista não veio (a fonte não respondeu ou não tem faixas), o formulário avisa "Lista de faixas indisponível: a nota será criada sem ela." **Criar nota** cria e abre a nota; num álbum sem lista de faixas, um aviso lembra que a nota saiu sem ela. **Voltar** retorna ao passo anterior sem perder a busca.
 
-O formulário tem **Título**, **Ano**, **Status**, **Início**, **Fim**, **Nota**, **Onde** e **Capa**, mais os campos do tipo: **Temporada** (só leitura) e **Episódios** em séries, **Horas** em jogos (**Onde** sugere as plataformas do jogo), **Autor**, **Páginas** e **Livro técnico** em livros, **Artista** em álbuns (artista ou banda, como na fonte; vários artistas ficam separados por vírgula). Em álbuns, as descrições dizem que **Título** é o título como foi lançado, **Ano** o do lançamento original (não o de uma reedição), **Início** a primeira audição, **Fim** a audição completa e **Onde** Spotify, YouTube Music, vinil… **Início** vem com a data de hoje, exceto com o status **Na fila**; se a data foi preenchida pelo formulário e você muda para **Na fila**, o campo volta a ficar vazio (uma data digitada por você fica). **Nota** aparece com **Concluído** ou **Abandonado**, e **Fim** só com **Concluído**, já com a data de hoje. Em resultados do Google Books, a descrição de **Ano** lembra que o ano é o da edição. Os campos são validados ao sair deles e ao salvar: ano com 4 dígitos, datas `AAAA-MM-DD`, nota inteira de 1 a 10, episódios, páginas e horas com zero ou mais.
+O formulário tem **Título**, **Ano**, **Status**, **Início**, **Fim**, **Nota**, **Onde** e **Capa**, mais os campos do tipo: **Temporada** (só leitura) e **Episódios** em séries, **Horas** em jogos (**Onde** sugere as plataformas do jogo), **Autor**, **Páginas** e **Livro técnico** em livros, **Artista** em álbuns (artista ou banda, como na fonte; vários artistas ficam separados por vírgula). Em séries, **Título** é o nome da série, sem a temporada: a nota grava a temporada no fim do `title` (ver [Frontmatter](#frontmatter)), e a descrição do campo mostra como ele vai terminar (`(S02)`). Uma temporada digitada no fim do título (`Horta Selvagem (S02)`) é trocada pela da nota, nunca repetida. Em álbuns, as descrições dizem que **Título** é o título como foi lançado, **Ano** o do lançamento original (não o de uma reedição), **Início** a primeira audição, **Fim** a audição completa e **Onde** Spotify, YouTube Music, vinil… **Início** vem com a data de hoje, exceto com o status **Na fila**; se a data foi preenchida pelo formulário e você muda para **Na fila**, o campo volta a ficar vazio (uma data digitada por você fica). **Nota** aparece com **Concluído** ou **Abandonado**, e **Fim** só com **Concluído**, já com a data de hoje. Em resultados do Google Books, a descrição de **Ano** lembra que o ano é o da edição. Os campos são validados ao sair deles e ao salvar: ano com 4 dígitos, datas `AAAA-MM-DD`, nota inteira de 1 a 10, episódios, páginas e horas com zero ou mais.
 
 Em **Capa**, **Manter o link** grava a URL da imagem, e **Baixar para os anexos** salva uma cópia no vault. Sem capa na fonte, o formulário avisa e a nota sai sem capa.
 
 ### Duplicatas
 
-Na confirmação, o plugin procura na pasta do catálogo (subpastas incluídas) uma nota do mesmo `kind`, com o mesmo título (ignorando acentos, maiúsculas e pontuação) e, em séries, a mesma `season`. Se as duas notas têm ano e os anos são diferentes, não é duplicata: dois filmes com o mesmo título e anos diferentes são duas notas. Em livros o ano não conta, porque o Open Library traz o ano da primeira publicação e o Google Books o da edição: o mesmo livro com outro ano é duplicata.
+Na confirmação, o plugin procura na pasta do catálogo (subpastas incluídas) uma nota do mesmo `kind`, com o mesmo título (ignorando acentos, maiúsculas e pontuação) e, em séries, a mesma `season`. Em séries, a temporada no fim do `title` não entra na comparação: `Horta Selvagem (S02)` e `Horta Selvagem` são o mesmo título. Se as duas notas têm ano e os anos são diferentes, não é duplicata: dois filmes com o mesmo título e anos diferentes são duas notas. Em livros o ano não conta, porque o Open Library traz o ano da primeira publicação e o Google Books o da edição: o mesmo livro com outro ano é duplicata.
 
 Em álbuns, conta também o artista (`author`, comparado como o título): o mesmo título de outro artista não é duplicata. O ano vale como nos filmes, porque uma banda pode lançar vários álbuns com o próprio nome: "Os Samambaias" de 1994 e "Os Samambaias" de 2001 são duas notas, e o de 1994 de novo é duplicata. Quando um dos dois lados não tem artista, o artista não decide. A nota que já ocupa o nome da nova (`<slug>.md`) segue a mesma regra.
 
@@ -38,7 +38,7 @@ Quando acha, o formulário mostra "Já está no catálogo: <nota>" com **Abrir n
 
 ### Trocar capa
 
-O modal abre com o tipo da nota travado e o `title` da nota já buscado. Em álbuns, a busca é `title` seguido de `author` (`Maré de Musgo Lia Broto`), porque muitos álbuns têm o mesmo título; num álbum homônimo, o nome vai uma vez só. Álbuns do MusicBrainz passam pela consulta da capa antes do último passo, como na criação. Os resultados sem capa vão para o fim da lista, e o primeiro com o `year` da nota vem destacado (em séries, só na temporada 1: nas outras, o ano da nota é o da temporada). Em séries, a temporada da nota vem destacada.
+O modal abre com o tipo da nota travado e o `title` da nota já buscado. Em séries, a busca é o nome da série, sem a temporada do fim (`Horta Selvagem (S02)` busca `Horta Selvagem`). Em álbuns, a busca é `title` seguido de `author` (`Maré de Musgo Lia Broto`), porque muitos álbuns têm o mesmo título; num álbum homônimo, o nome vai uma vez só. Álbuns do MusicBrainz passam pela consulta da capa antes do último passo, como na criação. Os resultados sem capa vão para o fim da lista, e o primeiro com o `year` da nota vem destacado (em séries, só na temporada 1: nas outras, o ano da nota é o da temporada). Em séries, a temporada da nota vem destacada.
 
 O último passo mostra lado a lado a capa **Atual** da nota e a **Nova**, o campo **Capa** (link ou download) e **Atualizar capa**. A atual pode ser uma URL `https://` de qualquer site, um link `[[arquivo]]` ou o nome de uma imagem do vault; sem capa, aparece o ícone de imagem ausente. Em séries, a escolha entre o pôster da temporada e o da série aparece como na criação. Com **Manter o link** e a mesma URL que a nota já tem, **Atualizar capa** fica desativado e o modal avisa que a nota já usa essa capa. Só `cover` muda na nota.
 
@@ -124,7 +124,7 @@ Sem chave, a busca avisa que a fonte precisa de uma chave de API. Chave recusada
 ### Nome do arquivo
 
 - Slug do título: minúsculas, sem acentos, cada sequência de caracteres que não são letras nem dígitos vira `-`, sem `-` nas pontas. "Samambaia: O Retorno" vira `samambaia-o-retorno`; um título sem letras nem dígitos vira `untitled`.
-- Séries ganham a temporada com dois dígitos: `horta-selvagem-s02`.
+- Séries usam o slug do nome da série, sem a temporada do `title`, e ganham a temporada com dois dígitos: `Horta Selvagem (S02)` vira `horta-selvagem-s02`.
 - Se o nome já existe (e não é duplicata, como outro ano), entra o ano: `samambaia-o-retorno-2031`. Séries mantêm `-sNN` no fim: `horta-selvagem-2031-s01`.
 - Se ainda assim existe, ou não há ano, entra um contador: `samambaia-o-retorno-2031-2`.
 - Álbuns tentam o artista antes do ano: `mare-de-musgo`, depois `mare-de-musgo-lia-broto`, depois `mare-de-musgo-lia-broto-2019`, depois o contador (`mare-de-musgo-lia-broto-2019-2`). Num álbum homônimo (o slug do artista é igual ao do título), o artista é pulado: `os-samambaias`, depois `os-samambaias-2001`. Sem artista, é como nos outros tipos.
@@ -146,7 +146,7 @@ Cada tipo grava só as suas chaves, nesta ordem (álbuns podem ter também `trac
 | Valor | Formato |
 |---|---|
 | `kind`, `status` | Sem aspas, sempre em inglês: `movie`, `series`, `game`, `book`, `album`; `backlog`, `in-progress`, `done`, `dropped`. |
-| `title`, `author`, `platform`, `reference` | Sempre entre aspas duplas, `""` quando vazios. Vários autores ficam separados por vírgula. Em álbuns, `author` é o artista ou a banda. |
+| `title`, `author`, `platform`, `reference` | Sempre entre aspas duplas, `""` quando vazios. Vários autores ficam separados por vírgula. Em álbuns, `author` é o artista ou a banda. Em séries, `title` é o nome da série seguido da temporada com dois dígitos: `"Horta Selvagem (S02)"`. |
 | `year`, `season`, `episodes`, `rating`, `hours`, `pages` | Número. Vazio vira `rating:` sem valor. |
 | `started`, `finished` | `AAAA-MM-DD` sem aspas, ou vazio. |
 | `cover` | URL `https://` sem aspas, `"[[<nota>-cover.<ext>]]"` quando baixada, `""` sem capa. |
@@ -158,7 +158,7 @@ Exemplo, com a série fictícia do dev-vault:
 ```yaml
 ---
 kind: series
-title: "Horta Selvagem"
+title: "Horta Selvagem (S02)"
 season: 2
 episodes: 10
 year: 2025

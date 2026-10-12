@@ -8,6 +8,7 @@ import { baseName, findDuplicate } from './duplicates';
 import { catalogFrontmatter, tracksProperty } from './frontmatter';
 import { folderPath, joinPath } from './paths';
 import { ensureReferenceNote, referenceLink } from './reference-note';
+import { bareTitle } from './series-title';
 import { hasSlug, seasonSuffix, slugify } from './slug';
 import { noteBody } from './template';
 
@@ -35,7 +36,7 @@ async function ensureFolder(app: App, folder: string): Promise<string> {
  * skips the artist and goes on with `<slug>-<year>`.
  */
 export function* nameCandidates(draft: CatalogDraft): Generator<string> {
-	const slug = slugify(draft.title);
+	const slug = slugify(bareTitle(draft.kind, draft.title));
 	const suffix = draft.kind === 'series' && draft.season !== null ? seasonSuffix(draft.season) : '';
 	yield baseName(draft.kind, draft.title, draft.season);
 	let stem = slug;
