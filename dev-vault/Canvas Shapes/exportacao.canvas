@@ -1,0 +1,131 @@
+{
+	"canvasShapes": {
+		"version": 1
+	},
+	"nodes": [
+		{
+			"id": "canteiro",
+			"type": "group",
+			"x": -40,
+			"y": -80,
+			"width": 1100,
+			"height": 620,
+			"label": "Canteiro norte",
+			"background": "Attachments/canvas-shapes-textura.png",
+			"backgroundStyle": "repeat"
+		},
+		{
+			"id": "foto",
+			"type": "file",
+			"file": "Attachments/canvas-shapes-horta.png",
+			"x": 0,
+			"y": 0,
+			"width": 240,
+			"height": 160
+		},
+		{
+			"id": "nota",
+			"type": "file",
+			"file": "Canvas Shapes/irrigacao.md",
+			"x": 320,
+			"y": 0,
+			"width": 340,
+			"height": 260,
+			"canvasShapes": {
+				"shape": "rectangle"
+			}
+		},
+		{
+			"id": "regras",
+			"type": "file",
+			"file": "Canvas Shapes/irrigacao.md",
+			"subpath": "#Regras",
+			"x": 740,
+			"y": 0,
+			"width": 280,
+			"height": 220,
+			"color": "6",
+			"canvasShapes": {
+				"shape": "circle"
+			}
+		},
+		{
+			"id": "site",
+			"type": "link",
+			"url": "https://example.com/horta-digital",
+			"x": 0,
+			"y": 260,
+			"width": 240,
+			"height": 120,
+			"color": "5"
+		},
+		{
+			"id": "texto",
+			"type": "text",
+			"text": "Veja [[Canvas Shapes/irrigacao|a nota de irrigação]] e ![[canvas-shapes-horta.png]].\n\n- [x] sensores instalados\n- [ ] alertas",
+			"x": 320,
+			"y": 320,
+			"width": 340,
+			"height": 180,
+			"canvasShapes": {
+				"shape": "diamond"
+			}
+		},
+		{
+			"id": "banco",
+			"type": "text",
+			"text": "Leituras",
+			"x": 760,
+			"y": 320,
+			"width": 160,
+			"height": 180,
+			"color": "4",
+			"canvasShapes": {
+				"shape": "cylinder"
+			}
+		}
+	],
+	"edges": [
+		{
+			"id": "a",
+			"fromNode": "foto",
+			"fromSide": "right",
+			"toNode": "nota",
+			"toSide": "left",
+			"canvasShapes": {
+				"line": "dotted"
+			}
+		},
+		{
+			"id": "b",
+			"fromNode": "nota",
+			"fromSide": "right",
+			"toNode": "regras",
+			"toSide": "left",
+			"color": "6",
+			"label": "resume",
+			"canvasShapes": {
+				"width": 4
+			}
+		},
+		{
+			"id": "c",
+			"fromNode": "texto",
+			"fromSide": "right",
+			"toNode": "banco",
+			"toSide": "left",
+			"canvasShapes": {
+				"line": "dashed",
+				"width": 2
+			}
+		},
+		{
+			"id": "d",
+			"fromNode": "site",
+			"fromSide": "top",
+			"toNode": "foto",
+			"toSide": "bottom",
+			"toEnd": "none"
+		}
+	]
+}

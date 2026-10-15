@@ -1,0 +1,142 @@
+{
+	"canvasShapes": {
+		"version": 1
+	},
+	"nodes": [
+		{
+			"id": "grupo",
+			"type": "group",
+			"x": -60,
+			"y": -100,
+			"width": 1240,
+			"height": 560,
+			"label": "Horta Digital",
+			"color": "4"
+		},
+		{
+			"id": "sensores",
+			"type": "text",
+			"text": "**Sensores**\numidade e luz",
+			"x": 0,
+			"y": 0,
+			"width": 160,
+			"height": 160,
+			"canvasShapes": {
+				"shape": "circle"
+			}
+		},
+		{
+			"id": "api",
+			"type": "text",
+			"text": "## API\n- leituras\n- *alertas* por canteiro\n- `POST /leituras`",
+			"x": 260,
+			"y": -20,
+			"width": 240,
+			"height": 200
+		},
+		{
+			"id": "fila",
+			"type": "text",
+			"text": "Fila de\n==leituras==",
+			"x": 600,
+			"y": 0,
+			"width": 160,
+			"height": 160,
+			"color": "2",
+			"canvasShapes": {
+				"shape": "square"
+			}
+		},
+		{
+			"id": "decisao",
+			"type": "text",
+			"text": "Umidade baixa?",
+			"x": 580,
+			"y": 240,
+			"width": 200,
+			"height": 160,
+			"color": "3",
+			"canvasShapes": {
+				"shape": "diamond"
+			}
+		},
+		{
+			"id": "banco",
+			"type": "text",
+			"text": "Postgres\n~~planilha~~",
+			"x": 880,
+			"y": -10,
+			"width": 180,
+			"height": 200,
+			"color": "5",
+			"canvasShapes": {
+				"shape": "cylinder"
+			}
+		},
+		{
+			"id": "irrigar",
+			"type": "text",
+			"text": "Ligar irrigação",
+			"x": 880,
+			"y": 260,
+			"width": 180,
+			"height": 120,
+			"color": "1"
+		}
+	],
+	"edges": [
+		{
+			"id": "mqtt",
+			"fromNode": "sensores",
+			"fromSide": "right",
+			"toNode": "api",
+			"toSide": "left",
+			"label": "MQTT"
+		},
+		{
+			"id": "publica",
+			"fromNode": "api",
+			"fromSide": "right",
+			"toNode": "fila",
+			"toSide": "left",
+			"canvasShapes": {
+				"line": "dashed"
+			}
+		},
+		{
+			"id": "avalia",
+			"fromNode": "fila",
+			"fromSide": "bottom",
+			"toNode": "decisao",
+			"toSide": "top",
+			"color": "1",
+			"canvasShapes": {
+				"line": "dotted",
+				"width": 4
+			}
+		},
+		{
+			"id": "grava",
+			"fromNode": "fila",
+			"fromSide": "right",
+			"fromEnd": "arrow",
+			"toNode": "banco",
+			"toSide": "left",
+			"canvasShapes": {
+				"width": 8
+			}
+		},
+		{
+			"id": "sim",
+			"fromNode": "decisao",
+			"fromSide": "right",
+			"toNode": "irrigar",
+			"toSide": "left",
+			"label": "sim",
+			"canvasShapes": {
+				"line": "dashed",
+				"width": 1
+			}
+		}
+	]
+}

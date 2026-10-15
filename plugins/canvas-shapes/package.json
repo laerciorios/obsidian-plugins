@@ -1,0 +1,21 @@
+{
+	"name": "canvas-shapes",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Shapes (rectangle, square, circle, diamond, cylinder) and line styles on the core Canvas, keeping files valid JSON Canvas, with SVG/PNG and web export.",
+	"main": "dist/main.js",
+	"scripts": {
+		"dev": "node ../../scripts/esbuild.mjs",
+		"build": "tsc --noEmit && node ../../scripts/esbuild.mjs --production",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint src",
+		"test": "node ../../scripts/test.mjs"
+	},
+	"dependencies": {
+		"@obsidian-plugins/i18n": "workspace:*",
+		"@obsidian-plugins/json-canvas-render": "workspace:*"
+	},
+	"devDependencies": {
+		"ajv": "8.20.0"
+	}
+}

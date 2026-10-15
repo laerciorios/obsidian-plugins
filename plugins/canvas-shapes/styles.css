@@ -1,0 +1,190 @@
+/* Canvas Shapes: only Obsidian CSS variables, so light and dark themes keep working. */
+
+/*
+ * Shapes. Circle, diamond and cylinder cards draw an SVG outline (.cs-shape) behind the card,
+ * whose own border and background turn transparent; the content moves into the shape
+ * (--cs-inset-* are percentages of the card, set by the plugin from the shared geometry).
+ */
+
+.canvas-node.cs-shaped > .canvas-node-container,
+.canvas-node.cs-shaped.is-themed > .canvas-node-container,
+.canvas-node.cs-shaped.is-selected > .canvas-node-container,
+.canvas-node.cs-shaped.is-focused > .canvas-node-container {
+	background-color: transparent;
+	border-color: transparent;
+	box-shadow: none;
+}
+
+.canvas-node.cs-shaped.is-themed .canvas-node-content {
+	background-color: transparent;
+}
+
+.canvas-node.cs-shaped > .canvas-node-container > .canvas-node-content {
+	position: absolute;
+	top: var(--cs-inset-top);
+	right: var(--cs-inset-right);
+	bottom: var(--cs-inset-bottom);
+	left: var(--cs-inset-left);
+	width: auto;
+	height: auto;
+}
+
+.cs-shape {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	pointer-events: none;
+}
+
+.cs-shape path {
+	stroke: var(--canvas-color);
+	stroke-width: 1px;
+	stroke-linejoin: round;
+}
+
+.cs-shape .cs-shape-outline {
+	fill: var(--background-primary);
+}
+
+.cs-shape .cs-shape-detail {
+	fill: none;
+}
+
+.canvas-node.is-themed .cs-shape path {
+	stroke: color-mix(in oklch, var(--canvas-color) 70%, transparent);
+	stroke-width: 2px;
+}
+
+.canvas-node.is-themed .cs-shape .cs-shape-outline {
+	fill: color-mix(in oklch, var(--canvas-color) 7%, var(--background-primary));
+}
+
+.canvas-node.is-selected .cs-shape path,
+.canvas-node.is-focused .cs-shape path {
+	stroke: var(--color-accent);
+	stroke-width: 2px;
+}
+
+.canvas-node.is-themed.is-selected .cs-shape path,
+.canvas-node.is-themed.is-focused .cs-shape path {
+	stroke: var(--canvas-color);
+	stroke-width: 3px;
+}
+
+.canvas-node.is-dragging .cs-shape {
+	filter: drop-shadow(0 2px 6px var(--background-modifier-box-shadow));
+}
+
+/* Circle, diamond and cylinder center their text, like a diagram tool. */
+.canvas-node.cs-centered .canvas-node-content.markdown-embed > .markdown-embed-content > .markdown-preview-view {
+	padding: 0 var(--size-4-2);
+	text-align: center;
+}
+
+.canvas-node.cs-centered .canvas-node-content.markdown-embed > .markdown-embed-content > .markdown-preview-view::before,
+.canvas-node.cs-centered .canvas-node-content.markdown-embed > .markdown-embed-content > .markdown-preview-view::after {
+	min-height: 0;
+	max-height: none;
+}
+
+/*
+ * Lines. Styled edges get .cs-line with --cs-line-width (px), --cs-dash and --cs-cap on the line
+ * group and --cs-arrow-scale on the arrowheads; everything follows the canvas zoom like the
+ * native line.
+ */
+
+.canvas-edges g.cs-line path.canvas-display-path {
+	stroke-width: calc(var(--cs-line-width) * var(--zoom-multiplier));
+	stroke-dasharray: var(--cs-dash);
+	stroke-linecap: var(--cs-cap);
+}
+
+.canvas-edges g.cs-line.is-focused path.canvas-display-path,
+.canvas:not(.is-connecting) .canvas-edges g.cs-line:hover path.canvas-display-path {
+	stroke-width: calc((var(--cs-line-width) + 3.5px) * var(--zoom-multiplier));
+}
+
+.canvas-wrapper g.cs-line polygon.canvas-path-end {
+	transform: scale(calc(var(--zoom-multiplier) * var(--cs-arrow-scale, 1)));
+}
+
+/*
+ * Toolbar: top left of the canvas (the native controls are on the right), one group per
+ * property. Scrolls sideways on narrow screens; bigger targets on mobile.
+ */
+
+.cs-toolbar {
+	position: absolute;
+	top: var(--size-4-2);
+	left: var(--size-4-2);
+	z-index: var(--layer-cover);
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	max-width: calc(100% - var(--size-4-16));
+	padding: var(--size-2-2);
+	overflow-x: auto;
+	background-color: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	box-shadow: var(--shadow-s);
+	scrollbar-width: none;
+	user-select: none;
+	touch-action: pan-x;
+}
+
+.cs-toolbar.is-hidden,
+.cs-toolbar-group.is-hidden,
+.cs-toolbar-divider.is-hidden {
+	display: none;
+}
+
+.canvas-wrapper.is-screenshotting .cs-toolbar {
+	display: none;
+}
+
+.cs-toolbar-group {
+	display: flex;
+	flex-shrink: 0;
+	gap: var(--size-2-1);
+}
+
+.cs-toolbar-divider {
+	flex-shrink: 0;
+	align-self: stretch;
+	width: 1px;
+	margin: var(--size-2-1) 0;
+	background-color: var(--background-modifier-border);
+}
+
+.cs-toolbar-button.clickable-icon {
+	padding: var(--size-2-2);
+	color: var(--icon-color);
+	border-radius: var(--radius-s);
+}
+
+.cs-toolbar-button.clickable-icon.is-active {
+	color: var(--text-on-accent);
+	background-color: var(--interactive-accent);
+}
+
+.cs-toolbar-button.clickable-icon.is-active:hover {
+	background-color: var(--interactive-accent-hover);
+}
+
+.cs-toolbar.is-mobile .cs-toolbar-button.clickable-icon {
+	padding: var(--size-4-2);
+}
+
+.cs-icon {
+	display: block;
+	width: var(--icon-m);
+	height: var(--icon-m);
+}
+
+.cs-toolbar.is-mobile .cs-icon {
+	width: var(--icon-l);
+	height: var(--icon-l);
+}

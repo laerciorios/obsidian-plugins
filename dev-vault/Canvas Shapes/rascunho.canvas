@@ -1,0 +1,89 @@
+{
+	"nodes": [
+		{
+			"id": "area",
+			"type": "group",
+			"x": -320,
+			"y": -80,
+			"width": 1120,
+			"height": 400,
+			"label": "Viveiro"
+		},
+		{
+			"id": "inicio",
+			"type": "text",
+			"text": "Pedido de mudas",
+			"x": 0,
+			"y": 0,
+			"width": 200,
+			"height": 80
+		},
+		{
+			"id": "validar",
+			"type": "text",
+			"text": "Validar pedido",
+			"x": 300,
+			"y": 0,
+			"width": 200,
+			"height": 80
+		},
+		{
+			"id": "valido",
+			"type": "text",
+			"text": "Pedido válido?",
+			"x": 300,
+			"y": 160,
+			"width": 200,
+			"height": 120
+		},
+		{
+			"id": "estoque",
+			"type": "text",
+			"text": "Estoque",
+			"x": 600,
+			"y": 0,
+			"width": 160,
+			"height": 120
+		},
+		{
+			"id": "cliente",
+			"type": "text",
+			"text": "Cliente",
+			"x": -280,
+			"y": 0,
+			"width": 120,
+			"height": 80
+		}
+	],
+	"edges": [
+		{
+			"id": "e1",
+			"fromNode": "cliente",
+			"fromSide": "right",
+			"toNode": "inicio",
+			"toSide": "left"
+		},
+		{
+			"id": "e2",
+			"fromNode": "inicio",
+			"fromSide": "right",
+			"toNode": "validar",
+			"toSide": "left"
+		},
+		{
+			"id": "e3",
+			"fromNode": "validar",
+			"fromSide": "bottom",
+			"toNode": "valido",
+			"toSide": "top"
+		},
+		{
+			"id": "e4",
+			"fromNode": "validar",
+			"fromSide": "right",
+			"toNode": "estoque",
+			"toSide": "left",
+			"label": "consulta"
+		}
+	]
+}

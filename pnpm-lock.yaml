@@ -74,6 +74,19 @@ importers:
         specifier: workspace:*
         version: link:../../packages/i18n
 
+  plugins/canvas-shapes:
+    dependencies:
+      '@obsidian-plugins/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
+      '@obsidian-plugins/json-canvas-render':
+        specifier: workspace:*
+        version: link:../../packages/json-canvas-render
+    devDependencies:
+      ajv:
+        specifier: 8.20.0
+        version: 8.20.0
+
   plugins/colored-text:
     dependencies:
       '@obsidian-plugins/i18n':
