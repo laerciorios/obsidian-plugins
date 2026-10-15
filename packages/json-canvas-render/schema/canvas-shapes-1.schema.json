@@ -1,0 +1,58 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://github.com/laerciorios/obsidian-plugins/blob/main/packages/json-canvas-render/schema/canvas-shapes-1.schema.json",
+	"title": "JSON Canvas with the Canvas Shapes extensions (format version 1)",
+	"description": "A JSON Canvas 1.0 file whose root, nodes and edges may carry a `canvasShapes` object. See FORMAT.md. Keys inside `canvasShapes` that this version does not define are allowed, so newer files stay valid for older readers.",
+	"allOf": [{ "$ref": "json-canvas-1.0.schema.json" }],
+	"type": "object",
+	"properties": {
+		"canvasShapes": { "$ref": "#/$defs/canvasExtension" },
+		"nodes": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": { "canvasShapes": { "$ref": "#/$defs/nodeExtension" } }
+			}
+		},
+		"edges": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": { "canvasShapes": { "$ref": "#/$defs/edgeExtension" } }
+			}
+		}
+	},
+	"$defs": {
+		"canvasExtension": {
+			"description": "Root marker: the version of the extensions format the file was written with.",
+			"type": "object",
+			"required": ["version"],
+			"properties": {
+				"version": { "type": "integer", "minimum": 1 }
+			}
+		},
+		"nodeExtension": {
+			"type": "object",
+			"properties": {
+				"shape": {
+					"description": "Outline of the card. Defaults to rectangle; ignored on groups.",
+					"enum": ["rectangle", "square", "circle", "diamond", "cylinder"]
+				}
+			}
+		},
+		"edgeExtension": {
+			"type": "object",
+			"properties": {
+				"line": {
+					"description": "Line style. Defaults to solid.",
+					"enum": ["solid", "dashed", "dotted"]
+				},
+				"width": {
+					"description": "Line width in pixels. Defaults to 2.",
+					"type": "number",
+					"exclusiveMinimum": 0
+				}
+			}
+		}
+	}
+}

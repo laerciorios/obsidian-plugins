@@ -27,6 +27,7 @@ Planejamento e specs ficam no vault, em `1 - Knowledge/Projects/Obsidian Plugins
 plugins/<id>/        um plugin por pasta (src/, manifest.json, styles.css, versions.json)
 packages/i18n/       tradução da interface, usada por todos os plugins
 packages/core-plugins/  configurações das daily notes e variáveis de template, como nos plugins nativos
+packages/json-canvas-render/  desenha JSON Canvas (+ extensões do Canvas Shapes) em SVG; formato e JSON Schemas
 scripts/             build compartilhado (esbuild) e utilitários do repo
 templates/plugin/    esqueleto usado por `pnpm new-plugin`
 dev-vault/           vault de testes versionado, com dados fictícios

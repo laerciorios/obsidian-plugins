@@ -1,0 +1,20 @@
+{
+	"name": "@obsidian-plugins/json-canvas-render",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Draws JSON Canvas files, with the Canvas Shapes extensions, as SVG. No Obsidian APIs and no runtime dependencies: used by the plugins and reusable by a website.",
+	"type": "module",
+	"main": "src/index.ts",
+	"types": "src/index.ts",
+	"exports": {
+		".": "./src/index.ts",
+		"./schema/*": "./schema/*"
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"test": "node ../../scripts/test.mjs"
+	},
+	"devDependencies": {
+		"ajv": "8.20.0"
+	}
+}

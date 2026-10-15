@@ -1,0 +1,85 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://github.com/laerciorios/obsidian-plugins/blob/main/packages/json-canvas-render/schema/json-canvas-1.0.schema.json",
+	"title": "JSON Canvas 1.0",
+	"description": "Transcription of the JSON Canvas 1.0 spec (version 2024-03-11) at https://github.com/obsidianmd/jsoncanvas/blob/456f843cb293df4f4ab1763e22ccb46a80b307c8/spec/1.0.md. The JSON Canvas project publishes the spec as Markdown only, with no schema file. Unknown keys are allowed everywhere, as the spec asks for forward compatibility. Not expressible here: unique ids, and edges referencing existing nodes.",
+	"type": "object",
+	"properties": {
+		"nodes": {
+			"description": "Nodes in ascending z-index order.",
+			"type": "array",
+			"items": { "$ref": "#/$defs/node" }
+		},
+		"edges": {
+			"type": "array",
+			"items": { "$ref": "#/$defs/edge" }
+		}
+	},
+	"$defs": {
+		"canvasColor": {
+			"description": "A preset color (\"1\" red, \"2\" orange, \"3\" yellow, \"4\" green, \"5\" cyan, \"6\" purple) or a hex color such as \"#FF0000\".",
+			"type": "string",
+			"anyOf": [{ "enum": ["1", "2", "3", "4", "5", "6"] }, { "pattern": "^#(?:[0-9A-Fa-f]{3}){1,2}$" }]
+		},
+		"side": { "enum": ["top", "right", "bottom", "left"] },
+		"end": { "enum": ["none", "arrow"] },
+		"node": {
+			"type": "object",
+			"required": ["id", "type", "x", "y", "width", "height"],
+			"properties": {
+				"id": { "type": "string" },
+				"type": { "enum": ["text", "file", "link", "group"] },
+				"x": { "type": "integer" },
+				"y": { "type": "integer" },
+				"width": { "type": "integer" },
+				"height": { "type": "integer" },
+				"color": { "$ref": "#/$defs/canvasColor" }
+			},
+			"allOf": [
+				{
+					"if": { "properties": { "type": { "const": "text" } } },
+					"then": { "required": ["text"], "properties": { "text": { "type": "string" } } }
+				},
+				{
+					"if": { "properties": { "type": { "const": "file" } } },
+					"then": {
+						"required": ["file"],
+						"properties": {
+							"file": { "type": "string" },
+							"subpath": { "type": "string", "pattern": "^#" }
+						}
+					}
+				},
+				{
+					"if": { "properties": { "type": { "const": "link" } } },
+					"then": { "required": ["url"], "properties": { "url": { "type": "string" } } }
+				},
+				{
+					"if": { "properties": { "type": { "const": "group" } } },
+					"then": {
+						"properties": {
+							"label": { "type": "string" },
+							"background": { "type": "string" },
+							"backgroundStyle": { "enum": ["cover", "ratio", "repeat"] }
+						}
+					}
+				}
+			]
+		},
+		"edge": {
+			"type": "object",
+			"required": ["id", "fromNode", "toNode"],
+			"properties": {
+				"id": { "type": "string" },
+				"fromNode": { "type": "string" },
+				"fromSide": { "$ref": "#/$defs/side" },
+				"fromEnd": { "$ref": "#/$defs/end" },
+				"toNode": { "type": "string" },
+				"toSide": { "$ref": "#/$defs/side" },
+				"toEnd": { "$ref": "#/$defs/end" },
+				"color": { "$ref": "#/$defs/canvasColor" },
+				"label": { "type": "string" }
+			}
+		}
+	}
+}

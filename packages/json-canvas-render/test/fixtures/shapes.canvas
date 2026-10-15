@@ -1,0 +1,20 @@
+{
+	"canvasShapes": { "version": 1 },
+	"nodes": [
+		{ "id": "g1", "type": "group", "x": -40, "y": -80, "width": 1180, "height": 520, "label": "Plataforma Nimbus", "color": "5" },
+		{ "id": "user", "type": "text", "text": "**Cliente**\nApp móvel", "x": 0, "y": 0, "width": 160, "height": 160, "canvasShapes": { "shape": "circle" } },
+		{ "id": "api", "type": "text", "text": "## API Gateway\n- autenticação\n- *limites* por cliente\n- `POST /pedidos`", "x": 260, "y": -20, "width": 260, "height": 200 },
+		{ "id": "queue", "type": "text", "text": "Fila de\n==eventos==", "x": 620, "y": 0, "width": 160, "height": 160, "canvasShapes": { "shape": "square" }, "color": "2" },
+		{ "id": "check", "type": "text", "text": "Pagamento aprovado?", "x": 600, "y": 220, "width": 200, "height": 160, "canvasShapes": { "shape": "diamond" }, "color": "3" },
+		{ "id": "db", "type": "text", "text": "Postgres\n~~MySQL~~", "x": 900, "y": 0, "width": 160, "height": 200, "canvasShapes": { "shape": "cylinder" }, "color": "4" },
+		{ "id": "doc", "type": "file", "file": "Projetos/Nimbus/arquitetura.md", "x": 260, "y": 240, "width": 260, "height": 160 },
+		{ "id": "site", "type": "link", "url": "https://example.com/nimbus", "x": 900, "y": 260, "width": 200, "height": 120, "color": "#7a52cc" }
+	],
+	"edges": [
+		{ "id": "e1", "fromNode": "user", "fromSide": "right", "toNode": "api", "toSide": "left", "label": "HTTPS" },
+		{ "id": "e2", "fromNode": "api", "fromSide": "right", "toNode": "queue", "toSide": "left", "canvasShapes": { "line": "dashed" } },
+		{ "id": "e3", "fromNode": "queue", "fromSide": "bottom", "toNode": "check", "toSide": "top", "color": "1", "canvasShapes": { "line": "dotted", "width": 4 } },
+		{ "id": "e4", "fromNode": "queue", "fromSide": "right", "fromEnd": "arrow", "toNode": "db", "toSide": "left", "canvasShapes": { "width": 8 } },
+		{ "id": "e5", "fromNode": "api", "toNode": "doc", "toEnd": "none" }
+	]
+}
