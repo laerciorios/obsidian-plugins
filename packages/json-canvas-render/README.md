@@ -1,6 +1,6 @@
 # @obsidian-plugins/json-canvas-render
 
-Desenha um arquivo [JSON Canvas](https://jsoncanvas.org) — com as extensões do Canvas Shapes (formas nos cards, estilo e espessura nas setas) — como SVG. Não usa nada do Obsidian e não tem dependências em runtime: serve ao plugin [Canvas Shapes](../../plugins/canvas-shapes) (formas no Canvas, exportação SVG/PNG e web) e a um site no futuro.
+Desenha um arquivo [JSON Canvas](https://jsoncanvas.org), com as extensões do Canvas Shapes (formas nos cards, estilo e espessura nas setas), como SVG. Não usa nada do Obsidian e não tem dependências em runtime: serve ao plugin [Canvas Shapes](../../plugins/canvas-shapes) (formas no Canvas, exportação SVG/PNG e web) e a um site no futuro.
 
 - **Formato**: [FORMAT.md](FORMAT.md) (em inglês, para outros sistemas) e os JSON Schemas em [`schema/`](schema/). O JSON Canvas não publica um schema oficial, então [`json-canvas-1.0.schema.json`](schema/json-canvas-1.0.schema.json) transcreve a spec 1.0; os testes validam os arquivos com os dois schemas (`ajv`, só em desenvolvimento).
 - **Extensões** (`extensions.ts`): leitura com padrões (`nodeShape`, `edgeStyle`) e escrita que não grava padrões e preserva chaves desconhecidas (`withShape`, `withLineStyle`, `withLineWidth`, `withFormatVersion`, `withExtension`).

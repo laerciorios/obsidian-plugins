@@ -19,6 +19,19 @@ export class CanvasShapesSettingTab extends PluginSettingTab {
 		return [
 			{
 				type: 'group',
+				heading: t('settings.panel.heading'),
+				items: [
+					{ name: t('settings.panel.name'), desc: t('settings.panel.desc'), control: { type: 'toggle', key: 'panel' } },
+					{
+						name: t('settings.panelShortcuts.name'),
+						desc: t('settings.panelShortcuts.desc'),
+						visible: () => settings.panel,
+						control: { type: 'toggle', key: 'panelShortcuts' },
+					},
+				],
+			},
+			{
+				type: 'group',
 				heading: t('settings.export.heading'),
 				items: [
 					{
@@ -73,6 +86,10 @@ export class CanvasShapesSettingTab extends PluginSettingTab {
 				return settings.webNotes;
 			case 'webLinkTemplate':
 				return settings.webLinkTemplate;
+			case 'panel':
+				return settings.panel;
+			case 'panelShortcuts':
+				return settings.panelShortcuts;
 			default:
 				return undefined;
 		}
@@ -85,8 +102,11 @@ export class CanvasShapesSettingTab extends PluginSettingTab {
 		else if (key === 'webTheme') settings.webTheme = text === 'light' || text === 'dark' ? text : 'system';
 		else if (key === 'webNotes') settings.webNotes = text === 'link' ? 'link' : 'text';
 		else if (key === 'webLinkTemplate' && text.trim()) settings.webLinkTemplate = text.trim();
+		else if (key === 'panel') settings.panel = value === true;
+		else if (key === 'panelShortcuts') settings.panelShortcuts = value === true;
 		else return;
 		void this.host.saveSettings();
+		this.host.shapes.refreshUi();
 		this.refreshDomState();
 	}
 }

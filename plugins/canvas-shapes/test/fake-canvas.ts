@@ -94,8 +94,15 @@ export class FakeCanvas implements CanvasLike {
 		this.saves++;
 	}
 
-	importData(): unknown {
-		return [];
+	/** Like Obsidian: edges whose two nodes exist are created (sides are kept as given). */
+	importData(data: Data): unknown {
+		const edges = Array.isArray(data.edges) ? (data.edges as Data[]) : [];
+		for (const edge of edges) {
+			const { id, fromNode, toNode } = edge;
+			if (typeof id !== 'string' || typeof fromNode !== 'string' || typeof toNode !== 'string') continue;
+			if (this.nodes.has(fromNode) && this.nodes.has(toNode)) this.edges.set(id, new FakeEdge(id, edge));
+		}
+		return new Set();
 	}
 
 	updateSelection(change: () => void): void {

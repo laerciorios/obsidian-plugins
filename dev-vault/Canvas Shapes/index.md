@@ -9,13 +9,26 @@ Canvas de teste: [[Canvas Shapes/formas.canvas|formas]] (todas as formas e estil
 ## Formas
 
 - [ ] Em `formas`: círculo (Sensores), quadrado laranja (Fila), losango amarelo (Umidade baixa?), cilindro ciano (Postgres) com o texto centralizado; API e Ligar irrigação continuam retângulos.
-- [ ] Em `rascunho`, selecione "Pedido válido?": a barra aparece no canto superior esquerdo com o retângulo destacado. Clique no losango: o card vira losango e a barra destaca o losango.
+- [ ] Em `rascunho`, selecione "Pedido válido?": a barra de propriedades aparece à esquerda, abaixo do painel, com o retângulo destacado. Clique no losango: o card vira losango e a barra destaca o losango.
 - [ ] "Cliente" → círculo pela barra: vira 120×120. Arraste a alça do canto: continua círculo.
 - [ ] "Estoque" → **Forma: cilindro** pela paleta de comandos.
 - [ ] Clique direito em "Validar pedido" → **Forma** → Quadrado: vira 200×200.
 - [ ] Selecione dois cards com formas diferentes: nenhuma forma destacada na barra; aplique uma e as duas mudam. Ctrl/Cmd+Z desfaz as duas de uma vez (espere um segundo antes de desfazer).
 - [ ] Selecione só o grupo "Viveiro": a barra some e os comandos de forma não aparecem.
 - [ ] Feche e reabra o canvas, e reinicie o Obsidian: as formas continuam.
+
+## Painel de elementos
+
+- [ ] Em `rascunho`, o painel aparece no topo com cadeado, mão, selecionar, as 5 formas, seta, linha, nota, mídia, página web e grupo, cada um com a letra no canto. A barra de baixo do Obsidian continua.
+- [ ] `R` e clique num espaço vazio: card 240×120 aberto para digitar; a ferramenta volta para selecionar.
+- [ ] Losango pelo botão e arraste: o tamanho segue o arraste, com prévia tracejada. Círculo arrastado torto fica redondo.
+- [ ] `A` e arraste de "Pedido de mudas" até "Estoque": seta ligando os dois. `L` e arraste de "Cliente" até um espaço vazio: linha sem ponta e um card novo ali, aberto para digitar.
+- [ ] `G` e arraste em volta de dois cards: grupo com o rótulo aberto.
+- [ ] `N` e clique: a busca de notas abre; "irrigacao" + Enter adiciona a nota. `M` com uma imagem; `W` com `example.com`.
+- [ ] `Q` (cadeado) e `S`: dois cliques criam dois quadrados. Esc durante a edição de um card só termina a edição.
+- [ ] `H` e arraste move a vista; `V` volta para selecionar.
+- [ ] Cada criação sai com um Ctrl/Cmd+Z (espere um segundo antes).
+- [ ] Em Configurações → Canvas Shapes, desligue **Atalhos de uma letra** (as letras somem e as teclas param) e **Mostrar o painel de elementos** (o painel some e a barra de propriedades sobe).
 
 ## Setas
 

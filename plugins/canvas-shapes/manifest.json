@@ -1,7 +1,7 @@
 {
 	"id": "canvas-shapes",
 	"name": "Canvas Shapes",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"minAppVersion": "1.13.0",
 	"description": "Shapes (rectangle, square, circle, diamond, cylinder) and line styles on the core Canvas, keeping files valid JSON Canvas, with SVG/PNG and web export.",
 	"author": "Laercio Rios",

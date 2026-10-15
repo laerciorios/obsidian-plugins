@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-/** Test helper: what JSON Schema cannot check — unique ids and edges pointing at nodes. */
+/** Test helper: what JSON Schema cannot check: unique ids and edges pointing at nodes. */
 export function checkReferences(data: unknown): void {
 	const canvas = data as { nodes?: { id: string }[]; edges?: { id: string; fromNode: string; toNode: string }[] };
 	const ids = new Set<string>();

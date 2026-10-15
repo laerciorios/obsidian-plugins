@@ -26,6 +26,10 @@ export interface CanvasShapesSettings {
 	webLinkTemplate: string;
 	/** Vault folder for exports where there is no save window (mobile); empty: next to the canvas. */
 	exportFolder: string;
+	/** Elements panel at the top of the canvas. */
+	panel: boolean;
+	/** One-letter shortcuts of the panel's tools. */
+	panelShortcuts: boolean;
 }
 
 export const SCALES = [1, 2, 3] as const;
@@ -39,6 +43,8 @@ export function defaultSettings(): CanvasShapesSettings {
 		webNotes: 'text',
 		webLinkTemplate: DEFAULT_LINK_TEMPLATE,
 		exportFolder: '',
+		panel: true,
+		panelShortcuts: true,
 	};
 }
 
@@ -67,6 +73,8 @@ export function normalizeSettings(raw: unknown): CanvasShapesSettings {
 		webNotes: pick(data.webNotes, ['text', 'link'], defaults.webNotes),
 		webLinkTemplate: typeof data.webLinkTemplate === 'string' && data.webLinkTemplate.trim() ? data.webLinkTemplate.trim() : defaults.webLinkTemplate,
 		exportFolder: typeof data.exportFolder === 'string' ? cleanFolder(data.exportFolder) : '',
+		panel: typeof data.panel === 'boolean' ? data.panel : defaults.panel,
+		panelShortcuts: typeof data.panelShortcuts === 'boolean' ? data.panelShortcuts : defaults.panelShortcuts,
 	};
 }
 

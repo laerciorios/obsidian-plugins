@@ -1,8 +1,8 @@
 import { ItemView, Notice } from 'obsidian';
 import type { Plugin, View } from 'obsidian';
 import { t } from '../i18n';
-import { detectCanvas } from './internals';
-import type { Detection } from './internals';
+import { detectCanvas, detectCreation } from './internals';
+import type { CanvasLike, CreationDetection, Detection } from './internals';
 import { CanvasSession } from './session';
 import type { SessionUi } from './session';
 
@@ -18,8 +18,11 @@ export class ShapesController {
 	/** Views whose canvas was not recognized or failed: not retried until they are reopened. */
 	private readonly failed = new WeakSet<View>();
 	private warned = false;
+	private panelWarned = false;
 	/** Swappable for tests in the app (forcing a detection failure). */
 	detect: (view: unknown) => Detection = detectCanvas;
+	/** Same, for the creation methods of the elements panel. */
+	detectCreation: (canvas: CanvasLike) => CreationDetection = detectCreation;
 
 	constructor(
 		private readonly plugin: Plugin,
@@ -74,6 +77,19 @@ export class ShapesController {
 		new Notice(t('notice.unsupported'), 10000);
 	}
 
+	/** The canvas lacks what the elements panel needs: the panel is off there, with one notice per load. */
+	panelUnsupported(reason: string): void {
+		console.warn(`Canvas Shapes: the elements panel is off on this canvas (${reason}). Shapes, lines and export keep working.`);
+		if (this.panelWarned) return;
+		this.panelWarned = true;
+		new Notice(t('notice.panelUnsupported'), 10000);
+	}
+
+	/** Refresh the toolbar and panel of every canvas (after a settings change). */
+	refreshUi(): void {
+		for (const session of this.sessions.values()) session.refresh();
+	}
+
 	/** The session of the active canvas tab, if it has one. */
 	activeSession(): CanvasSession | null {
 		const view = this.plugin.app.workspace.getActiveViewOfType(ItemView);
@@ -91,7 +107,6 @@ export class ShapesController {
 		const session = this.sessions.get(view);
 		return session?.isActive ? session : null;
 	}
-
 
 	private unload(): void {
 		for (const session of this.sessions.values()) session.dispose();

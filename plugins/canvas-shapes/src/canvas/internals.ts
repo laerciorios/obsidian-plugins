@@ -52,6 +52,40 @@ export interface CanvasLike {
 
 export type Detection = { ok: true; canvas: CanvasLike } | { ok: false; reason: string };
 
+/** Options of the Canvas's own `create*Node` methods: `pos` is the top-left corner. */
+export interface CreateOptions {
+	pos: { x: number; y: number };
+	size: { width: number; height: number };
+	save?: boolean;
+	/** Select the new node (and open text cards for typing, group labels for renaming). */
+	focus?: boolean;
+}
+
+/** What the elements panel needs on top of `CanvasLike`: creating nodes and the viewport. */
+export interface CanvasCreationLike extends CanvasLike {
+	/** Zoom factor (canvas px → screen px). */
+	scale: number;
+	/** Canvas position of a pointer event. */
+	posFromEvt(event: MouseEvent): { x: number; y: number };
+	panBy(dx: number, dy: number): void;
+	createTextNode(options: CreateOptions & { text?: string }): unknown;
+	createFileNode(options: CreateOptions & { file: unknown }): unknown;
+	createLinkNode(options: CreateOptions & { url: string }): unknown;
+	createGroupNode(options: CreateOptions & { label?: string }): unknown;
+}
+
+export type CreationDetection = { ok: true; canvas: CanvasCreationLike } | { ok: false; reason: string };
+
+/** Check the creation and viewport methods the panel uses; the rest of the plugin does not need them. */
+export function detectCreation(canvas: CanvasLike): CreationDetection {
+	const host = canvas as unknown as Record<string, unknown>;
+	if (typeof host.scale !== 'number' || !Number.isFinite(host.scale)) return { ok: false, reason: 'scale' };
+	for (const method of ['posFromEvt', 'panBy', 'createTextNode', 'createFileNode', 'createLinkNode', 'createGroupNode']) {
+		if (!isFunction(host[method])) return { ok: false, reason: method };
+	}
+	return { ok: true, canvas: canvas as CanvasCreationLike };
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === 'object' && value !== null;
 }

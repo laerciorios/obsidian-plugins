@@ -119,6 +119,22 @@ export class CanvasEditor {
 		return done.length;
 	}
 
+	/**
+	 * Add a connection through `importData` (the Canvas's own paste path), check it exists, and
+	 * save (one undo step). The data must reference existing nodes.
+	 */
+	addEdge(edge: Data): number {
+		if (this.canvas.readonly) return 0;
+		const id = edge.id;
+		if (typeof id !== 'string' || this.canvas.edges.has(id)) throw new CanvasAdapterError('edge-id');
+		this.canvas.importData({ nodes: [], edges: [edge] }, false);
+		const created = this.canvas.edges.get(id);
+		if (!created || !isCanvasEdge(created)) throw new CanvasAdapterError('edge-check');
+		if (extensionOf(edge)) this.markFormat();
+		this.canvas.requestSave();
+		return 1;
+	}
+
 	/** Mark the file as using format version 1 of the extensions (root `canvasShapes.version`). */
 	private markFormat(): void {
 		if (formatVersion(this.canvas.data) !== undefined) return;

@@ -29,7 +29,7 @@ export type BlockKind = 'paragraph' | 'heading' | 'item' | 'code' | 'rule' | 'ta
 export interface Block {
 	kind: BlockKind;
 	runs: Run[];
-	/** Heading level (1–6). */
+	/** Heading level (1 to 6). */
 	level?: number;
 	/** List nesting, from 0. */
 	depth?: number;

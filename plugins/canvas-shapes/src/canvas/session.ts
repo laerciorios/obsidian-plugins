@@ -64,6 +64,11 @@ export class CanvasSession {
 		for (const ui of this.uis) ui.update();
 	}
 
+	/** Refresh the interfaces (after a settings change). */
+	refresh(): void {
+		if (this.active) this.changed();
+	}
+
 	private hook(method: string, kind: keyof CanvasSession['pending']): void {
 		this.restores.push(
 			afterMethod(

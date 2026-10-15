@@ -1,11 +1,11 @@
-# Canvas Shapes extensions to JSON Canvas — format version 1
+# Canvas Shapes extensions to JSON Canvas (format version 1)
 
 A `.canvas` file with these extensions is a plain [JSON Canvas 1.0](https://jsoncanvas.org/spec/1.0/) file. The extensions live in a `canvasShapes` object on the root, on nodes and on edges. JSON Canvas asks readers to keep keys they do not know, so an app that ignores the extensions still opens the file, shows shapes as rectangles and lines as solid lines, and saves the extensions back untouched (Obsidian does).
 
 Schemas (JSON Schema 2020-12):
 
-- [`schema/canvas-shapes-1.schema.json`](schema/canvas-shapes-1.schema.json) — JSON Canvas plus the extensions.
-- [`schema/json-canvas-1.0.schema.json`](schema/json-canvas-1.0.schema.json) — JSON Canvas 1.0 alone, transcribed from the [official spec](https://github.com/obsidianmd/jsoncanvas/blob/456f843cb293df4f4ab1763e22ccb46a80b307c8/spec/1.0.md) (the project publishes no schema file).
+- [`schema/canvas-shapes-1.schema.json`](schema/canvas-shapes-1.schema.json): JSON Canvas plus the extensions.
+- [`schema/json-canvas-1.0.schema.json`](schema/json-canvas-1.0.schema.json): JSON Canvas 1.0 alone, transcribed from the [official spec](https://github.com/obsidianmd/jsoncanvas/blob/456f843cb293df4f4ab1763e22ccb46a80b307c8/spec/1.0.md) (the project publishes no schema file).
 
 ## Example
 

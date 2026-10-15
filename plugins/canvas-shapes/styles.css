@@ -188,3 +188,164 @@
 	width: var(--icon-l);
 	height: var(--icon-l);
 }
+
+/*
+ * Elements panel: centered at the top of the canvas, like Excalidraw's tools. The properties
+ * toolbar moves below it (--cs-panel-height is set by the plugin from the rendered panel).
+ */
+
+.cs-panel {
+	position: absolute;
+	top: var(--size-4-2);
+	left: 50%;
+	z-index: var(--layer-cover);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	max-width: calc(100% - var(--size-4-16) * 2);
+	transform: translateX(-50%);
+	pointer-events: none;
+}
+
+.cs-panel.is-hidden,
+.canvas-wrapper.is-screenshotting .cs-panel {
+	display: none;
+}
+
+.cs-panel-bar {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	max-width: 100%;
+	padding: var(--size-2-2);
+	overflow-x: auto;
+	background-color: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	box-shadow: var(--shadow-s);
+	scrollbar-width: none;
+	user-select: none;
+	touch-action: pan-x;
+	pointer-events: auto;
+}
+
+.cs-panel-group {
+	display: flex;
+	flex-shrink: 0;
+	gap: var(--size-2-1);
+}
+
+.cs-panel-divider {
+	flex-shrink: 0;
+	align-self: stretch;
+	width: 1px;
+	margin: var(--size-2-1) 0;
+	background-color: var(--background-modifier-border);
+}
+
+.cs-panel-button.clickable-icon {
+	position: relative;
+	padding: var(--size-4-2);
+	color: var(--icon-color);
+	border-radius: var(--radius-s);
+}
+
+.cs-panel-button.clickable-icon.is-active {
+	color: var(--text-on-accent);
+	background-color: var(--interactive-accent);
+}
+
+.cs-panel-button.clickable-icon.is-active:hover {
+	background-color: var(--interactive-accent-hover);
+}
+
+/* The shortcut letter in the corner, as in Excalidraw. */
+.cs-panel-key {
+	position: absolute;
+	right: 2px;
+	bottom: 1px;
+	color: var(--text-faint);
+	font-size: calc(var(--font-ui-smaller) * 0.75);
+	line-height: 1;
+	pointer-events: none;
+}
+
+.cs-panel-button.is-active .cs-panel-key {
+	color: var(--text-on-accent);
+}
+
+.cs-panel.cs-no-keys .cs-panel-key {
+	display: none;
+}
+
+.cs-panel.is-mobile .cs-panel-button.clickable-icon {
+	padding: var(--size-4-3);
+}
+
+.cs-panel.is-mobile .cs-icon {
+	width: var(--icon-l);
+	height: var(--icon-l);
+}
+
+.cs-panel-hint {
+	max-width: 100%;
+	margin-top: var(--size-2-3);
+	padding: 0 var(--size-4-2);
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	text-align: center;
+}
+
+.cs-panel-hint:empty {
+	display: none;
+}
+
+.canvas-wrapper.cs-has-panel .cs-toolbar {
+	top: calc(var(--size-4-2) * 2 + var(--cs-panel-height, 44px));
+}
+
+/* While a tool is on: crosshair to place, grab to move the view. */
+.canvas-wrapper.cs-tool-place,
+.canvas-wrapper.cs-tool-place:not(.mod-readonly) .canvas-node:not(.is-editing) .canvas-node-container,
+.canvas-wrapper.cs-tool-place .canvas-edges path.canvas-interaction-path {
+	cursor: crosshair;
+}
+
+.canvas-wrapper.cs-tool-hand,
+.canvas-wrapper.cs-tool-hand:not(.mod-readonly) .canvas-node:not(.is-editing) .canvas-node-container {
+	cursor: grab;
+}
+
+/* Preview of the element being dragged out. */
+.cs-preview {
+	position: absolute;
+	inset: 0;
+	z-index: var(--layer-cover);
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	pointer-events: none;
+}
+
+.cs-preview .cs-preview-shape {
+	fill: color-mix(in oklch, var(--interactive-accent) 8%, transparent);
+	stroke: var(--interactive-accent);
+	stroke-width: 1.5px;
+	stroke-dasharray: 6 4;
+}
+
+.cs-preview .cs-preview-line {
+	stroke: var(--interactive-accent);
+	stroke-width: 2px;
+	stroke-dasharray: 6 4;
+}
+
+.cs-preview .cs-preview-end {
+	fill: var(--interactive-accent);
+}
+
+.cs-picker-error {
+	min-height: 1.5em;
+	color: var(--text-error);
+	font-size: var(--font-ui-small);
+}

@@ -1,12 +1,12 @@
 # Canvas Shapes
 
-Formas (retângulo, quadrado, círculo, losango, cilindro) e estilo/espessura de seta no **Canvas nativo** do Obsidian, para diagramas de arquitetura e fluxos, com exportação para SVG/PNG e para web. O arquivo continua **JSON Canvas 1.0**: sem o plugin, ele abre normalmente (formas como retângulos, setas comuns) e nada se perde.
+Formas (retângulo, quadrado, círculo, losango, cilindro) e estilo/espessura de seta no **Canvas nativo** do Obsidian, para diagramas de arquitetura e fluxos, com um painel de elementos no topo (como o do Excalidraw) e exportação para SVG/PNG e para web. O arquivo continua **JSON Canvas 1.0**: sem o plugin, ele abre normalmente (formas como retângulos, setas comuns) e nada se perde.
 
 Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/canvas-shapes-spec.md`.
 
 ## Formato
 
-As extensões ficam num objeto `canvasShapes` — na raiz (`{ "version": 1 }`), nos cards (`{ "shape": "cylinder" }`) e nas setas (`{ "line": "dashed", "width": 4 }`). Nenhum tipo novo de card. Valores padrão (`rectangle`, `solid`, espessura 2) não são gravados. Documento do formato e JSON Schemas em [packages/json-canvas-render](../../packages/json-canvas-render/FORMAT.md).
+As extensões ficam num objeto `canvasShapes`: na raiz (`{ "version": 1 }`), nos cards (`{ "shape": "cylinder" }`) e nas setas (`{ "line": "dashed", "width": 4 }`). Nenhum tipo novo de card. Valores padrão (`rectangle`, `solid`, espessura 2) não são gravados. Documento do formato e JSON Schemas em [packages/json-canvas-render](../../packages/json-canvas-render/FORMAT.md).
 
 O Obsidian guarda os campos que não conhece: mover, redimensionar ou recolorir um card sem o plugin mantém o `canvasShapes` dele.
 
@@ -33,6 +33,28 @@ Estilo **contínua**, **tracejada** ou **pontilhada** e espessura **fina** (1 px
 - **Comandos** (para atalhos): "Forma: retângulo/quadrado/círculo/losango/cilindro", "Linha: contínua/tracejada/pontilhada", "Espessura da linha: fina/normal/grossa/extra grossa". Valem para a seleção do Canvas ativo.
 
 Uma aplicação na seleção inteira é um passo só no desfazer.
+
+## Painel de elementos
+
+No topo do Canvas, como no Excalidraw, com todas as opções à vista. A barra de baixo do Obsidian (arrastar cartão, nota, mídia) continua como sempre.
+
+| Botão | Letra | O que faz |
+|---|---|---|
+| Cadeado | Q | Mantém a ferramenta depois de adicionar (para criar vários seguidos) |
+| Mão | H | Arrasta a vista, também por cima de cards |
+| Selecionar | V | O Canvas normal (Esc também volta para cá) |
+| Retângulo, quadrado, losango, círculo, cilindro | R, S, D, O, C | Card de texto com a forma, já aberto para digitar |
+| Seta, linha | A, L | Arraste de um card até outro para ligar; soltar num espaço vazio cria um card ligado ali |
+| Nota, mídia | N, M | Escolha o arquivo do vault depois de clicar no canvas |
+| Página web | W | Pede o endereço (sem `https://`, ele completa) |
+| Grupo | G | Arraste para desenhar a área (envolve cards já existentes); o rótulo abre para renomear |
+
+- **Clique** no canvas cria com o tamanho padrão da ferramenta, centrado no clique; **arraste** define o tamanho, com prévia. Quadrado e círculo ficam 1:1.
+- Depois de criar, a ferramenta volta para selecionar, a não ser com o cadeado. Cada elemento é um passo no desfazer (a seta com o card criado junto também).
+- As letras valem com o Canvas ativo e sem texto em edição; durante a edição de um card, Esc só termina a edição.
+- A barra de propriedades (forma, linha, espessura) fica logo abaixo do painel, à esquerda.
+- No celular os botões são maiores e as letras somem; a barra rola para o lado.
+- O painel usa os métodos de criação do próprio Canvas. Se um Obsidian novo mudar esses métodos, só o painel se desliga (com aviso); formas, setas e exportação continuam.
 
 ## Exportar como SVG ou PNG
 
@@ -65,6 +87,8 @@ Títulos, parágrafos com quebra de linha simples, negrito, itálico, riscado, r
 
 | Configuração | Padrão |
 |---|---|
+| Mostrar o painel de elementos | ligado |
+| Atalhos de uma letra | ligado |
 | Pasta de exportação no mobile | vazio (ao lado do canvas) |
 | Tema inicial (web) | seguir o sistema |
 | Notas linkadas (web) | mostrar o texto |
@@ -72,7 +96,7 @@ Títulos, parágrafos com quebra de linha simples, negrito, itálico, riscado, r
 
 ## Compatibilidade e segurança
 
-O Canvas não tem API pública de edição. Todo acesso aos internos fica em `src/canvas/` e passa por detecção de recursos a cada Canvas aberto (testado no Obsidian 1.14): o plugin só se pendura na própria instância do Canvas (nunca no protótipo), grava pelo fluxo de salvar do Canvas (`setData` + `requestSave`, que também cria o passo de desfazer) e confere se o valor voltou antes de salvar. Se algo não bater — um Obsidian novo que mudou o Canvas —, a barra, os menus e os comandos de edição se desligam naquele Canvas, aparece um aviso e o arquivo não é tocado. A exportação continua funcionando, porque lê o JSON e não a tela. O arquivo `.canvas` nunca é reescrito por fora.
+O Canvas não tem API pública de edição. Todo acesso aos internos fica em `src/canvas/` e passa por detecção de recursos a cada Canvas aberto (testado no Obsidian 1.14): o plugin só se pendura na própria instância do Canvas (nunca no protótipo), grava pelo fluxo de salvar do Canvas (`setData` + `requestSave`, que também cria o passo de desfazer) e confere se o valor voltou antes de salvar. Se algo não bater (um Obsidian novo que mudou o Canvas), a barra, os menus e os comandos de edição se desligam naquele Canvas, aparece um aviso e o arquivo não é tocado. A exportação continua funcionando, porque lê o JSON e não a tela. O arquivo `.canvas` nunca é reescrito por fora.
 
 ## Desenvolvimento
 
