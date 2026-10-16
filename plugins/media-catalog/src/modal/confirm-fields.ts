@@ -69,7 +69,7 @@ export class ConfirmForm {
 		return this.values.title.trim();
 	}
 
-	/** Books and albums: the author or artist as typed, trimmed. */
+	/** Movies, books and albums: the directors, author or artist as typed, trimmed. */
 	get author(): string {
 		return this.values.author.trim();
 	}
@@ -111,6 +111,10 @@ export class ConfirmForm {
 			infoRow(el, { name: t('field.season.name') }, String(season.number));
 			const episodes = { name: t('field.episodes.name'), desc: t('field.episodes.desc'), type: 'number', min: 0 } as const;
 			fields.add(el, 'episodes', episodes, checkNumber(true));
+		}
+		if (kind === 'movie') {
+			// Not part of the duplicate check: one title and year is already one film.
+			fields.add(el, 'author', { name: t('field.director.name'), desc: t('field.director.desc') }, null);
 		}
 		if (kind === 'book') {
 			fields.add(el, 'author', { name: t('field.author.name') }, null);

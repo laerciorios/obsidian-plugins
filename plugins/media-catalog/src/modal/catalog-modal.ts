@@ -5,7 +5,7 @@ import type { CatalogContext, Provider, SearchResult, SeasonInfo, Track } from '
 import { AliasesStep } from './aliases-step';
 import { ConfirmStep } from './confirm-step';
 import { CoverStep } from './cover-step';
-import { ResolveStep } from './resolve-step';
+import { ResolveStep, withDirectors } from './resolve-step';
 import { createSearchState } from './search-state';
 import type { SearchState } from './search-state';
 import { SearchStep } from './search-step';
@@ -39,6 +39,8 @@ export class CatalogModal extends Modal {
 	private readonly resolved = new Map<string, SearchResult>();
 	/** Tracklists already fetched (create mode), by the same key. Failed requests are not kept: a new pick tries again. */
 	private readonly trackLists = new Map<string, Track[]>();
+	/** Directors of movies already fetched (create mode), by the same key. Failed or slow requests are not kept either. */
+	private readonly directorLists = new Map<string, string[]>();
 	private chosen: Chosen | null = null;
 	private step: Step | null = null;
 	private atConfirm = false;
@@ -106,8 +108,8 @@ export class CatalogModal extends Modal {
 
 	/**
 	 * A result was picked. Tracks mode: its tracks; aliases mode: its title in
-	 * the alias country. Otherwise resolve it and
-	 * fetch the tracklist of an album first (whatever is not known yet, both
+	 * the alias country. Otherwise resolve it and fetch the tracklist of an
+	 * album or the directors of a movie first (whatever is not known yet, all
 	 * at once), then seasons or confirm.
 	 */
 	private chooseResult(result: SearchResult, provider: Provider): void {
@@ -123,11 +125,16 @@ export class CatalogModal extends Modal {
 		const key = resultKey(result, provider);
 		const known = this.resolved.get(key);
 		const wantsTracks = this.wantsTracks(result, provider);
-		const jobs = { resolve: !known && !!provider.resolve, tracks: wantsTracks && !this.trackLists.has(key) };
-		const go = (found: SearchResult): void => {
-			this.proceed({ result: found, provider, tracks: wantsTracks ? (this.trackLists.get(key) ?? null) : undefined });
+		const jobs = {
+			resolve: !known && !!provider.resolve,
+			tracks: wantsTracks && !this.trackLists.has(key),
+			directors: this.wantsDirectors(result, provider) && !this.directorLists.has(key),
 		};
-		if (!jobs.resolve && !jobs.tracks) {
+		const go = (found: SearchResult): void => {
+			const tracks = wantsTracks ? (this.trackLists.get(key) ?? null) : undefined;
+			this.proceed({ result: withDirectors(found, this.directorLists.get(key)), provider, tracks });
+		};
+		if (!jobs.resolve && !jobs.tracks && !jobs.directors) {
 			go(known ?? result);
 			return;
 		}
@@ -136,6 +143,7 @@ export class CatalogModal extends Modal {
 			new ResolveStep(this.host, { result: known ?? result, provider }, jobs, (outcome) => {
 				if (jobs.resolve) this.resolved.set(key, outcome.result);
 				if (outcome.tracks) this.trackLists.set(key, outcome.tracks);
+				if (outcome.directors) this.directorLists.set(key, outcome.directors);
 				go(outcome.result);
 			}),
 		);
@@ -145,6 +153,11 @@ export class CatalogModal extends Modal {
 	private wantsTracks(result: SearchResult, provider: Provider): boolean {
 		const { settings } = this.host.context;
 		return this.launch.mode === 'create' && result.kind === 'album' && settings.albumTracklist && !!provider.tracks;
+	}
+
+	/** New movie notes get the directors in `author`: the search does not give them. */
+	private wantsDirectors(result: SearchResult, provider: Provider): boolean {
+		return this.launch.mode === 'create' && result.kind === 'movie' && !!provider.directors;
 	}
 
 	private showTracks(chosen: Chosen): void {

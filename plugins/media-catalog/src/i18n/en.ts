@@ -51,10 +51,11 @@ export const en = {
 	'search.noCover': 'No cover',
 	'search.results': 'Results',
 
-	// ---- after the pick (albums: the cover is checked before the form) ------
+	// ---- after the pick (albums: cover and tracks; movies: the directors) -----
 	'resolve.loading': 'Looking for the cover…',
 	'resolve.loadingBoth': 'Looking for the cover and tracks…',
 	'resolve.loadingTracks': 'Looking for the tracks…',
+	'resolve.loadingDirectors': 'Looking for the directors…',
 	'album.type.album': 'Album',
 	'album.type.ep': 'EP',
 	'album.tracks': '{count} tracks',
@@ -125,6 +126,8 @@ export const en = {
 	'field.author.name': 'Author',
 	'field.artist.name': 'Artist',
 	'field.artist.desc': 'Artist or band.',
+	'field.director.name': 'Director',
+	'field.director.desc': 'Separate several directors with commas.',
 	'field.pages.name': 'Pages',
 	'field.technical.name': 'Technical book',
 	'field.technical.desc': 'Also creates a reference note in the chosen area and links both notes.',

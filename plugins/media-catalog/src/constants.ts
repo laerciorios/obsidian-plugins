@@ -11,7 +11,7 @@ export const ALBUM_SOURCES = ['musicbrainz', 'itunes'] as const;
 
 /** Frontmatter keys per kind, in the order the catalog notes use. Keys not listed are never written. */
 export const FRONTMATTER_KEYS = {
-	movie: ['kind', 'title', 'aliases', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'cover', 'tags'],
+	movie: ['kind', 'title', 'aliases', 'author', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'cover', 'tags'],
 	series: ['kind', 'title', 'aliases', 'season', 'episodes', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'cover', 'tags'],
 	game: ['kind', 'title', 'aliases', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'hours', 'cover', 'tags'],
 	book: ['kind', 'title', 'aliases', 'author', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'pages', 'reference', 'cover', 'tags'],
@@ -136,6 +136,8 @@ export const ALIAS_COUNTRY_CODES = Object.keys(ALIAS_COUNTRIES) as AliasCountry[
 export const LOCALIZED_KINDS = ['movie', 'series', 'game'] as const;
 /** Past this, the alternative title is given up and the note is written without it. */
 export const LOCALIZED_TITLE_TIMEOUT_MS = 8_000;
+/** Movies: past this, the form opens with the director field empty (the lookup holds the step after the pick). */
+export const DIRECTORS_TIMEOUT_MS = 5_000;
 
 /** MusicBrainz allows about one request per second per client. */
 export const MUSICBRAINZ_INTERVAL_MS = 1100;

@@ -3,13 +3,15 @@ import type { AliasCountry } from '../constants';
 import type { Provider, SearchResult } from '../types';
 import { isRecord, num, records, str } from './guards';
 import { getJson, postJson } from './http';
-import { cleanQuery, finalize, imageUrl } from './results';
+import { PromiseCache } from './memo';
+import { cleanQuery, finalize, imageUrl, uniqueNames } from './results';
 
 /**
  * Movies from IMDb's public suggestion endpoint (the one behind imdb.com's
  * search box; no key). It answers at most 8 items, mixing titles, people and
- * franchises. The title of a country comes from IMDb's GraphQL API (also
- * behind imdb.com), asked with the country and its language.
+ * franchises, and no directors. The directors of the picked title and the
+ * title of a country come from IMDb's GraphQL API (also behind imdb.com), the
+ * latter asked with the country and its language.
  */
 
 const SUGGESTION_URL = 'https://v3.sg.media-imdb.com/suggestion';
@@ -88,12 +90,45 @@ export function parseImdbTitle(json: unknown): string | null {
 	return text ?? null;
 }
 
+/**
+ * GraphQL body asking the directors of `id`, a checked "tt…" id (it goes into
+ * the query as is): the "Director" line of the title page, as IMDb orders it.
+ */
+export function directorsQuery(id: string): string {
+	return JSON.stringify({
+		query: `{ title(id:"${id}") { principalCredits(filter:{categories:["director"]}) { category { id } credits { name { nameText { text } } } } } }`,
+	});
+}
+
+/**
+ * Names of the `principalCredits` group whose `category.id` is "director", in
+ * order, each once. [] when there are none: an unknown id answers
+ * `principalCredits: []`, a malformed one `title: null` plus `errors`.
+ */
+export function parseImdbDirectors(json: unknown): string[] {
+	const data = isRecord(json) && isRecord(json.data) ? json.data : null;
+	const title = data && isRecord(data.title) ? data.title : null;
+	if (!title) return [];
+	const names: string[] = [];
+	for (const group of records(title.principalCredits)) {
+		if (!isRecord(group.category) || group.category.id !== 'director') continue;
+		for (const credit of records(group.credits)) {
+			const person = isRecord(credit.name) ? credit.name : null;
+			const name = person && isRecord(person.nameText) ? str(person.nameText.text) : undefined;
+			if (name !== undefined) names.push(name);
+		}
+	}
+	return uniqueNames(names);
+}
+
 /** Headers that make the GraphQL API answer with the title of `country`, in its language. */
 export function titleHeaders(country: AliasCountry): Record<string, string> {
 	return { ...GRAPHQL_HEADERS, 'x-imdb-user-country': country, 'x-imdb-user-language': ALIAS_COUNTRIES[country] };
 }
 
 export function createImdb(): Provider {
+	// Picking the same film again (Back, or a new modal) asks once. Failures are retried.
+	const directorCache = new PromiseCache<string[]>({ max: 50, ttlMs: 10 * 60_000 });
 	return {
 		id: 'imdb',
 		name: 'IMDb',
@@ -102,6 +137,14 @@ export function createImdb(): Provider {
 			const cleaned = cleanQuery(query);
 			if (cleaned === null) return [];
 			return parseImdb(await getJson(suggestionUrl(cleaned)));
+		},
+		async directors(result: SearchResult): Promise<string[]> {
+			const id = result.externalId;
+			if (!TITLE_ID.test(id)) return [];
+			return directorCache.get(id, async () => {
+				const json = await postJson(GRAPHQL_URL, directorsQuery(id), 'application/json', GRAPHQL_HEADERS);
+				return parseImdbDirectors(json);
+			});
 		},
 		async localizedTitle(result: SearchResult, country: AliasCountry): Promise<string | null> {
 			const id = result.externalId;

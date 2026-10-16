@@ -23,6 +23,8 @@ export class Notice {
 export const Keymap = { isModifier: () => false };
 export const Platform = { isDesktop: true, isMobile: false };
 
+export function setIcon() {}
+
 export function getLanguage() {
 	return 'en';
 }

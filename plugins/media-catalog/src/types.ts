@@ -97,6 +97,12 @@ export interface Provider {
 	 */
 	tracks?(result: SearchResult, edition?: Edition): Promise<Track[]>;
 	/**
+	 * Movies, optional. Directors of the result, which the search does not
+	 * give, fetched after the pick when creating a note. Resolves to [] when
+	 * the source lists none; rejects on network errors.
+	 */
+	directors?(result: SearchResult): Promise<string[]>;
+	/**
 	 * Optional (movies, series, games). Title of the result as released in
 	 * `country`, or null when the source has none for it. Series give the
 	 * name of the show, without a season. Rejects on network errors.
@@ -124,7 +130,7 @@ export interface CatalogDraft {
 	episodes: number | null;
 	/** game */
 	hours: number | null;
-	/** book */
+	/** movie (directors), book (authors), album (artist); "" for the other kinds */
 	author: string;
 	pages: number | null;
 	/** Technical book: area folder (vault path) that holds `_References/Books`. Null: no reference note. */

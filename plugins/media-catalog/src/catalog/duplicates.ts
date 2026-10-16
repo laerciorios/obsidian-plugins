@@ -20,9 +20,11 @@ export interface DuplicateQuery {
 	 */
 	year?: number | null;
 	/**
-	 * Albums only: the artist, compared by slug. When both this and the note
-	 * have one and they differ, the note is not a duplicate (two bands, one
-	 * album title). An empty artist on either side does not decide.
+	 * Compared for albums only: the artist, by slug. When both this and the
+	 * note have one and they differ, the note is not a duplicate (two bands,
+	 * one album title). An empty artist on either side does not decide.
+	 * Movies and books carry their directors or authors here too, but title
+	 * and year already tell their notes apart: they never decide.
 	 */
 	author?: string | null;
 }

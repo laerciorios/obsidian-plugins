@@ -108,7 +108,8 @@ describe('frontmatter of a new note', () => {
 		assert.equal(lines[1], 'kind: movie');
 		assert.equal(lines[2], 'title: "Fern Road"');
 		assert.equal(lines[3], 'aliases: ["Fern Road", "Estrada das Samambaias"]');
-		assert.equal(lines[4], 'year: 2031');
+		assert.equal(lines[4], 'author: ""');
+		assert.equal(lines[5], 'year: 2031');
 	});
 
 	test('one alias without a localized title; quotes escaped', () => {

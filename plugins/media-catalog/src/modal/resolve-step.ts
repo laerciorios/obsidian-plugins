@@ -1,8 +1,9 @@
 import { ButtonComponent } from 'obsidian';
-import { CLS } from '../constants';
+import { CLS, DIRECTORS_TIMEOUT_MS } from '../constants';
 import { t } from '../i18n';
 import type { MessageKey } from '../i18n';
 import { CatalogError } from '../providers/errors';
+import { settleWithin } from '../providers/settle';
 import type { SearchResult, Track } from '../types';
 import { renderInstructions } from '../ui/instructions';
 import { renderPreview } from '../ui/preview';
@@ -15,6 +16,8 @@ export interface ResolveJobs {
 	resolve: boolean;
 	/** Provider.tracks: the tracklist of an album (create mode, setting on). */
 	tracks: boolean;
+	/** Provider.directors: the directors of a movie (create mode). */
+	directors: boolean;
 }
 
 export interface ResolveOutcome {
@@ -22,9 +25,18 @@ export interface ResolveOutcome {
 	result: SearchResult;
 	/** The tracks (possibly []); undefined when not asked or when the request failed. */
 	tracks?: Track[];
+	/** The directors (possibly []); undefined when not asked, or when the request failed or took too long. */
+	directors?: string[];
+}
+
+/** The result with `directors` as its authors, which the form fills `author` with. Unchanged when there are none. */
+export function withDirectors(result: SearchResult, directors: readonly string[] | undefined): SearchResult {
+	if (!directors || directors.length === 0) return result;
+	return { ...result, details: { ...result.details, authors: [...directors] } };
 }
 
 function loadingKey(jobs: ResolveJobs): MessageKey {
+	if (jobs.directors) return 'resolve.loadingDirectors';
 	if (jobs.resolve && jobs.tracks) return 'resolve.loadingBoth';
 	return jobs.tracks ? 'resolve.loadingTracks' : 'resolve.loading';
 }
@@ -32,9 +44,10 @@ function loadingKey(jobs: ResolveJobs): MessageKey {
 /**
  * Between the pick and the next step, for sources that finish a result once
  * it is picked (Provider.resolve: MusicBrainz checks the Cover Art Archive,
- * then iTunes) and for album tracklists (Provider.tracks), both at the same
- * time. Shows the chosen item and a loading state; Back returns to the
- * search. Leaving the step or closing the modal drops the answers.
+ * then iTunes), for album tracklists (Provider.tracks) and for the directors
+ * of a movie (Provider.directors), all at the same time. Shows the chosen
+ * item and a loading state; Back returns to the search. Leaving the step or
+ * closing the modal drops the answers.
  */
 export class ResolveStep implements Step {
 	readonly title: string;
@@ -65,8 +78,8 @@ export class ResolveStep implements Step {
 	}
 
 	private async run(): Promise<void> {
-		const [result, tracks] = await Promise.all([this.resolveResult(), this.fetchTracks()]);
-		if (this.active) this.onDone({ result, tracks });
+		const [result, tracks, directors] = await Promise.all([this.resolveResult(), this.fetchTracks(), this.fetchDirectors()]);
+		if (this.active) this.onDone({ result, tracks, directors });
 	}
 
 	private async resolveResult(): Promise<SearchResult> {
@@ -91,5 +104,16 @@ export class ResolveStep implements Step {
 			if (!(error instanceof CatalogError)) console.error('Media Catalog: could not load the tracks', error);
 			return undefined;
 		}
+	}
+
+	private async fetchDirectors(): Promise<string[] | undefined> {
+		const { result, provider } = this.chosen;
+		if (!this.jobs.directors || !provider.directors) return undefined;
+		const lookup = provider.directors(result).catch((error: unknown) => {
+			if (!(error instanceof CatalogError)) console.error('Media Catalog: could not load the directors', error);
+			throw error;
+		});
+		// A failed or slow request never holds the note back: the form opens with the field empty.
+		return (await settleWithin(lookup, DIRECTORS_TIMEOUT_MS)) ?? undefined;
 	}
 }

@@ -72,7 +72,7 @@ export function dateDescOf(kind: MediaKind, key: 'started' | 'finished'): Messag
 	return key === 'started' ? 'field.started.descAlbum' : 'field.finished.descAlbum';
 }
 
-/** Kinds whose notes have `author` (books: authors; albums: the artist). */
+/** Kinds whose notes have `author` (movies: the directors; books: authors; albums: the artist). */
 export function hasAuthor(kind: MediaKind): boolean {
 	const keys: readonly string[] = FRONTMATTER_KEYS[kind];
 	return keys.includes('author');

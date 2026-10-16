@@ -33,7 +33,8 @@ async function ensureFolder(app: App, folder: string): Promise<string> {
  * counter; series keep `-sNN` at the end (`<slug>-<year>-s01`, `<slug>-2-s01`).
  * Albums try the artist before the year: `<slug>-<artist>`, then
  * `<slug>-<artist>-<year>`; a self-titled album (artist slug = title slug)
- * skips the artist and goes on with `<slug>-<year>`.
+ * skips the artist and goes on with `<slug>-<year>`. Movies and books never
+ * put their directors or authors in the name.
  */
 export function* nameCandidates(draft: CatalogDraft): Generator<string> {
 	const slug = slugify(bareTitle(draft.kind, draft.title));

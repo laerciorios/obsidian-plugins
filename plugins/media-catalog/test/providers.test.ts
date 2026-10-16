@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { igdbRegions, localizationsQuery, parseLocalizations, pickLocalization, regionKey } from '../src/providers/igdb';
-import { parseImdbTitle, titleHeaders, titleQuery } from '../src/providers/imdb';
+import { directorsQuery, parseImdbDirectors, parseImdbTitle, titleHeaders, titleQuery } from '../src/providers/imdb';
 import { parseAkas } from '../src/providers/tvmaze';
 
 /** Shape of IMDb's GraphQL answers (fictional titles). */
@@ -50,6 +50,60 @@ describe('IMDb: title of a country', () => {
 			'x-imdb-user-language': 'ja-JP',
 		});
 		assert.equal(titleHeaders('BR')['x-imdb-user-language'], 'pt-BR');
+	});
+});
+
+describe('IMDb: directors', () => {
+	const person = (text: unknown) => ({ name: { id: 'nm0000001', nameText: { text } } });
+	const group = (id: string, names: unknown[]) => ({ category: { id, text: id }, credits: names.map(person) });
+	const answer = (principalCredits: unknown) => ({ data: { title: { principalCredits } }, extensions: DISCLAIMER });
+
+	test('asks for the director credits of the id', () => {
+		assert.deepEqual(JSON.parse(directorsQuery('tt7654321')), {
+			query: '{ title(id:"tt7654321") { principalCredits(filter:{categories:["director"]}) { category { id } credits { name { nameText { text } } } } } }',
+		});
+	});
+
+	test('reads the names of the director group, in order', () => {
+		const json = answer([group('director', ['Ilsa Marrow', 'Teodoro Brann'])]);
+		assert.deepEqual(parseImdbDirectors(json), ['Ilsa Marrow', 'Teodoro Brann']);
+	});
+
+	test('skips writers and cast, should the filter be ignored', () => {
+		const json = answer([
+			group('director', ['Ilsa Marrow']),
+			group('writer', ['Ilsa Marrow', 'Quentin Fell']),
+			group('cast', ['Rosa Tamblin', 'Otto Varga']),
+		]);
+		assert.deepEqual(parseImdbDirectors(json), ['Ilsa Marrow']);
+	});
+
+	test('trims names and keeps each once', () => {
+		const json = answer([group('director', [' Ilsa Marrow ', 'Teodoro Brann', 'ilsa marrow'])]);
+		assert.deepEqual(parseImdbDirectors(json), ['Ilsa Marrow', 'Teodoro Brann']);
+	});
+
+	test('drops credits without a usable name', () => {
+		const credits = [person('Ilsa Marrow'), person(''), person(null), { name: null }, { name: { nameText: null } }, 'x'];
+		assert.deepEqual(parseImdbDirectors(answer([{ category: { id: 'director' }, credits }])), ['Ilsa Marrow']);
+	});
+
+	test('unknown id: principalCredits is empty', () => {
+		assert.deepEqual(parseImdbDirectors(answer([])), []);
+	});
+
+	test('malformed id: title is null and errors come along', () => {
+		const json = {
+			errors: [{ message: 'xyz is not a valid ID for type with prefix tt', extensions: { code: 'BAD_USER_INPUT' } }],
+			data: { title: null },
+		};
+		assert.deepEqual(parseImdbDirectors(json), []);
+	});
+
+	test('anything else gives []', () => {
+		for (const json of [null, undefined, 'x', [], {}, { data: null }, answer(null), answer('x'), answer([{ category: null, credits: [person('Ilsa Marrow')] }])]) {
+			assert.deepEqual(parseImdbDirectors(json), [], JSON.stringify(json));
+		}
 	});
 });
 
