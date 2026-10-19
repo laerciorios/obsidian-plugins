@@ -1,5 +1,15 @@
 import { normalizePath } from 'obsidian';
-import { ALBUM_SOURCES, ALIAS_COUNTRY_CODES, BOOK_SOURCES, CATALOG_STATUSES, DEFAULT_BACKLOG_FOLDER, DEFAULT_FOLDER, KINDS } from '../constants';
+import {
+	ALBUM_SOURCES,
+	ALIAS_COUNTRY_CODES,
+	BACKLOG_TAG,
+	BOOK_SOURCES,
+	CATALOG_STATUSES,
+	CATALOG_TAG,
+	DEFAULT_BACKLOG_FOLDER,
+	DEFAULT_FOLDER,
+	KINDS,
+} from '../constants';
 import type { AliasCountry } from '../constants';
 import { isRecord } from '../providers/guards';
 import type { CatalogSettings } from '../types';
@@ -14,6 +24,8 @@ export function defaultSettings(): CatalogSettings {
 		version: 1,
 		folder: DEFAULT_FOLDER,
 		backlogFolder: DEFAULT_BACKLOG_FOLDER,
+		catalogTags: CATALOG_TAG,
+		backlogTags: BACKLOG_TAG,
 		templateFile: '',
 		addSourceLink: true,
 		defaultStatus: 'in-progress',
@@ -71,6 +83,20 @@ export function backlogFolder(value: unknown, fallback: string): string {
 	return vaultPath(value, fallback) || DEFAULT_BACKLOG_FOLDER;
 }
 
+/**
+ * Tags of a tags setting: split on commas and spaces, without a leading
+ * "#", repeats (case ignored) dropped. Nothing left: `fallback`.
+ */
+export function tagList(value: string, fallback: string): string[] {
+	const tags: string[] = [];
+	for (const raw of value.split(/[,\s]+/)) {
+		const tag = raw.replace(/^#+/, '');
+		if (tag && !tags.some((known) => known.toLowerCase() === tag.toLowerCase())) tags.push(tag);
+	}
+	if (tags.length > 0 || value === fallback) return tags;
+	return tagList(fallback, fallback);
+}
+
 /** Accept anything `loadData()` returns: invalid or missing fields get their defaults. */
 export function normalizeSettings(raw: unknown): CatalogSettings {
 	const defaults = defaultSettings();
@@ -79,6 +105,8 @@ export function normalizeSettings(raw: unknown): CatalogSettings {
 		version: 1,
 		folder: catalogFolder(raw.folder, defaults.folder),
 		backlogFolder: backlogFolder(raw.backlogFolder, defaults.backlogFolder),
+		catalogTags: text(raw.catalogTags, defaults.catalogTags),
+		backlogTags: text(raw.backlogTags, defaults.backlogTags),
 		templateFile: vaultPath(raw.templateFile, defaults.templateFile),
 		addSourceLink: flag(raw.addSourceLink, defaults.addSourceLink),
 		// Before the backlog folder, "backlog" was a status of the form: it becomes the default again.

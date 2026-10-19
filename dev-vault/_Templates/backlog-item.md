@@ -11,6 +11,6 @@ priority:             # high | medium | low
 added: {{date:YYYY-MM-DD}}
 recommended_by: ""
 cover: ""
-tags: [entertainment, backlog]
+tags: [backlog]
 ---
 ## Por que quero

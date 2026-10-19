@@ -1,7 +1,9 @@
 import { Notice, TFolder } from 'obsidian';
 import type { App, TFile } from 'obsidian';
+import { BACKLOG_TAG, CATALOG_TAG } from '../constants';
 import { t } from '../i18n';
 import { CatalogError } from '../providers/errors';
+import { tagList } from '../settings/settings';
 import type { CatalogDraft, CatalogSettings } from '../types';
 import { downloadCover } from './cover-download';
 import { todayIso } from './dates';
@@ -130,7 +132,8 @@ export async function createCatalogNote(app: App, settings: CatalogSettings, dra
 	const body = await noteBody(app, settings, draft, name);
 	const tracks = tracksProperty(draft, settings.albumTracksProperty);
 	const added = backlog ? todayIso() : undefined;
-	const file = await app.vault.create(path, catalogFrontmatter(draft, { cover, reference, tracks, added }) + body);
+	const tags = backlog ? tagList(settings.backlogTags, BACKLOG_TAG) : tagList(settings.catalogTags, CATALOG_TAG);
+	const file = await app.vault.create(path, catalogFrontmatter(draft, { cover, reference, tracks, added, tags }) + body);
 	if (area) await createReference(app, draft, area, name, file);
 	return { status: 'created', file };
 }

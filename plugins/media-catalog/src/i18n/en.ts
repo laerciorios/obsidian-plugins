@@ -230,6 +230,10 @@ export const en = {
 	'settings.folder.desc': 'Things you are consuming or have consumed. New notes go here unless you pick the backlog.',
 	'settings.backlogFolder.name': 'Backlog folder',
 	'settings.backlogFolder.desc': 'Things not started yet. "Start backlog item" moves a note from here to the catalog folder. Duplicates are looked for in both folders.',
+	'settings.catalogTags.name': 'Catalog tags',
+	'settings.catalogTags.desc': 'Tags of new catalog notes, separated by commas. "Start backlog item" puts them in place of the backlog tags. Empty: entertainment.',
+	'settings.backlogTags.name': 'Backlog tags',
+	'settings.backlogTags.desc': 'Tags of new backlog notes, separated by commas. Empty: backlog.',
 	'settings.templateFile.name': 'Template',
 	'settings.templateFile.desc':
 		'Its body (everything after the properties) goes into each new note. Empty: media.md in the core templates folder.',

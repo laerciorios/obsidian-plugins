@@ -9,7 +9,7 @@ priority: medium
 added: 2026-10-01
 recommended_by: "Ana Lumen"
 cover: ""
-tags: [entertainment, backlog]
+tags: [backlog]
 ---
 ## Por que quero
 

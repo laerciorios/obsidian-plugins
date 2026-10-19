@@ -6,9 +6,10 @@ import { todayIso } from '../catalog/dates';
 import { ensureFolder } from '../catalog/note-writer';
 import { joinPath } from '../catalog/paths';
 import { renderTracklist, replaceTracklistSection } from '../catalog/tracklist';
-import { ALBUM_TRACKS_KEY } from '../constants';
+import { ALBUM_TRACKS_KEY, BACKLOG_TAG, CATALOG_TAG } from '../constants';
 import { t } from '../i18n';
 import { CatalogError } from '../providers/errors';
+import { tagList } from '../settings/settings';
 import type { CatalogContext, CatalogNoteInfo, Track } from '../types';
 import { CatalogModal } from './catalog-modal';
 
@@ -57,7 +58,8 @@ async function addTracks(context: CatalogContext, note: CatalogNoteInfo): Promis
  * "Start backlog item": the note moves to the catalog folder with
  * fileManager.renameFile (links are updated), keeping its name; then
  * `status: in-progress`, `started` = today, no `priority` or
- * `recommended_by` (`added` stays), and `## Por que quero` becomes
+ * `recommended_by` (`added` stays), the backlog tags become the catalog
+ * tags, and `## Por que quero` becomes
  * `## Impressões`. Albums then get their tracklist. A note with the same
  * name in the catalog folder stops it before anything changes. Resolves
  * true once the note is moved and updated.
@@ -76,8 +78,9 @@ export async function startBacklogItem(context: CatalogContext, file: TFile): Pr
 		await app.fileManager.renameFile(file, target);
 		await app.vault.process(file, startBody);
 		const today = todayIso();
+		const tags = { backlog: tagList(settings.backlogTags, BACKLOG_TAG), catalog: tagList(settings.catalogTags, CATALOG_TAG) };
 		await app.fileManager.processFrontMatter(file, (frontmatter: Record<string, unknown>) => {
-			applyStart(frontmatter, today);
+			applyStart(frontmatter, today, tags);
 		});
 	} catch (error) {
 		// Expected failures (the folder setting points to a file) come with their own notice.

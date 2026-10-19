@@ -1,5 +1,5 @@
 import type { App, SettingDefinitionItem, TFile } from 'obsidian';
-import { CATALOG_STATUSES, DEFAULT_BACKLOG_FOLDER, DEFAULT_FOLDER, DEFAULT_TEMPLATE_NAME, IMPRESSIONS_HEADING } from '../constants';
+import { BACKLOG_TAG, CATALOG_STATUSES, CATALOG_TAG, DEFAULT_BACKLOG_FOLDER, DEFAULT_FOLDER, DEFAULT_TEMPLATE_NAME, IMPRESSIONS_HEADING } from '../constants';
 import { t } from '../i18n';
 import type { AlbumSource, BookSource, CatalogSettings } from '../types';
 import { countriesByName } from '../ui/countries';
@@ -50,6 +50,16 @@ export function settingDefinitions(context: DefinitionContext): SettingDefinitio
 					name: t('settings.backlogFolder.name'),
 					desc: t('settings.backlogFolder.desc'),
 					control: { type: 'folder', key: 'backlogFolder', placeholder: DEFAULT_BACKLOG_FOLDER },
+				},
+				{
+					name: t('settings.catalogTags.name'),
+					desc: t('settings.catalogTags.desc'),
+					control: { type: 'text', key: 'catalogTags', placeholder: CATALOG_TAG },
+				},
+				{
+					name: t('settings.backlogTags.name'),
+					desc: t('settings.backlogTags.desc'),
+					control: { type: 'text', key: 'backlogTags', placeholder: BACKLOG_TAG },
 				},
 				{
 					name: t('settings.templateFile.name'),

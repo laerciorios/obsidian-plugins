@@ -2,10 +2,11 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { TFile, TFolder } from 'obsidian';
 import type { App } from 'obsidian';
-import { albumSourceOf, applyStart, isInFolder, setAfter, startBody } from '../src/catalog/backlog';
+import { albumSourceOf, applyStart, isInFolder, setAfter, startBody, swapTags } from '../src/catalog/backlog';
 import { findInCatalogOrBacklog } from '../src/catalog/duplicates';
 import { catalogFrontmatter } from '../src/catalog/frontmatter';
-import { defaultSettings, normalizeSettings } from '../src/settings/settings';
+import { writeSetting } from '../src/settings/bindings';
+import { defaultSettings, normalizeSettings, tagList } from '../src/settings/settings';
 import type { CatalogDraft } from '../src/types';
 
 /** Fictional titles, artists and people only. */
@@ -57,7 +58,7 @@ describe('Backlog notes: frontmatter', () => {
 				'added: 2031-04-30',
 				'recommended_by: "Ana Lumen"',
 				'cover: ""',
-				'tags: [entertainment, backlog]',
+				'tags: [backlog]',
 				'---',
 				'',
 			].join('\n'),
@@ -105,7 +106,7 @@ describe('Starting a backlog item', () => {
 			added: '2031-01-10',
 			recommended_by: 'Ana Lumen',
 			cover: '',
-			tags: ['entertainment', 'backlog'],
+			tags: ['backlog'],
 		};
 		applyStart(frontmatter, '2031-06-01');
 		assert.deepEqual(frontmatter, {
@@ -127,8 +128,39 @@ describe('Starting a backlog item', () => {
 		assert.deepEqual(Object.entries(frontmatter), [
 			['status', 'in-progress'],
 			['started', '2031-06-01'],
-			['tags', []],
+			['tags', 'entertainment'],
 		]);
+	});
+
+	test('tags: swapped in place, other tags kept, "#backlog" accepted', () => {
+		const swap = { backlog: ['backlog'], catalog: ['entertainment'] };
+		assert.deepEqual(swapTags(['to-play', 'backlog', 'rpg'], swap), ['to-play', 'entertainment', 'rpg']);
+		assert.deepEqual(swapTags(['#backlog', 'rpg'], swap), ['entertainment', 'rpg']);
+		assert.deepEqual(swapTags(['Backlog'], swap), ['entertainment']);
+		assert.equal(swapTags('#backlog', swap), 'entertainment');
+	});
+
+	test('tags: entertainment never twice', () => {
+		const swap = { backlog: ['backlog'], catalog: ['entertainment'] };
+		assert.deepEqual(swapTags(['entertainment', 'backlog'], swap), ['entertainment']);
+		assert.deepEqual(swapTags(['backlog', 'rpg', 'entertainment'], swap), ['rpg', 'entertainment']);
+		assert.deepEqual(swapTags(['backlog', 'backlog'], swap), ['entertainment']);
+	});
+
+	test('tags: no backlog tag, nothing changes', () => {
+		const swap = { backlog: ['backlog'], catalog: ['entertainment'] };
+		assert.deepEqual(swapTags(['rpg'], swap), ['rpg']);
+		assert.equal(swapTags('rpg', swap), 'rpg');
+		assert.equal(swapTags(undefined, swap), undefined);
+	});
+
+	test('tags: configured lists', () => {
+		const swap = { backlog: ['queue', 'wishlist'], catalog: ['media', 'log'] };
+		assert.deepEqual(swapTags(['wishlist', 'rpg', 'queue'], swap), ['media', 'log', 'rpg']);
+		assert.deepEqual(swapTags('queue', swap), ['media', 'log']);
+		const frontmatter: Record<string, unknown> = { status: 'backlog', tags: ['queue'] };
+		applyStart(frontmatter, '2031-06-01', swap);
+		assert.deepEqual(frontmatter.tags, ['media', 'log']);
 	});
 
 	test('setAfter: after the key, or at the end without it', () => {
@@ -188,6 +220,22 @@ describe('Folders', () => {
 		assert.equal(defaultSettings().backlogFolder, '1 - Knowledge/Entertainment/Backlog/DB');
 		assert.equal(normalizeSettings({ backlogFolder: ' Queue/DB/ ' }).backlogFolder, 'Queue/DB');
 		assert.equal(normalizeSettings({ backlogFolder: '' }).backlogFolder, '1 - Knowledge/Entertainment/Backlog/DB');
+	});
+
+	test('tag settings: defaults, parsing, empty means the default', () => {
+		const settings = defaultSettings();
+		assert.equal(settings.catalogTags, 'entertainment');
+		assert.equal(settings.backlogTags, 'backlog');
+		assert.deepEqual(tagList('#media, log  Media,,', 'entertainment'), ['media', 'log']);
+		assert.deepEqual(tagList(' , ', 'backlog'), ['backlog']);
+		writeSetting(settings, 'backlogTags', ' queue, wishlist ');
+		assert.equal(settings.backlogTags, 'queue, wishlist');
+		assert.equal(normalizeSettings({ catalogTags: 42 }).catalogTags, 'entertainment');
+	});
+
+	test('backlog notes get the configured tags', () => {
+		const text = catalogFrontmatter(draft({}), { cover: '', reference: '', added: '2031-04-30', tags: ['queue', 'wishlist'] });
+		assert.match(text, /^tags: \[queue, wishlist\]$/m);
 	});
 
 	test('an old "backlog" default status becomes in progress', () => {

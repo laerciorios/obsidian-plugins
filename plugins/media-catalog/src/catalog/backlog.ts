@@ -1,4 +1,4 @@
-import { BACKLOG_ONLY_KEYS, BACKLOG_TAG, IMPRESSIONS_HEADING, WHY_HEADING } from '../constants';
+import { BACKLOG_ONLY_KEYS, BACKLOG_TAG, CATALOG_TAG, IMPRESSIONS_HEADING, WHY_HEADING } from '../constants';
 import type { ProviderId } from '../types';
 import { isMbid } from '../providers/albums';
 import { eolOf, frontmatterEnd, headingKey, headingsOf, spaced, splitLines } from './markdown';
@@ -18,21 +18,53 @@ export function isInFolder(path: string, folder: string): boolean {
 	return base === '/' || path.startsWith(`${base}/`);
 }
 
-/** `tags` without the backlog tag: a list stays a list, a single value stays a value. */
-function withoutBacklogTag(tags: unknown): unknown {
-	if (Array.isArray(tags)) return tags.filter((tag) => tag !== BACKLOG_TAG && tag !== `#${BACKLOG_TAG}`);
-	return tags === BACKLOG_TAG ? [] : tags;
+/** Tags swapped when an item starts (the tag settings, see tagList). */
+export interface StartTags {
+	backlog: readonly string[];
+	catalog: readonly string[];
+}
+
+const DEFAULT_START_TAGS: StartTags = { backlog: [BACKLOG_TAG], catalog: [CATALOG_TAG] };
+
+/** A tag as compared: no leading "#", case ignored (Obsidian tags ignore case). */
+function tagKey(tag: unknown): string | null {
+	return typeof tag === 'string' ? tag.trim().replace(/^#+/, '').toLowerCase() : null;
+}
+
+/**
+ * `tags` with the backlog tags swapped for the catalog tags, which go where
+ * the first backlog tag was; the other tags keep their place, and a catalog
+ * tag already there is never repeated (`[entertainment, backlog]` →
+ * `[entertainment]`). A list stays a list; a single value stays a single
+ * value when one tag replaces it. Without a backlog tag, nothing changes.
+ */
+export function swapTags(tags: unknown, swap: StartTags): unknown {
+	const backlog = new Set(swap.backlog.map(tagKey));
+	if (!Array.isArray(tags)) {
+		if (!backlog.has(tagKey(tags))) return tags;
+		return swap.catalog.length === 1 ? swap.catalog[0] : [...swap.catalog];
+	}
+	const list: unknown[] = tags;
+	const at = list.findIndex((tag) => backlog.has(tagKey(tag)));
+	if (at === -1) return tags;
+	const present = new Set(list.filter((tag) => !backlog.has(tagKey(tag))).map(tagKey));
+	const added = swap.catalog.filter((tag) => !present.has(tagKey(tag)));
+	return list.flatMap((tag, index) => {
+		if (index === at) return added;
+		return backlog.has(tagKey(tag)) ? [] : [tag];
+	});
 }
 
 /**
  * The properties of a started item, in place (processFrontMatter writes the
  * keys in object order): `status: in-progress`, `started` right after
  * `status` (or where the note already has it), no `priority` or
- * `recommended_by`, no backlog tag. `added` and everything else stay as they are.
+ * `recommended_by`, and the backlog tags swapped for the catalog tags in
+ * their place (see swapTags). `added` and everything else stay as they are.
  */
-export function applyStart(frontmatter: Record<string, unknown>, today: string): void {
+export function applyStart(frontmatter: Record<string, unknown>, today: string, tags: StartTags = DEFAULT_START_TAGS): void {
 	for (const key of BACKLOG_ONLY_KEYS) Reflect.deleteProperty(frontmatter, key);
-	if ('tags' in frontmatter) frontmatter.tags = withoutBacklogTag(frontmatter.tags);
+	if ('tags' in frontmatter) frontmatter.tags = swapTags(frontmatter.tags, tags);
 	frontmatter.status = IN_PROGRESS;
 	setAfter(frontmatter, 'started', today, 'status');
 }

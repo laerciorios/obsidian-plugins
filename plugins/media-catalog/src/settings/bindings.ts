@@ -1,6 +1,6 @@
 import { ALBUM_SOURCES, BOOK_SOURCES, CATALOG_STATUSES } from '../constants';
 import type { CatalogSettings } from '../types';
-import { aliasCountry, backlogFolder, catalogFolder, flag, oneOf, vaultPath } from './settings';
+import { aliasCountry, backlogFolder, catalogFolder, flag, oneOf, text, vaultPath } from './settings';
 
 /**
  * Settings edited through declarative controls. The keys are the settings
@@ -10,6 +10,8 @@ import { aliasCountry, backlogFolder, catalogFolder, flag, oneOf, vaultPath } fr
 export const CONTROL_KEYS = [
 	'folder',
 	'backlogFolder',
+	'catalogTags',
+	'backlogTags',
 	'templateFile',
 	'addSourceLink',
 	'defaultStatus',
@@ -38,6 +40,12 @@ const WRITERS: { [K in ControlKey]: (settings: CatalogSettings, value: unknown) 
 	},
 	backlogFolder: (settings, value) => {
 		settings.backlogFolder = backlogFolder(value, settings.backlogFolder);
+	},
+	catalogTags: (settings, value) => {
+		settings.catalogTags = text(value, settings.catalogTags);
+	},
+	backlogTags: (settings, value) => {
+		settings.backlogTags = text(value, settings.backlogTags);
 	},
 	templateFile: (settings, value) => {
 		settings.templateFile = vaultPath(value, settings.templateFile);

@@ -161,6 +161,10 @@ export interface CatalogSettings {
 	folder: string;
 	/** Things not started yet: notes with `status: backlog`, moved to `folder` when they start. */
 	backlogFolder: string;
+	/** Tags of catalog notes, as typed ("entertainment"; commas or spaces between tags). Empty: CATALOG_TAG. */
+	catalogTags: string;
+	/** Tags of backlog notes, as typed. Empty: BACKLOG_TAG. Swapped for catalogTags when an item starts. */
+	backlogTags: string;
 	/** Vault path of the template file. Empty: `<core Templates folder>/media.md`. */
 	templateFile: string;
 	addSourceLink: boolean;

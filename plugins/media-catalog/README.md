@@ -104,7 +104,7 @@ A gravação usa `processFrontMatter`. O Obsidian regrava o frontmatter inteiro:
 
 O vault separa o que ainda não comecei (pasta do backlog, template `backlog-item.md`) do que estou consumindo ou já consumi (pasta do catálogo). Com **Adicionar a** em **Backlog**, o formulário esconde **Status**, **Início**, **Fim**, **Nota**, **Episódios**, **Horas**, **Páginas** e **Livro técnico**, e mostra dois campos só do backlog: **Prioridade** (Alta, Média ou Baixa, com Média já escolhida; Nenhuma deixa a propriedade vazia) e **Quem indicou** (texto, vazio por padrão). A nota vai para a pasta do backlog com:
 
-- `status: backlog`, `priority` com a prioridade escolhida, `added` com a data de hoje, `recommended_by` com quem indicou (vazio quando não preenchido) e `tags: [entertainment, backlog]` (ver [Frontmatter](#frontmatter));
+- `status: backlog`, `priority` com a prioridade escolhida, `added` com a data de hoje, `recommended_by` com quem indicou (vazio quando não preenchido) e só as tags do backlog, `tags: [backlog]` por padrão, sem `entertainment`: no grafo, os itens do backlog se ligam só pelo backlog (ver [Frontmatter](#frontmatter));
 - o corpo do template `backlog-item.md` da pasta de templates do Obsidian (sem ele, `## Por que quero`) e a linha da fonte;
 - álbuns sem `## Faixas`: a lista entra quando o item começa.
 
@@ -116,7 +116,7 @@ Aparece só com uma nota da pasta do backlog (subpastas incluídas) aberta. Na o
 
 1. Move a nota para a pasta do catálogo com o mesmo nome, por `fileManager.renameFile`, então os links para ela são atualizados. Se a pasta do catálogo já tem uma nota com esse nome, um aviso pede para renomear uma delas e nada muda.
 2. `## Por que quero` vira `## Impressões`, com o texto que estava embaixo. Numa nota que já tem `## Impressões`, os títulos ficam como estão; numa sem nenhum dos dois, `## Impressões` entra no fim.
-3. As propriedades: `status: in-progress`, `started` com a data de hoje (logo depois de `status`), sem `priority` e `recommended_by` e sem a tag `backlog`. `added` fica.
+3. As propriedades: `status: in-progress`, `started` com a data de hoje (logo depois de `status`), sem `priority` e `recommended_by`. As tags do backlog dão lugar às do catálogo, na posição da primeira: `[backlog]` vira `[entertainment]`, `[to-play, backlog, rpg]` vira `[to-play, entertainment, rpg]`, e `#backlog` também conta. Uma lista continua lista e um valor único continua valor; uma tag do catálogo que a nota já tem não se repete (`[entertainment, backlog]` vira `[entertainment]`). `added` fica.
 4. Álbuns, com **Incluir lista de faixas em álbuns** ligado: as faixas são buscadas pelo link da fonte da nota (`- MusicBrainz: …` ou `- iTunes: …`, na edição principal) e a seção `## Faixas` entra antes de `## Impressões`, como numa nota nova. Sem o link, ou se a fonte falhar, um aviso explica e abre o **Atualizar faixas do álbum** para você escolher o álbum.
 
 Depois a nota abre. Um item do backlog que você desistiu de começar vai para a lixeira, não para `dropped` (regra do vault).
@@ -243,7 +243,7 @@ Notas do backlog seguem o template `backlog-item.md`, sem os campos de um regist
 | `priority`, `recommended_by` | Só no backlog, opcionais. `priority` sem aspas: `high`, `medium` (o padrão do formulário) ou `low`; vazio com **Nenhuma**. `recommended_by` entre aspas duplas (`"Ana Lumen"`); vazio, `recommended_by:` sem valor. |
 | `finished_dates` | Não existe em notas novas: só o **Novo registro** cria, logo depois de `finished` (ver [Novo registro](#novo-registro-rejogar--reassistir--reler)). |
 | `cover` | URL `https://` sem aspas, `"[[<nota>-cover.<ext>]]"` quando baixada, `""` sem capa. |
-| `tags` | `[entertainment]`; no backlog, `[entertainment, backlog]`. |
+| `tags` | As **Tags do catálogo** (`[entertainment]` por padrão); no backlog, só as **Tags do backlog** (`[backlog]` por padrão). |
 | `tracks` | Só álbuns, só com **Propriedade com o número de faixas** ligada e a lista de faixas conhecida: o número de faixas (todos os discos), logo depois de `year`. |
 
 Exemplo, com a série fictícia do dev-vault:
@@ -371,6 +371,8 @@ A nota do catálogo recebe `reference: "[[1 - Knowledge/Software Development/_Re
 |---|---|---|
 | Pasta do catálogo | `1 - Knowledge/Entertainment/DB` | Onde as notas novas são criadas (exceto as do backlog) e para onde **Começar item do backlog** move a nota. Vazio volta ao padrão. |
 | Pasta do backlog | `1 - Knowledge/Entertainment/Backlog/DB` | Onde ficam as notas com destino **Backlog**. As duplicatas são procuradas nas duas pastas. Vazio volta ao padrão. |
+| Tags do catálogo | `entertainment` | Tags das notas novas do catálogo, separadas por vírgula (um `#` no começo é ignorado). **Começar item do backlog** põe estas no lugar das tags do backlog. Vazio volta ao padrão. |
+| Tags do backlog | `backlog` | Tags das notas novas do backlog, separadas por vírgula. São as que **Começar item do backlog** troca pelas do catálogo. Vazio volta ao padrão. |
 | Template | vazio | Nota cujo corpo entra em cada nota nova. Vazio: `media.md` na pasta de templates do Obsidian. |
 | Link para a fonte | ligado | Adiciona a linha `- <Fonte>: <link>` no fim da nota. |
 | Status padrão | Em andamento | Status que o formulário sugere para o catálogo (Em andamento, Concluído ou Abandonado). Um `backlog` salvo por versões antigas vira Em andamento. |

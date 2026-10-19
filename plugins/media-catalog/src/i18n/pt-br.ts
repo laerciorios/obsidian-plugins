@@ -226,6 +226,10 @@ export const ptBR: Translation<typeof en> = {
 	'settings.folder.desc': 'O que você está consumindo ou já consumiu. As notas novas vão para cá, exceto quando você escolhe o backlog.',
 	'settings.backlogFolder.name': 'Pasta do backlog',
 	'settings.backlogFolder.desc': 'O que você ainda não começou. "Começar item do backlog" move a nota daqui para a pasta do catálogo. As duplicatas são procuradas nas duas pastas.',
+	'settings.catalogTags.name': 'Tags do catálogo',
+	'settings.catalogTags.desc': 'Tags das notas novas do catálogo, separadas por vírgula. "Começar item do backlog" põe estas no lugar das tags do backlog. Vazio: entertainment.',
+	'settings.backlogTags.name': 'Tags do backlog',
+	'settings.backlogTags.desc': 'Tags das notas novas do backlog, separadas por vírgula. Vazio: backlog.',
 	'settings.templateFile.name': 'Template',
 	'settings.templateFile.desc':
 		'O corpo (tudo depois das propriedades) entra em cada nota nova. Vazio: media.md na pasta de templates do Obsidian.',

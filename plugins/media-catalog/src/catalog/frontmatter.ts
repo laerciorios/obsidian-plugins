@@ -21,6 +21,8 @@ export interface ResolvedValues {
 	tracks?: number;
 	/** Backlog notes: the day the item entered the backlog (YYYY-MM-DD). */
 	added?: string;
+	/** `tags` (the settings of the destination). Default: [CATALOG_TAG], or [BACKLOG_TAG] for the backlog. */
+	tags?: readonly string[];
 }
 
 function date(value: string | null): YamlValue {
@@ -38,8 +40,8 @@ function coverValue(cover: string): YamlValue {
 /**
  * Frontmatter entries of a new note, in the order of FRONTMATTER_KEYS[kind]
  * (catalog) or BACKLOG_FRONTMATTER_KEYS[kind] (backlog: `status: backlog`,
- * `priority` and `recommended_by` (empty when not given), `added`, the backlog tag and none
- * of the fields of a run). Keys the kind does not use are never written;
+ * `priority` and `recommended_by` (empty when not given), `added`, only the
+ * backlog tags and none of the fields of a run). Keys the kind does not use are never written;
  * series titles end in the season (see noteTitle); `aliases` holds the title
  * and, when it differs, the title of the alias country (see noteAliases);
  * albums may add `tracks` after `year` (see ResolvedValues.tracks).
@@ -66,7 +68,7 @@ export function catalogEntries(draft: CatalogDraft, resolved: ResolvedValues): Y
 		priority: draft.priority ? yaml.plain(draft.priority) : yaml.null(),
 		added: date(resolved.added ?? null),
 		recommended_by: draft.recommendedBy.trim() ? yaml.quoted(draft.recommendedBy.trim()) : yaml.null(),
-		tags: yaml.list(backlog ? [CATALOG_TAG, BACKLOG_TAG] : [CATALOG_TAG]),
+		tags: yaml.list(resolved.tags ?? [backlog ? BACKLOG_TAG : CATALOG_TAG]),
 	};
 	const keys: readonly FrontmatterKey[] = (backlog ? BACKLOG_FRONTMATTER_KEYS : FRONTMATTER_KEYS)[draft.kind];
 	const entries = keys.map((key): YamlEntry => [key, values[key]]);
