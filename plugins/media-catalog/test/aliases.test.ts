@@ -215,6 +215,7 @@ function draft(overrides: Partial<CatalogDraft>): CatalogDraft {
 		hours: null,
 		author: '',
 		pages: null,
+		estimatedHours: null,
 		priority: null,
 		recommendedBy: '',
 		referenceArea: null,

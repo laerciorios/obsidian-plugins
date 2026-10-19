@@ -1,11 +1,24 @@
 import type { App, TFile } from 'obsidian';
-import type { ALBUM_SOURCES, AliasCountry, BOOK_SOURCES, CATALOG_STATUSES, DESTINATIONS, KINDS, PRIORITIES, PROVIDER_IDS, STATUSES } from './constants';
+import type {
+	ALBUM_SOURCES,
+	AliasCountry,
+	BOOK_SOURCES,
+	CATALOG_STATUSES,
+	DESTINATIONS,
+	HLTB_MEASURES,
+	KINDS,
+	PRIORITIES,
+	PROVIDER_IDS,
+	STATUSES,
+} from './constants';
+import type { HltbClient } from './providers/hltb';
 
 export type MediaKind = (typeof KINDS)[number];
 export type Status = (typeof STATUSES)[number];
 export type CatalogStatus = (typeof CATALOG_STATUSES)[number];
 export type Destination = (typeof DESTINATIONS)[number];
 export type Priority = (typeof PRIORITIES)[number];
+export type HltbMeasure = (typeof HLTB_MEASURES)[number];
 export type ProviderId = (typeof PROVIDER_IDS)[number];
 export type BookSource = (typeof BOOK_SOURCES)[number];
 export type AlbumSource = (typeof ALBUM_SOURCES)[number];
@@ -138,6 +151,8 @@ export interface CatalogDraft {
 	/** movie (directors), book (authors), album (artist); "" for the other kinds */
 	author: string;
 	pages: number | null;
+	/** Backlog games: `estimated_hours` (HowLongToBeat, editable); null writes it empty. Ignored otherwise. */
+	estimatedHours: number | null;
 	/** Backlog: `priority`; null writes it empty. Ignored for the catalog. */
 	priority: Priority | null;
 	/** Backlog: who recommended it (`recommended_by`); "" writes it empty. Ignored for the catalog. */
@@ -184,6 +199,8 @@ export interface CatalogSettings {
 	albumTracklist: boolean;
 	/** Albums: also write `tracks` (number of tracks) after `year`. */
 	albumTracksProperty: boolean;
+	/** HowLongToBeat time written as `estimated_hours` in backlog games; "off" looks nothing up. */
+	hltbMeasure: HltbMeasure;
 	/** Country of the alternative title written as the second alias; "" for none (the title only). */
 	aliasCountry: AliasCountry | '';
 	/** Kind picked in the last search, so the modal reopens on it. */
@@ -210,5 +227,7 @@ export interface CatalogContext {
 	app: App;
 	settings: CatalogSettings;
 	providers: Provider[];
+	/** HowLongToBeat (estimated hours of backlog games). */
+	hltb: HltbClient;
 	settingsChanged(): void;
 }

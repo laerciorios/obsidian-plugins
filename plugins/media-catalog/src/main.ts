@@ -8,8 +8,11 @@ import { CatalogModal } from './modal/catalog-modal';
 import { newRun } from './modal/new-run';
 import { askRating } from './modal/rating-modal';
 import { startBacklogItem } from './modal/start-item';
+import { updateEstimate } from './modal/update-estimate';
 import { updateNoteAliases } from './modal/update-aliases';
 import { createProviders, userAgentFor } from './providers';
+import { createHltb } from './providers/hltb';
+import type { HltbClient } from './providers/hltb';
 import { googleBooksKey, igdbCredentials } from './settings/secrets';
 import { defaultSettings, normalizeSettings } from './settings/settings';
 import { MediaCatalogSettingTab } from './settings/settings-tab';
@@ -18,6 +21,7 @@ import type { CatalogContext, CatalogNoteInfo, CatalogSettings, Provider } from 
 export default class MediaCatalogPlugin extends Plugin implements CatalogContext {
 	settings: CatalogSettings = defaultSettings();
 	providers: Provider[] = [];
+	readonly hltb: HltbClient = createHltb();
 	private readonly saveSoon = debounce(() => void this.saveData(this.settings), SAVE_DEBOUNCE_MS, true);
 
 	async onload(): Promise<void> {
@@ -104,6 +108,17 @@ export default class MediaCatalogPlugin extends Plugin implements CatalogContext
 				const note = this.activeNote();
 				if (!note || !isInFolder(note.file.path, this.settings.backlogFolder)) return false;
 				if (!checking) void this.start(note);
+				return true;
+			},
+		});
+		this.addCommand({
+			id: COMMAND_IDS.updateEstimate,
+			name: t('command.updateEstimate'),
+			icon: 'timer',
+			checkCallback: (checking) => {
+				const note = this.activeNote();
+				if (note?.kind !== 'game') return false;
+				if (!checking) void updateEstimate(this, note);
 				return true;
 			},
 		});

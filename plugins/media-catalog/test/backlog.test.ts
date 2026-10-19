@@ -29,6 +29,7 @@ function draft(overrides: Partial<CatalogDraft>): CatalogDraft {
 		hours: 12,
 		author: 'Ilsa Marrow',
 		pages: 300,
+		estimatedHours: null,
 		priority: null,
 		recommendedBy: '',
 		referenceArea: null,

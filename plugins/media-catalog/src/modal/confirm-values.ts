@@ -38,6 +38,8 @@ export interface ConfirmValues {
 	pages: string;
 	/** Backlog only. */
 	recommendedBy: string;
+	/** Backlog games only. */
+	estimatedHours: string;
 }
 
 export type TextKey = keyof ConfirmValues;
@@ -137,6 +139,7 @@ export function initialValues({ result, season }: ConfirmInput, status: Status):
 		author: result.details?.authors?.join(', ') ?? '',
 		pages: pages === undefined ? '' : String(pages),
 		recommendedBy: '',
+		estimatedHours: '',
 	};
 }
 

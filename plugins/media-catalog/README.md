@@ -15,6 +15,7 @@ Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/
 | **Atualizar faixas do álbum** | com uma nota de álbum aberta (`kind: album`) | Busca o mesmo álbum, você confirma a edição e só a seção `## Faixas` da nota é trocada (ou criada). |
 | **Atualizar aliases da nota atual** | com uma nota do catálogo aberta | Busca de novo o título lançado no país configurado e regrava `aliases`, mantendo os aliases que você adicionou. |
 | **Começar item do backlog** | com uma nota da pasta do backlog aberta | Move a nota para a pasta do catálogo e começa o registro (ver [Backlog](#backlog)). |
+| **Atualizar tempo estimado (HowLongToBeat)** | com uma nota de jogo aberta (`kind: game`) | Busca o jogo no HowLongToBeat e grava `estimated_hours` (ver [Tempo estimado](#tempo-estimado-howlongtobeat)). |
 
 Uma nota é do catálogo quando o frontmatter tem `kind` igual a `movie`, `series`, `game`, `book` ou `album`, em qualquer pasta.
 
@@ -110,6 +111,18 @@ O vault separa o que ainda não comecei (pasta do backlog, template `backlog-ite
 
 Os valores digitados nos campos escondidos ficam no formulário: voltar para **Catálogo** mostra todos de novo.
 
+Em jogos, o backlog mostra também **Tempo estimado** (ver abaixo).
+
+### Tempo estimado (HowLongToBeat)
+
+Jogos do backlog guardam em `estimated_hours` o tempo para zerar do [HowLongToBeat](https://howlongtobeat.com), para comparar depois com as `hours` reais. A medida vem de **Tempo estimado (HowLongToBeat)**, nas configurações: **Main Story**, **Main + Extra** (o padrão) ou **Completionist**.
+
+- **No cadastro**: ao escolher **Backlog** num jogo, o campo **Tempo estimado** aparece e o plugin busca o jogo no HowLongToBeat pelo título do formulário. O valor chega arredondado para meia hora (`33.5`) e continua editável; um valor digitado antes da resposta não é trocado. Uma linha embaixo do campo diz o que aconteceu: o jogo encontrado e o ano, "não encontrado", "mais de um jogo com este título" ou "não respondeu". Em todos os casos o campo fica editável e **Criar nota** funciona sem esperar a busca. A busca só acontece quando o campo aparece: jogos cadastrados direto no catálogo não consultam o HowLongToBeat.
+- **Qual jogo**: o nome ou um dos nomes alternativos do HowLongToBeat tem que ser igual ao título, ignorando maiúsculas, acentos e pontuação (o "Final Cut" de um jogo costuma estar nos nomes alternativos do jogo original). DLCs só contam sem um jogo com esse título. Com mais de um jogo com o título, vale o do ano do formulário; sem desempate, o campo fica vazio.
+- **Comando**: **Atualizar tempo estimado (HowLongToBeat)** faz a mesma busca para a nota de jogo aberta (título e `year` da nota) e grava `estimated_hours` no lugar, ou logo depois de `platform`. Serve para os itens antigos do backlog. Com a opção desligada nas configurações, o comando usa Main + Extra.
+- **Começar item do backlog** mantém `estimated_hours`.
+- Com **Desligado**, nada é buscado no cadastro, e o campo fica para preencher à mão.
+
 ### Começar item do backlog
 
 Aparece só com uma nota da pasta do backlog (subpastas incluídas) aberta. Na ordem:
@@ -168,6 +181,7 @@ O corpo é gravado antes do frontmatter: se a segunda gravação falhar, rodar o
 | Livro | Open Library | não | Uma obra por resultado: autores, ano da primeira publicação, páginas (mediana das edições) e capa. |
 | Livro | Google Books | sim | Edições, inclusive brasileiras: autores, ano da edição, páginas e capa. |
 | Jogo | IGDB | sim (app da Twitch) | Ano de lançamento, estúdio, plataformas e capa. Nomes por região (`game_localizations`). |
+| Jogo (tempo) | HowLongToBeat (busca interna do site) | não | Main Story, Main + Extra e Completionist, só para `estimated_hours` de jogos do backlog. Não é uma fonte de busca do modal. |
 | Álbum | MusicBrainz | não | Um resultado por álbum (o grupo de lançamentos, não cada edição): artista, ano do lançamento original e tipo. A capa vem do Cover Art Archive. Faixas com duração, da edição representativa ou da escolhida. |
 | Álbum | iTunes | não | Artista, ano, número de faixas e capa 600×600. Faixas com duração, do álbum da loja. Também é a fonte da capa quando o Cover Art Archive não tem a do álbum. |
 
@@ -231,7 +245,7 @@ Notas do backlog seguem o template `backlog-item.md`, sem os campos de um regist
 |---|---|
 | `movie`, `book`, `album` | `kind, title, aliases, author, year, status, platform, priority, added, recommended_by, cover, tags` |
 | `series` | `kind, title, aliases, year, season, status, platform, priority, added, recommended_by, cover, tags` |
-| `game` | `kind, title, aliases, year, status, platform, priority, added, recommended_by, cover, tags` |
+| `game` | `kind, title, aliases, year, status, platform, estimated_hours, priority, added, recommended_by, cover, tags` |
 
 | Valor | Formato |
 |---|---|
@@ -240,6 +254,7 @@ Notas do backlog seguem o template `backlog-item.md`, sem os campos de um regist
 | `aliases` | Lista com itens entre aspas duplas: o `title` e, quando há e é diferente, o título do país configurado (ver [Aliases e título alternativo](#aliases-e-título-alternativo)). |
 | `year`, `season`, `episodes`, `rating`, `hours`, `pages` | Número. Vazio vira `rating:` sem valor. |
 | `started`, `finished`, `added` | `AAAA-MM-DD` sem aspas, ou vazio. `added` só no backlog, com a data do cadastro. |
+| `estimated_hours` | Só em jogos do backlog, logo depois de `platform`: número de horas do HowLongToBeat, arredondado para meia hora (`estimated_hours: 32.5`), ou vazio. Fica quando o item começa. |
 | `priority`, `recommended_by` | Só no backlog, opcionais. `priority` sem aspas: `high`, `medium` (o padrão do formulário) ou `low`; vazio com **Nenhuma**. `recommended_by` entre aspas duplas (`"Ana Lumen"`); vazio, `recommended_by:` sem valor. |
 | `finished_dates` | Não existe em notas novas: só o **Novo registro** cria, logo depois de `finished` (ver [Novo registro](#novo-registro-rejogar--reassistir--reler)). |
 | `cover` | URL `https://` sem aspas, `"[[<nota>-cover.<ext>]]"` quando baixada, `""` sem capa. |
@@ -380,6 +395,7 @@ A nota do catálogo recebe `reference: "[[1 - Knowledge/Software Development/_Re
 | Baixar capas por padrão | desligado | Deixa **Baixar para os anexos** selecionado no formulário e no **Trocar capa**. |
 | Fonte de livros | Open Library | Fonte selecionada primeiro na busca de livros. Trocar a fonte no modal também muda esta opção. |
 | Fonte de álbuns | MusicBrainz | Fonte selecionada primeiro na busca de álbuns. Trocar a fonte no modal também muda esta opção. |
+| Tempo estimado (HowLongToBeat) | Main + Extra | Medida gravada em `estimated_hours` nos jogos do backlog: Main Story, Main + Extra ou Completionist. Desligado: nada é buscado no cadastro. |
 | Incluir EPs | ligado | A busca de álbuns também lista EPs. |
 | Incluir coletâneas e álbuns ao vivo | desligado | O MusicBrainz também lista coletâneas, álbuns ao vivo, remixes, DJ mixes e demos. |
 | Capas do iTunes | ligado | Álbum do MusicBrainz sem capa no Cover Art Archive: procura a capa no iTunes. Desligado, a nota sai sem capa. |
@@ -397,16 +413,17 @@ O plugin também guarda no `data.json` o último tipo buscado (`lastKind`), para
 
 | Uso | Hosts |
 |---|---|
-| APIs | `v3.sg.media-imdb.com`, `caching.graphql.imdb.com`, `api.tvmaze.com`, `www.googleapis.com`, `openlibrary.org`, `covers.openlibrary.org`, `id.twitch.tv`, `api.igdb.com`, `musicbrainz.org`, `itunes.apple.com` |
+| APIs | `v3.sg.media-imdb.com`, `caching.graphql.imdb.com`, `api.tvmaze.com`, `www.googleapis.com`, `openlibrary.org`, `covers.openlibrary.org`, `id.twitch.tv`, `api.igdb.com`, `musicbrainz.org`, `itunes.apple.com`, `howlongtobeat.com` |
 | Imagens (mostrar e baixar capas) | `m.media-amazon.com`, `static.tvmaze.com`, `books.google.com`, `books.googleusercontent.com`, `images.igdb.com`, `covers.openlibrary.org`, `coverartarchive.org`, `archive.org` e qualquer host terminado em `.archive.org`, `is1-ssl.mzstatic.com` a `is5-ssl.mzstatic.com` |
 
-- A rede só é usada quando um comando roda: busca, lista de temporadas, consulta da capa e da lista de faixas de um álbum escolhido, diretores de um filme escolhido, edições e faixas no **Atualizar faixas do álbum**, título do país (no formulário e no **Atualizar aliases da nota atual**, só com um país configurado), capas mostradas no modal e download de capa. Carregar o plugin não faz nenhuma requisição.
+- A rede só é usada quando um comando roda: busca, lista de temporadas, consulta da capa e da lista de faixas de um álbum escolhido, diretores de um filme escolhido, tempo estimado de um jogo do backlog (no formulário e no **Atualizar tempo estimado**), edições e faixas no **Atualizar faixas do álbum**, título do país (no formulário e no **Atualizar aliases da nota atual**, só com um país configurado), capas mostradas no modal e download de capa. Carregar o plugin não faz nenhuma requisição.
 - O modal só mostra imagens `https://` dos hosts de imagem, sem enviar referrer. A exceção é a capa **Atual** do **Trocar capa**: ela é mostrada de onde a nota aponta (qualquer `https://`), só para exibir. Downloads continuam limitados aos hosts de imagem.
 - A lista vale para cada endereço que o plugin pede. Os redirecionamentos, o Obsidian segue sozinho: o `requestUrl` roda no processo principal com `redirect: "follow"`, e um plugin não vê nem interrompe os saltos. O `<img>` também segue. Por isso os saltos não passam pela lista um a um. As cadeias conhecidas terminam em hosts da lista: as capas do Open Library redirecionam para `archive.org`, e as do Cover Art Archive para `archive.org` e depois para um servidor de armazenamento com nome variável (`ia800123.us.archive.org`, `dn720706.ca.archive.org`), aceito pelo sufixo `.archive.org`, que vale só para imagens. O plugin nunca pede uma URL tirada de um redirecionamento.
 - Cada fonte recebe o texto da busca. Na consulta da capa de um álbum do MusicBrainz, o Cover Art Archive recebe o id do álbum e, sem capa lá, o iTunes recebe artista e título. Para as faixas, o MusicBrainz recebe o id do álbum e o da edição, e o iTunes o id do álbum na loja. O iTunes recebe também o país da loja, tirado do idioma do Obsidian. O MusicBrainz e o Cover Art Archive recebem o `User-Agent` com a versão do plugin e `https://laerciorios.com`. A chave do Google Books vai para `www.googleapis.com`; o client id e o client secret da Twitch vão para `id.twitch.tv`, que devolve o token usado em `api.igdb.com`.
 - Diretores: o IMDb recebe o id do filme escolhido, sem país nem idioma.
 - Título do país: o IMDb recebe o id do filme, o país e o idioma; o TVmaze, o id da série; a IGDB, o id do jogo.
 - **API GraphQL do IMDb** (`caching.graphql.imdb.com`): é a API que o próprio imdb.com usa, sem chave. Ela responde 403 sem os cabeçalhos `Origin: https://www.imdb.com` e `Referer: https://www.imdb.com/`, então o plugin os envia (o `User-Agent` é o do Obsidian). Cada resposta traz um aviso de que o uso público, comercial ou não pessoal dos dados não é permitido, e de que o uso limitado e não comercial segue as regras do IMDb ([Can I use IMDb data in my software?](https://help.imdb.com/article/imdb/general-information/can-i-use-imdb-data-in-my-software/G5JTRESSHJBBHTGX)). O plugin é para uso pessoal e faz no máximo duas consultas por filme cadastrado (diretores e título do país) e uma por nota atualizada; não use essa parte num contexto comercial. A API não é documentada e pode mudar: se ela falhar, a nota sai só com o título e sem diretor.
+- **HowLongToBeat** (`howlongtobeat.com`): o site não tem API pública. O plugin faz o que a própria página de busca faz: pede um token em `/api/search/site/init` e busca em `POST /api/search/site` com ele, mandando `Origin` e `Referer` do site. O site recebe o título do jogo. O token fica só em memória, por 10 minutos ou até um 403. Se o endereço da busca mudar, o plugin o procura nos scripts da página inicial. Tudo isso fica em `src/providers/hltb-session.ts`: quando o site mudar de novo, é o único arquivo a mexer. Se a busca falhar, `estimated_hours` fica vazio e editável.
 - O token do IGDB fica só em memória: é renovado antes de expirar ou depois de um 401, e nunca é gravado.
 - Sem telemetria.
 
@@ -426,6 +443,7 @@ Um idioma novo é um arquivo novo em `src/i18n/`, com todas as chaves de `src/i1
 | `src/constants.ts` | Tipos, status, ordem das chaves por tipo, pasta padrão, hosts permitidos e textos da nota de referência. |
 | `src/providers/http.ts` | O único módulo que acessa a rede: `requestUrl`, só `https://`, só hosts da lista. |
 | `src/providers/imdb.ts`, `tvmaze.ts`, `open-library.ts`, `google-books.ts`, `igdb.ts`, `musicbrainz.ts`, `itunes.ts` | Uma fonte por arquivo: monta a requisição e converte a resposta em resultados. O MusicBrainz também completa o resultado escolhido (`resolve`: capa no Cover Art Archive ou no iTunes), e o IMDb busca os diretores do filme escolhido (`directors`). |
+| `src/providers/hltb.ts`, `hltb-session.ts` | HowLongToBeat: `hltb.ts` monta a busca, lê a resposta, escolhe o jogo e arredonda as horas; `hltb-session.ts` guarda a parte frágil (endereço da busca e token). `src/modal/estimate-field.ts` é o campo do formulário e `update-estimate.ts` o comando. |
 | `src/providers/guards.ts`, `results.ts`, `errors.ts` | Leitura defensiva do JSON, helpers comuns, erros e suas mensagens. |
 | `src/providers/localized-title.ts`, `settle.ts` | Título do país configurado (`localizedTitle` de IMDb, TVmaze e IGDB) com tempo-limite, sem nunca falhar; respostas guardadas por 10 minutos. |
 | `src/modal/catalog-modal.ts` | Modal único com os passos busca → capa e faixas (álbuns) ou diretores (filmes) → temporada → confirmação, e busca → faixas no **Atualizar faixas do álbum**. Guarda o estado que sobrevive ao **Voltar**, inclusive os resultados já completados, as listas de faixas, os diretores e as edições. |

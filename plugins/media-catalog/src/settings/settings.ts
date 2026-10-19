@@ -8,6 +8,8 @@ import {
 	CATALOG_TAG,
 	DEFAULT_BACKLOG_FOLDER,
 	DEFAULT_FOLDER,
+	DEFAULT_HLTB_MEASURE,
+	HLTB_MEASURES,
 	KINDS,
 } from '../constants';
 import type { AliasCountry } from '../constants';
@@ -38,6 +40,7 @@ export function defaultSettings(): CatalogSettings {
 		albumTracklist: true,
 		albumTracksProperty: false,
 		aliasCountry: '',
+		hltbMeasure: DEFAULT_HLTB_MEASURE,
 		lastKind: 'movie',
 		igdbClientId: '',
 		igdbClientSecret: '',
@@ -120,6 +123,7 @@ export function normalizeSettings(raw: unknown): CatalogSettings {
 		albumTracklist: flag(raw.albumTracklist, defaults.albumTracklist),
 		albumTracksProperty: flag(raw.albumTracksProperty, defaults.albumTracksProperty),
 		aliasCountry: aliasCountry(raw.aliasCountry, defaults.aliasCountry),
+		hltbMeasure: oneOf(raw.hltbMeasure, HLTB_MEASURES, defaults.hltbMeasure),
 		lastKind: oneOf(raw.lastKind, KINDS, defaults.lastKind),
 		igdbClientId: text(raw.igdbClientId, defaults.igdbClientId),
 		igdbClientSecret: text(raw.igdbClientSecret, defaults.igdbClientSecret),

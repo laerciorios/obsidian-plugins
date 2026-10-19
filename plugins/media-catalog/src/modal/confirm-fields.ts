@@ -24,6 +24,8 @@ import {
 	yearDescOf,
 } from './confirm-values';
 import type { ConfirmInput, ConfirmValues, TextKey } from './confirm-values';
+import { EstimateField } from './estimate-field';
+import type { EstimateLookup } from './estimate-field';
 import { TextFields } from './text-fields';
 
 let nextDatalistId = 0;
@@ -31,7 +33,7 @@ let nextDatalistId = 0;
 /** Fields of a run (and of the notes in the catalog folder only): hidden and not written for the backlog. */
 const RUN_KEYS: ReadonlySet<TextKey> = new Set<TextKey>(['started', 'finished', 'rating', 'episodes', 'hours', 'pages']);
 /** Fields of the backlog only. */
-const BACKLOG_KEYS: ReadonlySet<TextKey> = new Set<TextKey>(['recommendedBy']);
+const BACKLOG_KEYS: ReadonlySet<TextKey> = new Set<TextKey>(['recommendedBy', 'estimatedHours']);
 /** Value of the "no priority" option (`priority` written empty). */
 const NO_PRIORITY = '';
 
@@ -61,6 +63,8 @@ export class ConfirmForm {
 	private statusRow: Setting | null = null;
 	private technicalRow: Setting | null = null;
 	private areaRow: Setting | null = null;
+	/** Backlog games: `estimated_hours`, from HowLongToBeat. */
+	private readonly estimate: EstimateField | null;
 
 	constructor(
 		private readonly app: App,
@@ -68,6 +72,8 @@ export class ConfirmForm {
 		private readonly input: ConfirmInput,
 		/** Title, year or (albums) artist edited: what the duplicate check looks at. */
 		private readonly onIdentityChange: () => void,
+		/** Games with the HowLongToBeat setting on; null otherwise. */
+		estimateLookup: EstimateLookup | null = null,
 	) {
 		this.status = settings.defaultStatus;
 		this.download = settings.downloadCovers;
@@ -75,6 +81,12 @@ export class ConfirmForm {
 		this.cover = coverUrlOf(input);
 		this.tracks = tracklistOf(input, settings) ?? null;
 		this.fields = new TextFields(this.values, (key) => this.isShown(key));
+		this.estimate = input.result.kind === 'game' ? new EstimateField(this.fields, settings.hltbMeasure, estimateLookup) : null;
+	}
+
+	/** The step leaves the screen: a late HowLongToBeat answer is dropped. */
+	destroy(): void {
+		this.estimate?.destroy();
 	}
 
 	get title(): string {
@@ -166,6 +178,7 @@ export class ConfirmForm {
 		this.rows.set('rating', fields.add(el, 'rating', rating, checkRating).setting);
 
 		this.renderPlatform(el);
+		if (this.estimate) this.rows.set('estimatedHours', this.estimate.render(el));
 		this.priorityRow = dropdownRow(el, {
 			name: t('field.priority.name'),
 			options: [...PRIORITIES.map((priority) => [priority, t(`priority.${priority}`)] as const), [NO_PRIORITY, t('priority.none')]],
@@ -230,6 +243,7 @@ export class ConfirmForm {
 			pages: kind === 'book' ? number('pages') : null,
 			priority: backlog ? this.priority : null,
 			recommendedBy: backlog ? values.recommendedBy.trim() : '',
+			estimatedHours: kind === 'game' ? number('estimatedHours') : null,
 			referenceArea: kind === 'book' && !backlog && this.technical && this.area ? this.area : null,
 			cover: { url: cover, download: cover !== null && this.download },
 			source: { provider: result.provider, name: provider.name, url: result.sourceUrl ?? null },
@@ -262,6 +276,7 @@ export class ConfirmForm {
 		if (!destination) return;
 		this.destination = destination;
 		this.updateVisibility();
+		if (destination === 'backlog') this.estimate?.show(this.title, this.year);
 	}
 
 	private updateVisibility(): void {

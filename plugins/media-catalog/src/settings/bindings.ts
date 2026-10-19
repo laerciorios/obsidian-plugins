@@ -1,4 +1,4 @@
-import { ALBUM_SOURCES, BOOK_SOURCES, CATALOG_STATUSES } from '../constants';
+import { ALBUM_SOURCES, BOOK_SOURCES, CATALOG_STATUSES, HLTB_MEASURES } from '../constants';
 import type { CatalogSettings } from '../types';
 import { aliasCountry, backlogFolder, catalogFolder, flag, oneOf, text, vaultPath } from './settings';
 
@@ -24,6 +24,7 @@ export const CONTROL_KEYS = [
 	'albumTracklist',
 	'albumTracksProperty',
 	'aliasCountry',
+	'hltbMeasure',
 ] as const;
 export type ControlKey = (typeof CONTROL_KEYS)[number];
 
@@ -82,6 +83,9 @@ const WRITERS: { [K in ControlKey]: (settings: CatalogSettings, value: unknown) 
 	},
 	aliasCountry: (settings, value) => {
 		settings.aliasCountry = aliasCountry(value, settings.aliasCountry);
+	},
+	hltbMeasure: (settings, value) => {
+		settings.hltbMeasure = oneOf(value, HLTB_MEASURES, settings.hltbMeasure);
 	},
 };
 

@@ -14,6 +14,7 @@ export const en = {
 	'command.updateAliases': 'Update aliases of the current note',
 	'command.newRun': 'New run (replay / rewatch / reread)',
 	'command.startBacklogItem': 'Start backlog item',
+	'command.updateEstimate': 'Update estimated time (HowLongToBeat)',
 
 	// ---- kinds and statuses (labels only; notes store the English values) --
 	'kind.movie': 'Movie',
@@ -110,6 +111,18 @@ export const en = {
 	'destination.catalog': 'Catalog',
 	'destination.backlog': 'Backlog',
 	'field.status.name': 'Status',
+	'field.estimatedHours.name': 'Estimated time',
+	'field.estimatedHours.desc': 'Hours to beat ({measure}), from HowLongToBeat, rounded to half an hour. Empty is fine.',
+	'hltb.measure.main': 'Main Story',
+	'hltb.measure.main-extra': 'Main + Extra',
+	'hltb.measure.completionist': 'Completionist',
+	'hltb.measure.off': 'Off',
+	'hltb.loading': 'Looking it up on HowLongToBeat…',
+	'hltb.found': 'HowLongToBeat: {name} ({year}).',
+	'hltb.none': 'Not found on HowLongToBeat. Fill it in by hand if you want.',
+	'hltb.ambiguous': 'More than one game with this title on HowLongToBeat. Fill it in by hand if you want.',
+	'hltb.noTime': 'HowLongToBeat has no {measure} time for {name}.',
+	'hltb.failed': 'HowLongToBeat did not answer. Fill it in by hand if you want.',
 	'field.priority.name': 'Priority',
 	'priority.high': 'High',
 	'priority.medium': 'Medium',
@@ -222,6 +235,13 @@ export const en = {
 	'notice.startFailed': 'Media Catalog: could not start "{name}".',
 	'notice.startNameTaken': 'Media Catalog: the catalog folder already has "{path}". Rename one of the notes and try again.',
 	'notice.startPickAlbum': 'Media Catalog: the album source of "{name}" is unknown. Pick the album to fill in its tracks.',
+	'notice.estimateUpdated': 'Media Catalog: estimated time of "{name}": {hours} h ({measure}).',
+	'notice.estimateUnchanged': 'Media Catalog: "{name}" already has {hours} h ({measure}).',
+	'notice.estimateNone': 'Media Catalog: "{name}" was not found on HowLongToBeat.',
+	'notice.estimateAmbiguous': 'Media Catalog: more than one game called "{name}" on HowLongToBeat. Set the year of the note or fill it in by hand.',
+	'notice.estimateNoTime': 'Media Catalog: HowLongToBeat has no {measure} time for "{name}".',
+	'notice.estimateFailed': 'Media Catalog: HowLongToBeat did not answer. Try again later.',
+	'notice.estimateWriteFailed': 'Media Catalog: could not update the estimated time of "{name}".',
 	'notice.folderIsFile': 'Media Catalog: "{path}" is a file, not a folder. Check the catalog folder setting.',
 
 	// ---- settings -----------------------------------------------------------
@@ -245,6 +265,8 @@ export const en = {
 	'settings.aliasCountry.desc':
 		'New movie, series and game notes also get the title released in this country as their second alias, when it differs from the title. None: the title is the only alias.',
 	'settings.aliasCountry.none': 'None',
+	'settings.hltbMeasure.name': 'Estimated time (HowLongToBeat)',
+	'settings.hltbMeasure.desc': 'Time to beat written as "estimated_hours" in backlog games, looked up on HowLongToBeat when you pick the game. Off: nothing is looked up.',
 	'settings.covers.heading': 'Covers',
 	'settings.downloadCovers.name': 'Download covers by default',
 	'settings.downloadCovers.desc':

@@ -7,6 +7,7 @@ import type { CreateResult } from '../catalog/note-writer';
 import { CLS, SEARCH_DEBOUNCE_MS } from '../constants';
 import { t } from '../i18n';
 import { CatalogError } from '../providers/errors';
+import { lookupEstimate } from '../providers/hltb';
 import { findLocalizedTitle } from '../providers/localized-title';
 import { modEnterLabel, renderInstructions } from '../ui/instructions';
 import { renderChosenPreview } from './chosen-preview';
@@ -42,7 +43,12 @@ export class ConfirmStep implements Step {
 		private readonly input: ConfirmInput,
 	) {
 		const { app, settings } = host.context;
-		this.form = new ConfirmForm(app, settings, input, () => this.recheck());
+		const measure = settings.hltbMeasure;
+		const estimate =
+			input.result.kind === 'game' && measure !== 'off'
+				? (title: string, year: number | null) => lookupEstimate(host.context.hltb, title, year, measure)
+				: null;
+		this.form = new ConfirmForm(app, settings, input, () => this.recheck(), estimate);
 		this.localizedTitle = findLocalizedTitle(input.provider, input.result, settings.aliasCountry);
 	}
 
@@ -81,6 +87,7 @@ export class ConfirmStep implements Step {
 	destroy(): void {
 		this.active = false;
 		this.recheck.cancel();
+		this.form.destroy();
 	}
 
 	private checkDuplicate(): void {

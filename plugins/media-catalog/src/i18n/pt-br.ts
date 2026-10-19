@@ -10,6 +10,7 @@ export const ptBR: Translation<typeof en> = {
 	'command.updateAliases': 'Atualizar aliases da nota atual',
 	'command.newRun': 'Novo registro (rejogar / reassistir / reler)',
 	'command.startBacklogItem': 'Começar item do backlog',
+	'command.updateEstimate': 'Atualizar tempo estimado (HowLongToBeat)',
 
 	// ---- kinds and statuses -------------------------------------------------
 	'kind.movie': 'Filme',
@@ -106,6 +107,18 @@ export const ptBR: Translation<typeof en> = {
 	'destination.catalog': 'Catálogo',
 	'destination.backlog': 'Backlog',
 	'field.status.name': 'Status',
+	'field.estimatedHours.name': 'Tempo estimado',
+	'field.estimatedHours.desc': 'Horas para zerar ({measure}), do HowLongToBeat, arredondadas para meia hora. Pode ficar vazio.',
+	'hltb.measure.main': 'Main Story',
+	'hltb.measure.main-extra': 'Main + Extra',
+	'hltb.measure.completionist': 'Completionist',
+	'hltb.measure.off': 'Desligado',
+	'hltb.loading': 'Buscando no HowLongToBeat…',
+	'hltb.found': 'HowLongToBeat: {name} ({year}).',
+	'hltb.none': 'Não encontrado no HowLongToBeat. Preencha à mão, se quiser.',
+	'hltb.ambiguous': 'Mais de um jogo com este título no HowLongToBeat. Preencha à mão, se quiser.',
+	'hltb.noTime': 'O HowLongToBeat não tem o tempo {measure} de {name}.',
+	'hltb.failed': 'O HowLongToBeat não respondeu. Preencha à mão, se quiser.',
 	'field.priority.name': 'Prioridade',
 	'priority.high': 'Alta',
 	'priority.medium': 'Média',
@@ -218,6 +231,13 @@ export const ptBR: Translation<typeof en> = {
 	'notice.startFailed': 'Media Catalog: não foi possível começar "{name}".',
 	'notice.startNameTaken': 'Media Catalog: a pasta do catálogo já tem "{path}". Renomeie uma das notas e tente de novo.',
 	'notice.startPickAlbum': 'Media Catalog: a fonte do álbum "{name}" é desconhecida. Escolha o álbum para preencher as faixas.',
+	'notice.estimateUpdated': 'Media Catalog: tempo estimado de "{name}": {hours} h ({measure}).',
+	'notice.estimateUnchanged': 'Media Catalog: "{name}" já tem {hours} h ({measure}).',
+	'notice.estimateNone': 'Media Catalog: "{name}" não foi encontrado no HowLongToBeat.',
+	'notice.estimateAmbiguous': 'Media Catalog: mais de um jogo chamado "{name}" no HowLongToBeat. Preencha o ano da nota ou o tempo à mão.',
+	'notice.estimateNoTime': 'Media Catalog: o HowLongToBeat não tem o tempo {measure} de "{name}".',
+	'notice.estimateFailed': 'Media Catalog: o HowLongToBeat não respondeu. Tente de novo mais tarde.',
+	'notice.estimateWriteFailed': 'Media Catalog: não foi possível atualizar o tempo estimado de "{name}".',
 	'notice.folderIsFile': 'Media Catalog: "{path}" é um arquivo, não uma pasta. Confira a pasta do catálogo nas configurações.',
 
 	// ---- settings -----------------------------------------------------------
@@ -241,6 +261,8 @@ export const ptBR: Translation<typeof en> = {
 	'settings.aliasCountry.desc':
 		'Notas novas de filmes, séries e jogos também ganham, como segundo alias, o título lançado nesse país, quando é diferente do título. Nenhum: o único alias é o título.',
 	'settings.aliasCountry.none': 'Nenhum',
+	'settings.hltbMeasure.name': 'Tempo estimado (HowLongToBeat)',
+	'settings.hltbMeasure.desc': 'Tempo para zerar gravado em "estimated_hours" nos jogos do backlog, buscado no HowLongToBeat quando você escolhe o jogo. Desligado: nada é buscado.',
 	'settings.covers.heading': 'Capas',
 	'settings.downloadCovers.name': 'Baixar capas por padrão',
 	'settings.downloadCovers.desc':

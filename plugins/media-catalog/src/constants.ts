@@ -12,6 +12,16 @@ export const DESTINATIONS = ['catalog', 'backlog'] as const;
 /** `priority` of backlog notes (optional). */
 export const PRIORITIES = ['high', 'medium', 'low'] as const;
 export const DEFAULT_PRIORITY = 'medium';
+/**
+ * HowLongToBeat time written as `estimated_hours` in backlog games (data
+ * values of the setting). "off": nothing is looked up.
+ */
+export const HLTB_MEASURES = ['main', 'main-extra', 'completionist', 'off'] as const;
+export const DEFAULT_HLTB_MEASURE = 'main-extra';
+/** Backlog games: hours to beat from HowLongToBeat, right after `platform`. */
+export const ESTIMATED_HOURS_KEY = 'estimated_hours';
+/** HowLongToBeat search tokens are renewed after this (and on a 403, as the site does). */
+export const HLTB_TOKEN_TTL_MS = 10 * 60_000;
 export const PROVIDER_IDS = ['imdb', 'tvmaze', 'google-books', 'open-library', 'igdb', 'musicbrainz', 'itunes'] as const;
 export const BOOK_SOURCES = ['open-library', 'google-books'] as const;
 export const ALBUM_SOURCES = ['musicbrainz', 'itunes'] as const;
@@ -33,7 +43,7 @@ export const FRONTMATTER_KEYS = {
 export const BACKLOG_FRONTMATTER_KEYS = {
 	movie: ['kind', 'title', 'aliases', 'author', 'year', 'status', 'platform', 'priority', 'added', 'recommended_by', 'cover', 'tags'],
 	series: ['kind', 'title', 'aliases', 'year', 'season', 'status', 'platform', 'priority', 'added', 'recommended_by', 'cover', 'tags'],
-	game: ['kind', 'title', 'aliases', 'year', 'status', 'platform', 'priority', 'added', 'recommended_by', 'cover', 'tags'],
+	game: ['kind', 'title', 'aliases', 'year', 'status', 'platform', 'estimated_hours', 'priority', 'added', 'recommended_by', 'cover', 'tags'],
 	book: ['kind', 'title', 'aliases', 'author', 'year', 'status', 'platform', 'priority', 'added', 'recommended_by', 'cover', 'tags'],
 	album: ['kind', 'title', 'aliases', 'author', 'year', 'status', 'platform', 'priority', 'added', 'recommended_by', 'cover', 'tags'],
 } as const;
@@ -93,6 +103,7 @@ export const API_HOSTS = [
 	'api.igdb.com',
 	'musicbrainz.org',
 	'itunes.apple.com',
+	'howlongtobeat.com',
 ] as const;
 
 /** Hosts covers are shown from and downloaded from. */
@@ -188,6 +199,7 @@ export const COMMAND_IDS = {
 	updateAliases: 'update-aliases',
 	newRun: 'new-run',
 	startBacklogItem: 'start-backlog-item',
+	updateEstimate: 'update-estimated-time',
 } as const;
 
 export const SETTINGS_ICON = 'clapperboard';

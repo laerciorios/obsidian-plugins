@@ -106,6 +106,11 @@ export async function getJson(url: string, headers?: Record<string, string>): Pr
 	return parseJson(await send(url, isAllowedUrl, { headers }), hostOf(url));
 }
 
+/** GET a page or script as text (HowLongToBeat: finding the search endpoint). */
+export async function getText(url: string, headers?: Record<string, string>): Promise<string> {
+	return (await send(url, isAllowedUrl, { headers })).text;
+}
+
 /** POST a text body (form-encoded or IGDB's Apicalypse) and parse JSON. */
 export async function postJson(
 	url: string,

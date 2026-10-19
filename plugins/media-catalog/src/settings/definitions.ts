@@ -1,5 +1,5 @@
 import type { App, SettingDefinitionItem, TFile } from 'obsidian';
-import { BACKLOG_TAG, CATALOG_STATUSES, CATALOG_TAG, DEFAULT_BACKLOG_FOLDER, DEFAULT_FOLDER, DEFAULT_TEMPLATE_NAME, IMPRESSIONS_HEADING } from '../constants';
+import { BACKLOG_TAG, CATALOG_STATUSES, CATALOG_TAG, DEFAULT_BACKLOG_FOLDER, HLTB_MEASURES, DEFAULT_FOLDER, DEFAULT_TEMPLATE_NAME, IMPRESSIONS_HEADING } from '../constants';
 import { t } from '../i18n';
 import type { AlbumSource, BookSource, CatalogSettings } from '../types';
 import { countriesByName } from '../ui/countries';
@@ -27,6 +27,11 @@ export interface DefinitionContext {
 /** Labels are translated; the values stay the English data values written to notes. */
 function statusOptions(): Record<string, string> {
 	return Object.fromEntries(CATALOG_STATUSES.map((status) => [status, t(`status.${status}`)]));
+}
+
+/** The HowLongToBeat measures, then "Off". Labels translated; values are data. */
+function measureOptions(): Record<string, string> {
+	return Object.fromEntries(HLTB_MEASURES.map((measure) => [measure, t(`hltb.measure.${measure}`)]));
 }
 
 /** "None" first, then the countries by name in the UI language ("Brasil (BR)"); the value is the ISO code. */
@@ -112,6 +117,11 @@ export function settingDefinitions(context: DefinitionContext): SettingDefinitio
 					name: t('settings.albumSource.name'),
 					desc: t('settings.albumSource.desc'),
 					control: { type: 'dropdown', key: 'albumSource', options: ALBUM_SOURCE_NAMES },
+				},
+				{
+					name: t('settings.hltbMeasure.name'),
+					desc: t('settings.hltbMeasure.desc'),
+					control: { type: 'dropdown', key: 'hltbMeasure', options: measureOptions() },
 				},
 				{
 					name: t('settings.albumIncludeEps.name'),

@@ -61,6 +61,7 @@ export function catalogEntries(draft: CatalogDraft, resolved: ResolvedValues): Y
 		started: date(draft.started),
 		finished: date(draft.finished),
 		platform: yaml.quoted(draft.platform.trim()),
+		estimated_hours: yaml.number(draft.estimatedHours),
 		hours: yaml.number(draft.hours),
 		pages: yaml.number(draft.pages),
 		reference: yaml.quoted(resolved.reference),
