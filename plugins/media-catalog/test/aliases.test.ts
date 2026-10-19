@@ -215,6 +215,8 @@ function draft(overrides: Partial<CatalogDraft>): CatalogDraft {
 		hours: null,
 		author: '',
 		pages: null,
+		priority: null,
+		recommendedBy: '',
 		referenceArea: null,
 		cover: { url: null, download: false },
 		source: { provider: 'imdb', name: 'IMDb', url: null },

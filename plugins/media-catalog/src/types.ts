@@ -1,10 +1,11 @@
 import type { App, TFile } from 'obsidian';
-import type { ALBUM_SOURCES, AliasCountry, BOOK_SOURCES, CATALOG_STATUSES, DESTINATIONS, KINDS, PROVIDER_IDS, STATUSES } from './constants';
+import type { ALBUM_SOURCES, AliasCountry, BOOK_SOURCES, CATALOG_STATUSES, DESTINATIONS, KINDS, PRIORITIES, PROVIDER_IDS, STATUSES } from './constants';
 
 export type MediaKind = (typeof KINDS)[number];
 export type Status = (typeof STATUSES)[number];
 export type CatalogStatus = (typeof CATALOG_STATUSES)[number];
 export type Destination = (typeof DESTINATIONS)[number];
+export type Priority = (typeof PRIORITIES)[number];
 export type ProviderId = (typeof PROVIDER_IDS)[number];
 export type BookSource = (typeof BOOK_SOURCES)[number];
 export type AlbumSource = (typeof ALBUM_SOURCES)[number];
@@ -137,6 +138,10 @@ export interface CatalogDraft {
 	/** movie (directors), book (authors), album (artist); "" for the other kinds */
 	author: string;
 	pages: number | null;
+	/** Backlog: `priority`; null writes it empty. Ignored for the catalog. */
+	priority: Priority | null;
+	/** Backlog: who recommended it (`recommended_by`); "" writes it empty. Ignored for the catalog. */
+	recommendedBy: string;
 	/** Technical book: area folder (vault path) that holds `_References/Books`. Null: no reference note. */
 	referenceArea: string | null;
 	cover: { url: string | null; download: boolean };

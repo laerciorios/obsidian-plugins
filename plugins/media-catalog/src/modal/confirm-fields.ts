@@ -1,9 +1,9 @@
 import type { App, Setting } from 'obsidian';
 import { isIsoDate, todayIso } from '../catalog/dates';
 import { listAreas } from '../catalog/reference-note';
-import { CATALOG_STATUSES, DESTINATIONS, RATING_MAX, RATING_MIN } from '../constants';
+import { CATALOG_STATUSES, DEFAULT_PRIORITY, DESTINATIONS, PRIORITIES, RATING_MAX, RATING_MIN } from '../constants';
 import { t } from '../i18n';
-import type { CatalogDraft, CatalogSettings, CatalogStatus, Destination, Track } from '../types';
+import type { CatalogDraft, CatalogSettings, CatalogStatus, Destination, Priority, Track } from '../types';
 import { coverChoiceRow, noCoverRow } from '../ui/cover-row';
 import { dropdownRow, infoRow, toggleRow } from '../ui/form';
 import {
@@ -30,19 +30,26 @@ let nextDatalistId = 0;
 
 /** Fields of a run (and of the notes in the catalog folder only): hidden and not written for the backlog. */
 const RUN_KEYS: ReadonlySet<TextKey> = new Set<TextKey>(['started', 'finished', 'rating', 'episodes', 'hours', 'pages']);
+/** Fields of the backlog only. */
+const BACKLOG_KEYS: ReadonlySet<TextKey> = new Set<TextKey>(['recommendedBy']);
+/** Value of the "no priority" option (`priority` written empty). */
+const NO_PRIORITY = '';
 
 /**
  * The rows of the confirm step (create mode), one `Setting` each, with the
  * fields of the result's kind. Messages appear on blur and on submit, and
  * disappear as soon as the value is fixed. The destination comes first:
  * the backlog keeps what is known before starting (no status, dates,
- * rating, hours, pages or reference note).
+ * rating, hours, pages or reference note) and adds priority and who
+ * recommended it.
  */
 export class ConfirmForm {
 	private readonly values: ConfirmValues;
 	private readonly fields: TextFields;
 	private status: CatalogStatus;
 	private destination: Destination = 'catalog';
+	private priority: Priority | null = DEFAULT_PRIORITY;
+	private priorityRow: Setting | null = null;
 	private download: boolean;
 	private cover: string | null;
 	/** Albums: the section of the new note (see tracklistOf). */
@@ -159,6 +166,16 @@ export class ConfirmForm {
 		this.rows.set('rating', fields.add(el, 'rating', rating, checkRating).setting);
 
 		this.renderPlatform(el);
+		this.priorityRow = dropdownRow(el, {
+			name: t('field.priority.name'),
+			options: [...PRIORITIES.map((priority) => [priority, t(`priority.${priority}`)] as const), [NO_PRIORITY, t('priority.none')]],
+			value: this.priority ?? NO_PRIORITY,
+			onChange: (value) => {
+				this.priority = PRIORITIES.find((priority) => priority === value) ?? null;
+			},
+		}).setting;
+		const recommended = { name: t('field.recommendedBy.name'), desc: t('field.recommendedBy.desc') };
+		this.rows.set('recommendedBy', fields.add(el, 'recommendedBy', recommended, null).setting);
 		if (kind === 'game') {
 			const hours = {
 				name: t('field.hours.name'),
@@ -211,6 +228,8 @@ export class ConfirmForm {
 			hours: kind === 'game' ? number('hours') : null,
 			author: hasAuthor(kind) ? values.author.trim() : '',
 			pages: kind === 'book' ? number('pages') : null,
+			priority: backlog ? this.priority : null,
+			recommendedBy: backlog ? values.recommendedBy.trim() : '',
 			referenceArea: kind === 'book' && !backlog && this.technical && this.area ? this.area : null,
 			cover: { url: cover, download: cover !== null && this.download },
 			source: { provider: result.provider, name: provider.name, url: result.sourceUrl ?? null },
@@ -220,9 +239,10 @@ export class ConfirmForm {
 		};
 	}
 
-	/** Backlog: no field of a run. Finished: done only. Rating: done or dropped. */
+	/** Backlog: no field of a run. Catalog: no backlog field. Finished: done only. Rating: done or dropped. */
 	private isShown(key: TextKey): boolean {
 		if (this.destination === 'backlog' && RUN_KEYS.has(key)) return false;
+		if (this.destination === 'catalog' && BACKLOG_KEYS.has(key)) return false;
 		if (key === 'finished') return this.status === 'done';
 		if (key === 'rating') return hasRating(this.status);
 		return true;
@@ -252,6 +272,7 @@ export class ConfirmForm {
 			if (!this.isShown(key)) this.fields.check(key);
 		}
 		this.statusRow?.settingEl.toggle(catalog);
+		this.priorityRow?.settingEl.toggle(!catalog);
 		this.technicalRow?.settingEl.toggle(catalog);
 		this.areaRow?.settingEl.toggle(catalog && this.technical);
 	}

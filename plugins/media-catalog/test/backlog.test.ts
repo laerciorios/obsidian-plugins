@@ -28,6 +28,8 @@ function draft(overrides: Partial<CatalogDraft>): CatalogDraft {
 		hours: 12,
 		author: 'Ilsa Marrow',
 		pages: 300,
+		priority: null,
+		recommendedBy: '',
 		referenceArea: null,
 		cover: { url: null, download: false },
 		source: { provider: 'imdb', name: 'IMDb', url: null },
@@ -39,7 +41,7 @@ function draft(overrides: Partial<CatalogDraft>): CatalogDraft {
 
 describe('Backlog notes: frontmatter', () => {
 	test('the keys of the backlog template, without the fields of a run', () => {
-		const text = catalogFrontmatter(draft({}), { cover: '', reference: '', added: '2031-04-30' });
+		const text = catalogFrontmatter(draft({ priority: 'medium', recommendedBy: ' Ana Lumen ' }), { cover: '', reference: '', added: '2031-04-30' });
 		assert.equal(
 			text,
 			[
@@ -51,15 +53,20 @@ describe('Backlog notes: frontmatter', () => {
 				'year: 1984',
 				'status: backlog',
 				'platform: "Cinema"',
-				'priority:',
+				'priority: medium',
 				'added: 2031-04-30',
-				'recommended_by: ""',
+				'recommended_by: "Ana Lumen"',
 				'cover: ""',
 				'tags: [entertainment, backlog]',
 				'---',
 				'',
 			].join('\n'),
 		);
+	});
+
+	test('priority and recommended_by are optional: empty when not given', () => {
+		const text = catalogFrontmatter(draft({ priority: null, recommendedBy: '  ' }), { cover: '', reference: '', added: '2031-04-30' });
+		assert.match(text, /^priority:\nadded: 2031-04-30\nrecommended_by:\n/m);
 	});
 
 	test('series keep the season after the year; albums never get tracks', () => {
@@ -77,7 +84,10 @@ describe('Backlog notes: frontmatter', () => {
 	});
 
 	test('catalog notes are written as before', () => {
-		const text = catalogFrontmatter(draft({ destination: 'catalog', status: 'done' }), { cover: '', reference: '' });
+		const text = catalogFrontmatter(draft({ destination: 'catalog', status: 'done', priority: 'high', recommendedBy: 'Ana Lumen' }), {
+			cover: '',
+			reference: '',
+		});
 		assert.match(text, /^status: done\nrating: 8\nstarted: 2031-05-01\nfinished: 2031-05-02$/m);
 		assert.match(text, /^tags: \[entertainment\]$/m);
 		assert.doesNotMatch(text, /priority|added|recommended_by/);

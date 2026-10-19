@@ -102,9 +102,9 @@ A gravação usa `processFrontMatter`. O Obsidian regrava o frontmatter inteiro:
 
 ### Backlog
 
-O vault separa o que ainda não comecei (pasta do backlog, template `backlog-item.md`) do que estou consumindo ou já consumi (pasta do catálogo). Com **Adicionar a** em **Backlog**, o formulário esconde **Status**, **Início**, **Fim**, **Nota**, **Episódios**, **Horas**, **Páginas** e **Livro técnico**, e a nota vai para a pasta do backlog com:
+O vault separa o que ainda não comecei (pasta do backlog, template `backlog-item.md`) do que estou consumindo ou já consumi (pasta do catálogo). Com **Adicionar a** em **Backlog**, o formulário esconde **Status**, **Início**, **Fim**, **Nota**, **Episódios**, **Horas**, **Páginas** e **Livro técnico**, e mostra dois campos só do backlog: **Prioridade** (Alta, Média ou Baixa, com Média já escolhida; Nenhuma deixa a propriedade vazia) e **Quem indicou** (texto, vazio por padrão). A nota vai para a pasta do backlog com:
 
-- `status: backlog`, `priority` vazio, `added` com a data de hoje, `recommended_by` vazio e `tags: [entertainment, backlog]` (ver [Frontmatter](#frontmatter));
+- `status: backlog`, `priority` com a prioridade escolhida, `added` com a data de hoje, `recommended_by` com quem indicou (vazio quando não preenchido) e `tags: [entertainment, backlog]` (ver [Frontmatter](#frontmatter));
 - o corpo do template `backlog-item.md` da pasta de templates do Obsidian (sem ele, `## Por que quero`) e a linha da fonte;
 - álbuns sem `## Faixas`: a lista entra quando o item começa.
 
@@ -240,7 +240,7 @@ Notas do backlog seguem o template `backlog-item.md`, sem os campos de um regist
 | `aliases` | Lista com itens entre aspas duplas: o `title` e, quando há e é diferente, o título do país configurado (ver [Aliases e título alternativo](#aliases-e-título-alternativo)). |
 | `year`, `season`, `episodes`, `rating`, `hours`, `pages` | Número. Vazio vira `rating:` sem valor. |
 | `started`, `finished`, `added` | `AAAA-MM-DD` sem aspas, ou vazio. `added` só no backlog, com a data do cadastro. |
-| `priority`, `recommended_by` | Só no backlog, vazios no cadastro (`priority:` e `recommended_by: ""`): você preenche (`high`, `medium` ou `low`; quem indicou). |
+| `priority`, `recommended_by` | Só no backlog, opcionais. `priority` sem aspas: `high`, `medium` (o padrão do formulário) ou `low`; vazio com **Nenhuma**. `recommended_by` entre aspas duplas (`"Ana Lumen"`); vazio, `recommended_by:` sem valor. |
 | `finished_dates` | Não existe em notas novas: só o **Novo registro** cria, logo depois de `finished` (ver [Novo registro](#novo-registro-rejogar--reassistir--reler)). |
 | `cover` | URL `https://` sem aspas, `"[[<nota>-cover.<ext>]]"` quando baixada, `""` sem capa. |
 | `tags` | `[entertainment]`; no backlog, `[entertainment, backlog]`. |

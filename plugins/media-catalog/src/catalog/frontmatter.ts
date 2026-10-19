@@ -38,7 +38,7 @@ function coverValue(cover: string): YamlValue {
 /**
  * Frontmatter entries of a new note, in the order of FRONTMATTER_KEYS[kind]
  * (catalog) or BACKLOG_FRONTMATTER_KEYS[kind] (backlog: `status: backlog`,
- * empty `priority` and `recommended_by`, `added`, the backlog tag and none
+ * `priority` and `recommended_by` (empty when not given), `added`, the backlog tag and none
  * of the fields of a run). Keys the kind does not use are never written;
  * series titles end in the season (see noteTitle); `aliases` holds the title
  * and, when it differs, the title of the alias country (see noteAliases);
@@ -63,9 +63,9 @@ export function catalogEntries(draft: CatalogDraft, resolved: ResolvedValues): Y
 		pages: yaml.number(draft.pages),
 		reference: yaml.quoted(resolved.reference),
 		cover: coverValue(resolved.cover),
-		priority: yaml.null(),
+		priority: draft.priority ? yaml.plain(draft.priority) : yaml.null(),
 		added: date(resolved.added ?? null),
-		recommended_by: yaml.quoted(''),
+		recommended_by: draft.recommendedBy.trim() ? yaml.quoted(draft.recommendedBy.trim()) : yaml.null(),
 		tags: yaml.list(backlog ? [CATALOG_TAG, BACKLOG_TAG] : [CATALOG_TAG]),
 	};
 	const keys: readonly FrontmatterKey[] = (backlog ? BACKLOG_FRONTMATTER_KEYS : FRONTMATTER_KEYS)[draft.kind];

@@ -9,6 +9,9 @@ export const STATUSES = ['backlog', 'in-progress', 'done', 'dropped'] as const;
 export const CATALOG_STATUSES = ['in-progress', 'done', 'dropped'] as const;
 /** Where "Add to catalog" files a new note. */
 export const DESTINATIONS = ['catalog', 'backlog'] as const;
+/** `priority` of backlog notes (optional). */
+export const PRIORITIES = ['high', 'medium', 'low'] as const;
+export const DEFAULT_PRIORITY = 'medium';
 export const PROVIDER_IDS = ['imdb', 'tvmaze', 'google-books', 'open-library', 'igdb', 'musicbrainz', 'itunes'] as const;
 export const BOOK_SOURCES = ['open-library', 'google-books'] as const;
 export const ALBUM_SOURCES = ['musicbrainz', 'itunes'] as const;
