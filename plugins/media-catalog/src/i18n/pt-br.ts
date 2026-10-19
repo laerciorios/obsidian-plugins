@@ -9,6 +9,7 @@ export const ptBR: Translation<typeof en> = {
 	'command.updateTracks': 'Atualizar faixas do álbum',
 	'command.updateAliases': 'Atualizar aliases da nota atual',
 	'command.newRun': 'Novo registro (rejogar / reassistir / reler)',
+	'command.startBacklogItem': 'Começar item do backlog',
 
 	// ---- kinds and statuses -------------------------------------------------
 	'kind.movie': 'Filme',
@@ -16,7 +17,6 @@ export const ptBR: Translation<typeof en> = {
 	'kind.game': 'Jogo',
 	'kind.book': 'Livro',
 	'kind.album': 'Álbum',
-	'status.backlog': 'Na fila',
 	'status.in-progress': 'Em andamento',
 	'status.done': 'Concluído',
 	'status.dropped': 'Abandonado',
@@ -101,6 +101,10 @@ export const ptBR: Translation<typeof en> = {
 	'field.year.descBook': 'Ano da primeira publicação.',
 	'field.year.descBookEdition': 'Ano desta edição. O catálogo usa o ano da primeira publicação: ajuste se souber.',
 	'field.year.descAlbum': 'Ano do lançamento original, não de uma reedição ou remasterização.',
+	'field.destination.name': 'Adicionar a',
+	'field.destination.desc': 'Backlog: ainda não comecei. Só o que se sabe antes de começar é salvo; as datas vêm quando começar.',
+	'destination.catalog': 'Catálogo',
+	'destination.backlog': 'Backlog',
 	'field.status.name': 'Status',
 	'field.started.name': 'Início',
 	'field.finished.name': 'Fim',
@@ -135,6 +139,8 @@ export const ptBR: Translation<typeof en> = {
 	'field.cover.download': 'Baixar para os anexos',
 	'field.cover.none': 'Nenhuma capa encontrada. A nota é criada sem capa.',
 	'confirm.duplicate': 'Já está no catálogo: {name}.',
+	'confirm.duplicateBacklog': 'Já está no backlog: {name}.',
+	'confirm.start': 'Começar agora',
 	'confirm.open': 'Abrir nota existente',
 	'confirm.registerAgain': 'Registrar de novo',
 	'confirm.create': 'Criar nota',
@@ -181,6 +187,7 @@ export const ptBR: Translation<typeof en> = {
 
 	// ---- notices ------------------------------------------------------------
 	'notice.created': 'Media Catalog: "{name}" criada.',
+	'notice.createdBacklog': 'Media Catalog: "{name}" adicionada ao backlog.',
 	'notice.createFailed': 'Media Catalog: não foi possível criar a nota.',
 	'notice.duplicate': 'Media Catalog: "{name}" já está no catálogo.',
 	'notice.coverUpdated': 'Media Catalog: capa de "{name}" atualizada.',
@@ -200,19 +207,25 @@ export const ptBR: Translation<typeof en> = {
 	'notice.aliasesUpdated': 'Media Catalog: aliases de "{name}" atualizados.',
 	'notice.aliasesUnchanged': 'Media Catalog: "{name}" já tem esses aliases.',
 	'notice.aliasesFailed': 'Media Catalog: não foi possível atualizar os aliases de "{name}".',
+	'notice.started': 'Media Catalog: "{name}" começou e foi movida para o catálogo.',
+	'notice.startFailed': 'Media Catalog: não foi possível começar "{name}".',
+	'notice.startNameTaken': 'Media Catalog: a pasta do catálogo já tem "{path}". Renomeie uma das notas e tente de novo.',
+	'notice.startPickAlbum': 'Media Catalog: a fonte do álbum "{name}" é desconhecida. Escolha o álbum para preencher as faixas.',
 	'notice.folderIsFile': 'Media Catalog: "{path}" é um arquivo, não uma pasta. Confira a pasta do catálogo nas configurações.',
 
 	// ---- settings -----------------------------------------------------------
 	'settings.notes.heading': 'Notas',
 	'settings.folder.name': 'Pasta do catálogo',
-	'settings.folder.desc': 'As notas novas são criadas aqui, e as duplicatas são procuradas aqui.',
+	'settings.folder.desc': 'O que você está consumindo ou já consumiu. As notas novas vão para cá, exceto quando você escolhe o backlog.',
+	'settings.backlogFolder.name': 'Pasta do backlog',
+	'settings.backlogFolder.desc': 'O que você ainda não começou. "Começar item do backlog" move a nota daqui para a pasta do catálogo. As duplicatas são procuradas nas duas pastas.',
 	'settings.templateFile.name': 'Template',
 	'settings.templateFile.desc':
 		'O corpo (tudo depois das propriedades) entra em cada nota nova. Vazio: media.md na pasta de templates do Obsidian.',
 	'settings.addSourceLink.name': 'Link para a fonte',
 	'settings.addSourceLink.desc': 'Adiciona uma linha como "- IMDb: <link>" no fim da nota.',
 	'settings.defaultStatus.name': 'Status padrão',
-	'settings.defaultStatus.desc': 'Status sugerido no formulário. O início recebe a data de hoje, exceto na fila.',
+	'settings.defaultStatus.desc': 'Status sugerido no formulário para notas do catálogo. O início recebe a data de hoje.',
 	'settings.aliasCountry.name': 'País do título alternativo',
 	'settings.aliasCountry.desc':
 		'Notas novas de filmes, séries e jogos também ganham, como segundo alias, o título lançado nesse país, quando é diferente do título. Nenhum: o único alias é o título.',

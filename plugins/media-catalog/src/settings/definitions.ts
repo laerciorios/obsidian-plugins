@@ -1,7 +1,7 @@
 import type { App, SettingDefinitionItem, TFile } from 'obsidian';
-import { DEFAULT_FOLDER, DEFAULT_TEMPLATE_NAME, IMPRESSIONS_HEADING, STATUSES } from '../constants';
+import { CATALOG_STATUSES, DEFAULT_BACKLOG_FOLDER, DEFAULT_FOLDER, DEFAULT_TEMPLATE_NAME, IMPRESSIONS_HEADING } from '../constants';
 import { t } from '../i18n';
-import type { AlbumSource, BookSource, CatalogSettings, Status } from '../types';
+import type { AlbumSource, BookSource, CatalogSettings } from '../types';
 import { countriesByName } from '../ui/countries';
 import type { ControlKey } from './bindings';
 import { secretRow } from './secrets';
@@ -26,7 +26,7 @@ export interface DefinitionContext {
 
 /** Labels are translated; the values stay the English data values written to notes. */
 function statusOptions(): Record<string, string> {
-	return Object.fromEntries(STATUSES.map((status: Status) => [status, t(`status.${status}`)]));
+	return Object.fromEntries(CATALOG_STATUSES.map((status) => [status, t(`status.${status}`)]));
 }
 
 /** "None" first, then the countries by name in the UI language ("Brasil (BR)"); the value is the ISO code. */
@@ -45,6 +45,11 @@ export function settingDefinitions(context: DefinitionContext): SettingDefinitio
 					name: t('settings.folder.name'),
 					desc: t('settings.folder.desc'),
 					control: { type: 'folder', key: 'folder', placeholder: DEFAULT_FOLDER },
+				},
+				{
+					name: t('settings.backlogFolder.name'),
+					desc: t('settings.backlogFolder.desc'),
+					control: { type: 'folder', key: 'backlogFolder', placeholder: DEFAULT_BACKLOG_FOLDER },
 				},
 				{
 					name: t('settings.templateFile.name'),

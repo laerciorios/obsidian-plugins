@@ -91,3 +91,12 @@ export function findDuplicate(app: App, folder: string, query: DuplicateQuery): 
 	}
 	return null;
 }
+
+/** findDuplicate in the catalog folder, then in the backlog folder: an item lives in one of them. */
+export function findInCatalogOrBacklog(
+	app: App,
+	settings: { folder: string; backlogFolder: string },
+	query: DuplicateQuery,
+): TFile | null {
+	return findDuplicate(app, settings.folder, query) ?? findDuplicate(app, settings.backlogFolder, query);
+}

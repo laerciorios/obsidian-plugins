@@ -1,5 +1,5 @@
 import { normalizePath } from 'obsidian';
-import { ALBUM_SOURCES, ALIAS_COUNTRY_CODES, BOOK_SOURCES, DEFAULT_FOLDER, KINDS, STATUSES } from '../constants';
+import { ALBUM_SOURCES, ALIAS_COUNTRY_CODES, BOOK_SOURCES, CATALOG_STATUSES, DEFAULT_BACKLOG_FOLDER, DEFAULT_FOLDER, KINDS } from '../constants';
 import type { AliasCountry } from '../constants';
 import { isRecord } from '../providers/guards';
 import type { CatalogSettings } from '../types';
@@ -13,6 +13,7 @@ export function defaultSettings(): CatalogSettings {
 	return {
 		version: 1,
 		folder: DEFAULT_FOLDER,
+		backlogFolder: DEFAULT_BACKLOG_FOLDER,
 		templateFile: '',
 		addSourceLink: true,
 		defaultStatus: 'in-progress',
@@ -65,6 +66,11 @@ export function catalogFolder(value: unknown, fallback: string): string {
 	return vaultPath(value, fallback) || DEFAULT_FOLDER;
 }
 
+/** The backlog folder: like catalogFolder, empty means DEFAULT_BACKLOG_FOLDER. */
+export function backlogFolder(value: unknown, fallback: string): string {
+	return vaultPath(value, fallback) || DEFAULT_BACKLOG_FOLDER;
+}
+
 /** Accept anything `loadData()` returns: invalid or missing fields get their defaults. */
 export function normalizeSettings(raw: unknown): CatalogSettings {
 	const defaults = defaultSettings();
@@ -72,9 +78,11 @@ export function normalizeSettings(raw: unknown): CatalogSettings {
 	return {
 		version: 1,
 		folder: catalogFolder(raw.folder, defaults.folder),
+		backlogFolder: backlogFolder(raw.backlogFolder, defaults.backlogFolder),
 		templateFile: vaultPath(raw.templateFile, defaults.templateFile),
 		addSourceLink: flag(raw.addSourceLink, defaults.addSourceLink),
-		defaultStatus: oneOf(raw.defaultStatus, STATUSES, defaults.defaultStatus),
+		// Before the backlog folder, "backlog" was a status of the form: it becomes the default again.
+		defaultStatus: oneOf(raw.defaultStatus, CATALOG_STATUSES, defaults.defaultStatus),
 		downloadCovers: flag(raw.downloadCovers, defaults.downloadCovers),
 		bookSource: oneOf(raw.bookSource, BOOK_SOURCES, defaults.bookSource),
 		albumSource: oneOf(raw.albumSource, ALBUM_SOURCES, defaults.albumSource),

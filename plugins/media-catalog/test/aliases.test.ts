@@ -201,6 +201,7 @@ function result(kind: MediaKind, externalId: string): SearchResult {
 
 function draft(overrides: Partial<CatalogDraft>): CatalogDraft {
 	return {
+		destination: 'catalog',
 		kind: 'movie',
 		title: 'Fern Road',
 		year: 2031,

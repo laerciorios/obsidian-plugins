@@ -1,9 +1,9 @@
 import type { App, Setting } from 'obsidian';
 import { isIsoDate, todayIso } from '../catalog/dates';
 import { listAreas } from '../catalog/reference-note';
-import { RATING_MAX, RATING_MIN, STATUSES } from '../constants';
+import { CATALOG_STATUSES, DESTINATIONS, RATING_MAX, RATING_MIN } from '../constants';
 import { t } from '../i18n';
-import type { CatalogDraft, CatalogSettings, Status, Track } from '../types';
+import type { CatalogDraft, CatalogSettings, CatalogStatus, Destination, Track } from '../types';
 import { coverChoiceRow, noCoverRow } from '../ui/cover-row';
 import { dropdownRow, infoRow, toggleRow } from '../ui/form';
 import {
@@ -28,25 +28,31 @@ import { TextFields } from './text-fields';
 
 let nextDatalistId = 0;
 
+/** Fields of a run (and of the notes in the catalog folder only): hidden and not written for the backlog. */
+const RUN_KEYS: ReadonlySet<TextKey> = new Set<TextKey>(['started', 'finished', 'rating', 'episodes', 'hours', 'pages']);
+
 /**
  * The rows of the confirm step (create mode), one `Setting` each, with the
  * fields of the result's kind. Messages appear on blur and on submit, and
- * disappear as soon as the value is fixed.
+ * disappear as soon as the value is fixed. The destination comes first:
+ * the backlog keeps what is known before starting (no status, dates,
+ * rating, hours, pages or reference note).
  */
 export class ConfirmForm {
 	private readonly values: ConfirmValues;
 	private readonly fields: TextFields;
-	private status: Status;
+	private status: CatalogStatus;
+	private destination: Destination = 'catalog';
 	private download: boolean;
 	private cover: string | null;
 	/** Albums: the section of the new note (see tracklistOf). */
 	private readonly tracks: Track[] | null;
-	/** `started` holds the date the form filled in (today), not one the user typed. */
-	private startedAuto: boolean;
 	private technical = false;
 	private area = '';
-	private finishedRow: Setting | null = null;
-	private ratingRow: Setting | null = null;
+	/** Rows hidden for some statuses or for the backlog, by text key. */
+	private readonly rows = new Map<TextKey, Setting>();
+	private statusRow: Setting | null = null;
+	private technicalRow: Setting | null = null;
 	private areaRow: Setting | null = null;
 
 	constructor(
@@ -59,7 +65,6 @@ export class ConfirmForm {
 		this.status = settings.defaultStatus;
 		this.download = settings.downloadCovers;
 		this.values = initialValues(input, this.status);
-		this.startedAuto = this.values.started !== '';
 		this.cover = coverUrlOf(input);
 		this.tracks = tracklistOf(input, settings) ?? null;
 		this.fields = new TextFields(this.values, (key) => this.isShown(key));
@@ -104,13 +109,20 @@ export class ConfirmForm {
 		const { result, season } = this.input;
 		const { kind } = result;
 		const fields = this.fields;
+		dropdownRow(el, {
+			name: t('field.destination.name'),
+			desc: t('field.destination.desc'),
+			options: DESTINATIONS.map((destination) => [destination, t(`destination.${destination}`)] as const),
+			value: this.destination,
+			onChange: (value) => this.changeDestination(value),
+		});
 		fields.add(el, 'title', { name: t('field.title.name'), desc: titleDescOf(this.input) }, checkTitle, this.onIdentityChange);
 		const year = { name: t('field.year.name'), desc: t(yearDescOf(result)), type: 'number', min: 1000, max: 9999 } as const;
 		fields.add(el, 'year', year, checkYear, this.onIdentityChange);
 		if (kind === 'series' && season) {
 			infoRow(el, { name: t('field.season.name') }, String(season.number));
 			const episodes = { name: t('field.episodes.name'), desc: t('field.episodes.desc'), type: 'number', min: 0 } as const;
-			fields.add(el, 'episodes', episodes, checkNumber(true));
+			this.rows.set('episodes', fields.add(el, 'episodes', episodes, checkNumber(true)).setting);
 		}
 		if (kind === 'movie') {
 			// Not part of the duplicate check: one title and year is already one film.
@@ -118,7 +130,8 @@ export class ConfirmForm {
 		}
 		if (kind === 'book') {
 			fields.add(el, 'author', { name: t('field.author.name') }, null);
-			fields.add(el, 'pages', { name: t('field.pages.name'), type: 'number', min: 1 }, checkNumber(true));
+			const pages = { name: t('field.pages.name'), type: 'number', min: 1 } as const;
+			this.rows.set('pages', fields.add(el, 'pages', pages, checkNumber(true)).setting);
 		}
 		if (kind === 'album') {
 			// The artist tells two albums with one title apart (duplicates, note name).
@@ -126,18 +139,16 @@ export class ConfirmForm {
 			fields.add(el, 'author', artist, null, this.onIdentityChange);
 		}
 
-		dropdownRow(el, {
+		this.statusRow = dropdownRow(el, {
 			name: t('field.status.name'),
-			options: STATUSES.map((status) => [status, t(`status.${status}`)] as const),
+			options: CATALOG_STATUSES.map((status) => [status, t(`status.${status}`)] as const),
 			value: this.status,
 			onChange: (value) => this.changeStatus(value),
-		});
+		}).setting;
 		const started = { name: t('field.started.name'), desc: t(dateDescOf(kind, 'started')), type: 'date' } as const;
-		fields.add(el, 'started', started, checkDate, () => {
-			this.startedAuto = false;
-		});
+		this.rows.set('started', fields.add(el, 'started', started, checkDate).setting);
 		const finished = { name: t('field.finished.name'), desc: t(dateDescOf(kind, 'finished')), type: 'date' } as const;
-		this.finishedRow = fields.add(el, 'finished', finished, checkDate).setting;
+		this.rows.set('finished', fields.add(el, 'finished', finished, checkDate).setting);
 		const rating = {
 			name: t('field.rating.name'),
 			desc: t('field.rating.desc'),
@@ -145,7 +156,7 @@ export class ConfirmForm {
 			min: RATING_MIN,
 			max: RATING_MAX,
 		} as const;
-		this.ratingRow = fields.add(el, 'rating', rating, checkRating).setting;
+		this.rows.set('rating', fields.add(el, 'rating', rating, checkRating).setting);
 
 		this.renderPlatform(el);
 		if (kind === 'game') {
@@ -156,7 +167,7 @@ export class ConfirmForm {
 				min: 0,
 				step: 'any',
 			} as const;
-			fields.add(el, 'hours', hours, checkNumber(false));
+			this.rows.set('hours', fields.add(el, 'hours', hours, checkNumber(false)).setting);
 		}
 		if (kind === 'book') this.renderTechnical(el);
 
@@ -181,61 +192,68 @@ export class ConfirmForm {
 		const { kind } = result;
 		const values = this.values;
 		const cover = this.coverUrl;
+		const backlog = this.destination === 'backlog';
+		// Hidden fields are not written (the backlog hides every field of a run).
+		const shown = (key: TextKey): string | null => (this.isShown(key) ? values[key].trim() || null : null);
+		const number = (key: TextKey): number | null => toNumber(shown(key) ?? '');
 		return {
+			destination: this.destination,
 			kind,
 			title: this.title,
 			year: toNumber(values.year),
-			status: this.status,
-			rating: this.isShown('rating') ? toNumber(values.rating) : null,
-			started: values.started || null,
-			finished: this.isShown('finished') ? values.finished || null : null,
+			status: backlog ? 'backlog' : this.status,
+			rating: number('rating'),
+			started: shown('started'),
+			finished: shown('finished'),
 			platform: values.platform.trim(),
 			season: kind === 'series' ? (season?.number ?? null) : null,
-			episodes: kind === 'series' && season ? toNumber(values.episodes) : null,
-			hours: kind === 'game' ? toNumber(values.hours) : null,
+			episodes: kind === 'series' && season ? number('episodes') : null,
+			hours: kind === 'game' ? number('hours') : null,
 			author: hasAuthor(kind) ? values.author.trim() : '',
-			pages: kind === 'book' ? toNumber(values.pages) : null,
-			referenceArea: kind === 'book' && this.technical && this.area ? this.area : null,
+			pages: kind === 'book' ? number('pages') : null,
+			referenceArea: kind === 'book' && !backlog && this.technical && this.area ? this.area : null,
 			cover: { url: cover, download: cover !== null && this.download },
 			source: { provider: result.provider, name: provider.name, url: result.sourceUrl ?? null },
-			tracks: kind === 'album' ? this.tracks : null,
+			tracks: kind === 'album' && !backlog ? this.tracks : null,
 			// Looked up by the confirm step while the form is open (see findLocalizedTitle).
 			localizedTitle: null,
 		};
 	}
 
-	/** Finished: done only. Rating: done or dropped. */
+	/** Backlog: no field of a run. Finished: done only. Rating: done or dropped. */
 	private isShown(key: TextKey): boolean {
+		if (this.destination === 'backlog' && RUN_KEYS.has(key)) return false;
 		if (key === 'finished') return this.status === 'done';
 		if (key === 'rating') return hasRating(this.status);
 		return true;
 	}
 
 	private changeStatus(value: string): void {
-		const status = STATUSES.find((candidate) => candidate === value);
+		const status = CATALOG_STATUSES.find((candidate) => candidate === value);
 		if (!status) return;
-		const previous = this.status;
 		this.status = status;
 		if (status === 'done' && !this.values.finished) this.fields.fill('finished', todayIso());
-		if (status === 'backlog' && this.startedAuto) {
-			// Not started yet: drop the date the form filled in (one the user typed stays).
-			this.fields.fill('started', '');
-			this.startedAuto = false;
-		} else if (previous === 'backlog' && status !== 'backlog' && !this.values.started) {
-			this.fields.fill('started', todayIso());
-			this.startedAuto = true;
-		}
+		this.updateVisibility();
+	}
+
+	/** The values typed in hidden fields stay: going back to the catalog shows them again. */
+	private changeDestination(value: string): void {
+		const destination = DESTINATIONS.find((candidate) => candidate === value);
+		if (!destination) return;
+		this.destination = destination;
 		this.updateVisibility();
 	}
 
 	private updateVisibility(): void {
-		this.finishedRow?.settingEl.toggle(this.isShown('finished'));
-		this.ratingRow?.settingEl.toggle(this.isShown('rating'));
-		this.areaRow?.settingEl.toggle(this.technical);
-		// Hidden fields always pass: clear their messages.
-		for (const key of ['finished', 'rating'] as const) {
+		const catalog = this.destination === 'catalog';
+		for (const [key, row] of this.rows) {
+			row.settingEl.toggle(this.isShown(key));
+			// Hidden fields always pass: clear their messages.
 			if (!this.isShown(key)) this.fields.check(key);
 		}
+		this.statusRow?.settingEl.toggle(catalog);
+		this.technicalRow?.settingEl.toggle(catalog);
+		this.areaRow?.settingEl.toggle(catalog && this.technical);
 	}
 
 	/** Free text; games suggest the platforms the provider lists. */
@@ -254,7 +272,7 @@ export class ConfirmForm {
 	/** Technical book: toggle + area dropdown; disabled when no folder holds _References/Books. */
 	private renderTechnical(el: HTMLElement): void {
 		const areas = listAreas(this.app);
-		const { control } = toggleRow(el, {
+		const { setting, control } = toggleRow(el, {
 			name: t('field.technical.name'),
 			desc: t(areas.length > 0 ? 'field.technical.desc' : 'field.technical.none'),
 			value: false,
@@ -263,6 +281,7 @@ export class ConfirmForm {
 				this.updateVisibility();
 			},
 		});
+		this.technicalRow = setting;
 		if (areas.length === 0) {
 			control.setDisabled(true);
 			return;

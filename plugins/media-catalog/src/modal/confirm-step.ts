@@ -1,6 +1,7 @@
 import { ButtonComponent, Notice, debounce } from 'obsidian';
 import type { TFile } from 'obsidian';
-import { findDuplicate } from '../catalog/duplicates';
+import { findInCatalogOrBacklog } from '../catalog/duplicates';
+import { isInFolder } from '../catalog/backlog';
 import { createCatalogNote } from '../catalog/note-writer';
 import type { CreateResult } from '../catalog/note-writer';
 import { CLS, SEARCH_DEBOUNCE_MS } from '../constants';
@@ -13,6 +14,7 @@ import { ConfirmForm } from './confirm-fields';
 import { tracklistOf } from './confirm-values';
 import type { ConfirmInput } from './confirm-values';
 import { newRun } from './new-run';
+import { startBacklogItem } from './start-item';
 import { isSubmitKey } from './steps';
 import type { Step, StepHost } from './steps';
 
@@ -21,7 +23,7 @@ import type { Step, StepHost } from './steps';
  * The alternative title (alias country) is looked up as soon as the step
  * opens, out of sight, and awaited by "Create note". The banner of a note
  * already in the catalog offers a new run in it ("Register again") instead
- * of a second note.
+ * of a second note; one in the backlog offers to start it.
  */
 export class ConfirmStep implements Step {
 	readonly title = t('modal.confirm.title');
@@ -87,7 +89,7 @@ export class ConfirmStep implements Step {
 		const title = this.form.title;
 		const season = this.input.season?.number ?? null;
 		const query = { kind: this.input.result.kind, title, season, year: this.form.year, author: this.form.author };
-		this.showDuplicate(title ? findDuplicate(app, settings.folder, query) : null);
+		this.showDuplicate(title ? findInCatalogOrBacklog(app, settings, query) : null);
 	}
 
 	private showDuplicate(file: TFile | null): void {
@@ -97,9 +99,11 @@ export class ConfirmStep implements Step {
 			el.empty();
 			el.toggle(file !== null);
 			if (file) {
-				el.createSpan({ text: t('confirm.duplicate', { name: file.basename }) });
+				const backlog = isInFolder(file.path, this.host.context.settings.backlogFolder);
+				el.createSpan({ text: t(backlog ? 'confirm.duplicateBacklog' : 'confirm.duplicate', { name: file.basename }) });
 				const actions = el.createDiv({ cls: CLS.duplicateActions });
-				new ButtonComponent(actions).setButtonText(t('confirm.registerAgain')).onClick(() => void this.registerAgain(file));
+				if (backlog) new ButtonComponent(actions).setButtonText(t('confirm.start')).onClick(() => void this.start(file));
+				else new ButtonComponent(actions).setButtonText(t('confirm.registerAgain')).onClick(() => void this.registerAgain(file));
 				new ButtonComponent(actions).setButtonText(t('confirm.open')).onClick(() => this.open(file));
 			}
 		}
@@ -114,6 +118,12 @@ export class ConfirmStep implements Step {
 	private async registerAgain(file: TFile): Promise<void> {
 		const written = await newRun(this.host.context, file, { platform: this.form.platform, started: this.form.started });
 		if (written) this.open(file);
+	}
+
+	/** "Start backlog item" on the note in the backlog; once moved, the note opens. */
+	private async start(file: TFile): Promise<void> {
+		this.host.close();
+		if (await startBacklogItem(this.host.context, file)) void this.host.context.app.workspace.getLeaf(false).openFile(file);
 	}
 
 	private open(file: TFile): void {
@@ -158,9 +168,10 @@ export class ConfirmStep implements Step {
 			else new Notice(t('notice.duplicate', { name: result.file.basename }));
 			return;
 		}
-		new Notice(t('notice.created', { name: result.file.basename }));
+		const backlog = draft.destination === 'backlog';
+		new Notice(t(backlog ? 'notice.createdBacklog' : 'notice.created', { name: result.file.basename }));
 		// Album without its tracklist (fetch failed, none listed, a source without tracks): the note has no section.
-		if (draft.kind === 'album' && settings.albumTracklist && !draft.tracks) new Notice(t('notice.tracksMissing'));
+		if (!backlog && draft.kind === 'album' && settings.albumTracklist && !draft.tracks) new Notice(t('notice.tracksMissing'));
 		// Closed while saving (Esc): the note exists, but do not pull the user into it.
 		if (!this.active) return;
 		this.host.close();

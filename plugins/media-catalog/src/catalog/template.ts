@@ -1,6 +1,6 @@
 import { getFrontMatterInfo, moment, normalizePath } from 'obsidian';
 import type { App } from 'obsidian';
-import { DEFAULT_TEMPLATE_NAME } from '../constants';
+import { DEFAULT_BACKLOG_TEMPLATE_NAME, DEFAULT_TEMPLATE_NAME, WHY_HEADING } from '../constants';
 import { t } from '../i18n';
 import { isRecord } from '../providers/guards';
 import type { CatalogDraft, CatalogSettings } from '../types';
@@ -67,6 +67,11 @@ export function sourceLine(draft: CatalogDraft): string | null {
 	return url ? `- ${draft.source.name}: ${url}` : null;
 }
 
+/** `<core Templates folder>/backlog-item.md`: the backlog template has no setting of its own. */
+export function backlogTemplatePath(config: TemplatesConfig): string {
+	return joinPath(config.folder, DEFAULT_BACKLOG_TEMPLATE_NAME);
+}
+
 /** Body text of the template (after its frontmatter). Missing template → "". */
 async function templateBody(app: App, path: string): Promise<string> {
 	const file = app.vault.getFileByPath(path);
@@ -87,7 +92,8 @@ export function withTracklist(body: string, draft: CatalogDraft): string {
 }
 
 /**
- * Body of a new catalog note: the template body with its variables expanded
+ * Body of a new note: the template body (backlog: the backlog template, or
+ * `## Por que quero` without one) with its variables expanded
  * (`basename` is the new note's name, like the core plugin's `{{title}}`),
  * the tracklist of albums, then the source line after one blank line when
  * enabled (always last). Ends with a single newline, or is "" when there is
@@ -95,8 +101,11 @@ export function withTracklist(body: string, draft: CatalogDraft): string {
  */
 export async function noteBody(app: App, settings: CatalogSettings, draft: CatalogDraft, basename: string): Promise<string> {
 	const config = await readTemplatesConfig(app);
-	const expanded = expandTemplate(await templateBody(app, templatePath(settings, config)), basename, config).trimEnd();
-	const body = withTracklist(expanded, draft);
+	const backlog = draft.destination === 'backlog';
+	const path = backlog ? backlogTemplatePath(config) : templatePath(settings, config);
+	const expanded = expandTemplate(await templateBody(app, path), basename, config).trimEnd();
+	// Backlog albums get their tracklist when they start.
+	const body = backlog ? expanded || WHY_HEADING : withTracklist(expanded, draft);
 	const source = settings.addSourceLink ? sourceLine(draft) : null;
 	const parts = [body, source].filter((part): part is string => !!part);
 	return parts.length > 0 ? `${parts.join('\n\n')}\n` : '';

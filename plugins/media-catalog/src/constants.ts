@@ -5,6 +5,10 @@
 
 export const KINDS = ['movie', 'series', 'game', 'book', 'album'] as const;
 export const STATUSES = ['backlog', 'in-progress', 'done', 'dropped'] as const;
+/** Statuses of notes in the catalog folder: `backlog` lives in the backlog folder only. */
+export const CATALOG_STATUSES = ['in-progress', 'done', 'dropped'] as const;
+/** Where "Add to catalog" files a new note. */
+export const DESTINATIONS = ['catalog', 'backlog'] as const;
 export const PROVIDER_IDS = ['imdb', 'tvmaze', 'google-books', 'open-library', 'igdb', 'musicbrainz', 'itunes'] as const;
 export const BOOK_SOURCES = ['open-library', 'google-books'] as const;
 export const ALBUM_SOURCES = ['musicbrainz', 'itunes'] as const;
@@ -18,11 +22,30 @@ export const FRONTMATTER_KEYS = {
 	album: ['kind', 'title', 'aliases', 'author', 'year', 'status', 'rating', 'started', 'finished', 'platform', 'cover', 'tags'],
 } as const;
 
+/**
+ * Backlog notes (things not started yet), in the order of the backlog
+ * template. Keys not listed are never written: no dates of a run, rating or
+ * hours; albums get their tracklist when they start.
+ */
+export const BACKLOG_FRONTMATTER_KEYS = {
+	movie: ['kind', 'title', 'aliases', 'author', 'year', 'status', 'platform', 'priority', 'added', 'recommended_by', 'cover', 'tags'],
+	series: ['kind', 'title', 'aliases', 'year', 'season', 'status', 'platform', 'priority', 'added', 'recommended_by', 'cover', 'tags'],
+	game: ['kind', 'title', 'aliases', 'year', 'status', 'platform', 'priority', 'added', 'recommended_by', 'cover', 'tags'],
+	book: ['kind', 'title', 'aliases', 'author', 'year', 'status', 'platform', 'priority', 'added', 'recommended_by', 'cover', 'tags'],
+	album: ['kind', 'title', 'aliases', 'author', 'year', 'status', 'platform', 'priority', 'added', 'recommended_by', 'cover', 'tags'],
+} as const;
+
 export const CATALOG_TAG = 'entertainment';
+export const BACKLOG_TAG = 'backlog';
+export const BACKLOG_STATUS = 'backlog';
+/** Backlog keys dropped when an item starts (`added` stays). */
+export const BACKLOG_ONLY_KEYS = ['priority', 'recommended_by'] as const;
 
 /** Folder conventions (never note names). Editable in the settings tab. */
 export const DEFAULT_FOLDER = '1 - Knowledge/Entertainment/DB';
 export const DEFAULT_TEMPLATE_NAME = 'media.md';
+export const DEFAULT_BACKLOG_FOLDER = '1 - Knowledge/Entertainment/Backlog/DB';
+export const DEFAULT_BACKLOG_TEMPLATE_NAME = 'backlog-item.md';
 export const REFERENCE_BOOKS_PATH = '_References/Books';
 
 /** Reference note for technical books (note content, kept as in the vault). */
@@ -38,6 +61,8 @@ export const COVER_SUFFIX = '-cover';
 export const ALBUM_TRACKS_KEY = 'tracks';
 /** Albums: the tracklist section goes right before this heading of the template body (note content, as in the vault). */
 export const IMPRESSIONS_HEADING = '## Impressões';
+/** Body of backlog notes; renamed to `## Impressões` when the item starts (note content, as in the vault). */
+export const WHY_HEADING = '## Por que quero';
 
 /**
  * Re-entries (replay, rewatch, reread) stay in the same note. The runs before
@@ -159,6 +184,7 @@ export const COMMAND_IDS = {
 	updateTracks: 'update-tracks',
 	updateAliases: 'update-aliases',
 	newRun: 'new-run',
+	startBacklogItem: 'start-backlog-item',
 } as const;
 
 export const SETTINGS_ICON = 'clapperboard';

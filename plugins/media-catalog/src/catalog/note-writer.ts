@@ -4,7 +4,8 @@ import { t } from '../i18n';
 import { CatalogError } from '../providers/errors';
 import type { CatalogDraft, CatalogSettings } from '../types';
 import { downloadCover } from './cover-download';
-import { baseName, findDuplicate } from './duplicates';
+import { todayIso } from './dates';
+import { baseName, findInCatalogOrBacklog } from './duplicates';
 import { catalogFrontmatter, tracksProperty } from './frontmatter';
 import { folderPath, joinPath } from './paths';
 import { ensureReferenceNote, referenceLink } from './reference-note';
@@ -14,8 +15,8 @@ import { noteBody } from './template';
 
 export type CreateResult = { status: 'created'; file: TFile } | { status: 'duplicate'; file: TFile };
 
-/** The catalog folder, created when missing. A file in its place is a setting error. */
-async function ensureFolder(app: App, folder: string): Promise<string> {
+/** The catalog (or backlog) folder, created when missing. A file in its place is a setting error. */
+export async function ensureFolder(app: App, folder: string): Promise<string> {
 	const path = folderPath(folder);
 	if (path === '/') return path;
 	const existing = app.vault.getAbstractFileByPath(path);
@@ -98,15 +99,18 @@ async function createReference(app: App, draft: CatalogDraft, area: string, name
 }
 
 /**
- * Resolves slug/path (collision → "-<year>", albums "-<artist>" first), re-checks duplicates, downloads the cover when
+ * Resolves slug/path (collision → "-<year>", albums "-<artist>" first) in the catalog or backlog folder
+ * (draft.destination), re-checks duplicates in both, downloads the cover when
  * draft.cover.download (failure → Notice + keeps URL), writes the note (albums: with the tracklist) with a single
  * vault.create (creating the folder when missing), then creates the reference note when
  * draft.referenceArea (failure → Notice + `reference: ""`). Does NOT open the note.
  * Throws on unexpected failure.
  */
 export async function createCatalogNote(app: App, settings: CatalogSettings, draft: CatalogDraft): Promise<CreateResult> {
-	const folder = await ensureFolder(app, settings.folder);
-	const duplicate = findDuplicate(app, folder, {
+	const backlog = draft.destination === 'backlog';
+	const folder = await ensureFolder(app, backlog ? settings.backlogFolder : settings.folder);
+	// Both folders: an item already in the backlog is not filed again in the catalog, and the other way round.
+	const duplicate = findInCatalogOrBacklog(app, settings, {
 		kind: draft.kind,
 		title: draft.title,
 		season: draft.season,
@@ -120,12 +124,13 @@ export async function createCatalogNote(app: App, settings: CatalogSettings, dra
 	// The cover value goes into the file, so the download comes first. If vault.create
 	// fails afterwards, the image stays in the attachments (files are never deleted).
 	const cover = await resolveCover(app, draft, name, path);
-	const area = draft.kind === 'book' ? draft.referenceArea : null;
+	const area = draft.kind === 'book' && !backlog ? draft.referenceArea : null;
 	// The link is known before the reference note exists, so it is written with the note.
 	const reference = area ? referenceLink(area, name) : '';
 	const body = await noteBody(app, settings, draft, name);
 	const tracks = tracksProperty(draft, settings.albumTracksProperty);
-	const file = await app.vault.create(path, catalogFrontmatter(draft, { cover, reference, tracks }) + body);
+	const added = backlog ? todayIso() : undefined;
+	const file = await app.vault.create(path, catalogFrontmatter(draft, { cover, reference, tracks, added }) + body);
 	if (area) await createReference(app, draft, area, name, file);
 	return { status: 'created', file };
 }

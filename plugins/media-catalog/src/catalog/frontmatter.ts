@@ -1,4 +1,4 @@
-import { ALBUM_TRACKS_KEY, CATALOG_TAG, FRONTMATTER_KEYS } from '../constants';
+import { ALBUM_TRACKS_KEY, BACKLOG_FRONTMATTER_KEYS, BACKLOG_STATUS, BACKLOG_TAG, CATALOG_TAG, FRONTMATTER_KEYS } from '../constants';
 import type { CatalogDraft, MediaKind } from '../types';
 import { noteAliases } from './aliases';
 import { isIsoDate } from './dates';
@@ -6,7 +6,7 @@ import { noteTitle } from './series-title';
 import { isPlainSafe, renderFrontmatterBlock, yaml } from './yaml';
 import type { YamlEntry, YamlValue } from './yaml';
 
-type FrontmatterKey = (typeof FRONTMATTER_KEYS)[MediaKind][number];
+type FrontmatterKey = (typeof FRONTMATTER_KEYS)[MediaKind][number] | (typeof BACKLOG_FRONTMATTER_KEYS)[MediaKind][number];
 
 /** Values the note writer resolves before writing (they depend on downloads and other notes). */
 export interface ResolvedValues {
@@ -19,6 +19,8 @@ export interface ResolvedValues {
 	 * only when the setting asks for it and the tracklist is known.
 	 */
 	tracks?: number;
+	/** Backlog notes: the day the item entered the backlog (YYYY-MM-DD). */
+	added?: string;
 }
 
 function date(value: string | null): YamlValue {
@@ -34,13 +36,16 @@ function coverValue(cover: string): YamlValue {
 }
 
 /**
- * Frontmatter entries of a new catalog note, in the order of
- * FRONTMATTER_KEYS[kind]. Keys the kind does not use are never written;
+ * Frontmatter entries of a new note, in the order of FRONTMATTER_KEYS[kind]
+ * (catalog) or BACKLOG_FRONTMATTER_KEYS[kind] (backlog: `status: backlog`,
+ * empty `priority` and `recommended_by`, `added`, the backlog tag and none
+ * of the fields of a run). Keys the kind does not use are never written;
  * series titles end in the season (see noteTitle); `aliases` holds the title
  * and, when it differs, the title of the alias country (see noteAliases);
  * albums may add `tracks` after `year` (see ResolvedValues.tracks).
  */
 export function catalogEntries(draft: CatalogDraft, resolved: ResolvedValues): YamlEntry[] {
+	const backlog = draft.destination === 'backlog';
 	const values: Record<FrontmatterKey, YamlValue> = {
 		kind: yaml.plain(draft.kind),
 		title: yaml.quoted(noteTitle(draft.kind, draft.title, draft.season)),
@@ -49,7 +54,7 @@ export function catalogEntries(draft: CatalogDraft, resolved: ResolvedValues): Y
 		season: yaml.number(draft.season),
 		episodes: yaml.number(draft.episodes),
 		year: yaml.number(draft.year),
-		status: yaml.plain(draft.status),
+		status: yaml.plain(backlog ? BACKLOG_STATUS : draft.status),
 		rating: yaml.number(draft.rating),
 		started: date(draft.started),
 		finished: date(draft.finished),
@@ -58,11 +63,14 @@ export function catalogEntries(draft: CatalogDraft, resolved: ResolvedValues): Y
 		pages: yaml.number(draft.pages),
 		reference: yaml.quoted(resolved.reference),
 		cover: coverValue(resolved.cover),
-		tags: yaml.list([CATALOG_TAG]),
+		priority: yaml.null(),
+		added: date(resolved.added ?? null),
+		recommended_by: yaml.quoted(''),
+		tags: yaml.list(backlog ? [CATALOG_TAG, BACKLOG_TAG] : [CATALOG_TAG]),
 	};
-	const keys: readonly FrontmatterKey[] = FRONTMATTER_KEYS[draft.kind];
+	const keys: readonly FrontmatterKey[] = (backlog ? BACKLOG_FRONTMATTER_KEYS : FRONTMATTER_KEYS)[draft.kind];
 	const entries = keys.map((key): YamlEntry => [key, values[key]]);
-	const tracks = draft.kind === 'album' ? resolved.tracks : undefined;
+	const tracks = draft.kind === 'album' && !backlog ? resolved.tracks : undefined;
 	if (tracks === undefined || !Number.isInteger(tracks) || tracks <= 0) return entries;
 	const at = keys.indexOf('year') + 1;
 	return [...entries.slice(0, at), [ALBUM_TRACKS_KEY, yaml.number(tracks)], ...entries.slice(at)];

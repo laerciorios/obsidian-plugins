@@ -14,6 +14,7 @@ Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/
 | **Novo registro (rejogar / reassistir / reler)** | com uma nota do catálogo aberta | Só em notas concluídas: guarda o registro atual em `## Histórico` e `finished_dates` e começa outro na mesma nota. |
 | **Atualizar faixas do álbum** | com uma nota de álbum aberta (`kind: album`) | Busca o mesmo álbum, você confirma a edição e só a seção `## Faixas` da nota é trocada (ou criada). |
 | **Atualizar aliases da nota atual** | com uma nota do catálogo aberta | Busca de novo o título lançado no país configurado e regrava `aliases`, mantendo os aliases que você adicionou. |
+| **Começar item do backlog** | com uma nota da pasta do backlog aberta | Move a nota para a pasta do catálogo e começa o registro (ver [Backlog](#backlog)). |
 
 Uma nota é do catálogo quando o frontmatter tem `kind` igual a `movie`, `series`, `game`, `book` ou `album`, em qualquer pasta.
 
@@ -27,17 +28,19 @@ Uma nota é do catálogo quando o frontmatter tem `kind` igual a `movie`, `serie
 6. **Temporada** (só séries): grade com pôster, número de episódios e ano de cada temporada.
 7. **Confirmar**: o formulário vem preenchido com o resultado, e a capa aparece grande ao lado do título. Quando a temporada tem pôster próprio, diferente do da série, dois botões abaixo dos dados escolhem entre **Pôster da temporada** (o padrão) e **Pôster da série**; a capa grande e a nota seguem a escolha. Em álbuns, a linha do tipo mostra o número de faixas e a duração total da lista que vai para a nota (`Álbum · 10 faixas · 42:39`; com mais de um disco, `Álbum · 23 faixas · 2 discos · 1:31:05`; sem nenhuma duração conhecida, só o número). Quando a lista não veio (a fonte não respondeu ou não tem faixas), o formulário avisa "Lista de faixas indisponível: a nota será criada sem ela." **Criar nota** cria e abre a nota; num álbum sem lista de faixas, um aviso lembra que a nota saiu sem ela. **Voltar** retorna ao passo anterior sem perder a busca.
 
-O formulário tem **Título**, **Ano**, **Status**, **Início**, **Fim**, **Nota**, **Onde** e **Capa**, mais os campos do tipo: **Temporada** (só leitura) e **Episódios** em séries, **Horas** em jogos (**Onde** sugere as plataformas do jogo), **Diretor** em filmes (vários diretores separados por vírgula, como `Ilsa Marrow, Teodoro Brann`), **Autor**, **Páginas** e **Livro técnico** em livros, **Artista** em álbuns (artista ou banda, como na fonte; vários artistas ficam separados por vírgula). Em séries, **Título** é o nome da série, sem a temporada: a nota grava a temporada no fim do `title` (ver [Frontmatter](#frontmatter)), e a descrição do campo mostra como ele vai terminar (`(S02)`). Uma temporada digitada no fim do título (`Horta Selvagem (S02)`) é trocada pela da nota, nunca repetida. Em álbuns, as descrições dizem que **Título** é o título como foi lançado, **Ano** o do lançamento original (não o de uma reedição), **Início** a primeira audição, **Fim** a audição completa e **Onde** Spotify, YouTube Music, vinil… **Início** vem com a data de hoje, exceto com o status **Na fila**; se a data foi preenchida pelo formulário e você muda para **Na fila**, o campo volta a ficar vazio (uma data digitada por você fica). **Nota** aparece com **Concluído** ou **Abandonado**, e **Fim** só com **Concluído**, já com a data de hoje. Em resultados do Google Books, a descrição de **Ano** lembra que o ano é o da edição. Os campos são validados ao sair deles e ao salvar: ano com 4 dígitos, datas `AAAA-MM-DD`, nota inteira de 1 a 10, episódios, páginas e horas com zero ou mais.
+O formulário começa por **Adicionar a**: **Catálogo** (o padrão) ou **Backlog** (ver [Backlog](#backlog)). Depois vêm **Título**, **Ano**, **Status**, **Início**, **Fim**, **Nota**, **Onde** e **Capa**, mais os campos do tipo: **Temporada** (só leitura) e **Episódios** em séries, **Horas** em jogos (**Onde** sugere as plataformas do jogo), **Diretor** em filmes (vários diretores separados por vírgula, como `Ilsa Marrow, Teodoro Brann`), **Autor**, **Páginas** e **Livro técnico** em livros, **Artista** em álbuns (artista ou banda, como na fonte; vários artistas ficam separados por vírgula). Em séries, **Título** é o nome da série, sem a temporada: a nota grava a temporada no fim do `title` (ver [Frontmatter](#frontmatter)), e a descrição do campo mostra como ele vai terminar (`(S02)`). Uma temporada digitada no fim do título (`Horta Selvagem (S02)`) é trocada pela da nota, nunca repetida. Em álbuns, as descrições dizem que **Título** é o título como foi lançado, **Ano** o do lançamento original (não o de uma reedição), **Início** a primeira audição, **Fim** a audição completa e **Onde** Spotify, YouTube Music, vinil… **Status** tem **Em andamento**, **Concluído** e **Abandonado** (`backlog` não é status do catálogo: é o destino **Backlog**). **Início** vem com a data de hoje. **Nota** aparece com **Concluído** ou **Abandonado**, e **Fim** só com **Concluído**, já com a data de hoje. Em resultados do Google Books, a descrição de **Ano** lembra que o ano é o da edição. Os campos são validados ao sair deles e ao salvar: ano com 4 dígitos, datas `AAAA-MM-DD`, nota inteira de 1 a 10, episódios, páginas e horas com zero ou mais.
 
 Em **Capa**, **Manter o link** grava a URL da imagem, e **Baixar para os anexos** salva uma cópia no vault. Sem capa na fonte, o formulário avisa e a nota sai sem capa.
 
 ### Duplicatas
 
-Na confirmação, o plugin procura na pasta do catálogo (subpastas incluídas) uma nota do mesmo `kind`, com o mesmo título (ignorando acentos, maiúsculas e pontuação) e, em séries, a mesma `season`. Em séries, a temporada no fim do `title` não entra na comparação: `Horta Selvagem (S02)` e `Horta Selvagem` são o mesmo título. Se as duas notas têm ano e os anos são diferentes, não é duplicata: dois filmes com o mesmo título e anos diferentes são duas notas. Em livros o ano não conta, porque o Open Library traz o ano da primeira publicação e o Google Books o da edição: o mesmo livro com outro ano é duplicata.
+Na confirmação, o plugin procura na pasta do catálogo e na pasta do backlog (subpastas incluídas) uma nota do mesmo `kind`, com o mesmo título (ignorando acentos, maiúsculas e pontuação) e, em séries, a mesma `season`. Em séries, a temporada no fim do `title` não entra na comparação: `Horta Selvagem (S02)` e `Horta Selvagem` são o mesmo título. Se as duas notas têm ano e os anos são diferentes, não é duplicata: dois filmes com o mesmo título e anos diferentes são duas notas. Em livros o ano não conta, porque o Open Library traz o ano da primeira publicação e o Google Books o da edição: o mesmo livro com outro ano é duplicata.
 
 Em álbuns, conta também o artista (`author`, comparado como o título): o mesmo título de outro artista não é duplicata. O ano vale como nos filmes, porque uma banda pode lançar vários álbuns com o próprio nome: "Os Samambaias" de 1994 e "Os Samambaias" de 2001 são duas notas, e o de 1994 de novo é duplicata. Quando um dos dois lados não tem artista, o artista não decide. A nota que já ocupa o nome da nova (`<slug>.md`) segue a mesma regra. Em filmes, o diretor (`author`) não conta: o mesmo título e ano com outro diretor é duplicata.
 
 Quando acha, o formulário mostra "Já está no catálogo: <nota>" com **Registrar de novo** e **Abrir nota existente**, e **Criar nota** fica desativado. A busca se repete enquanto você edita título, ano e, em álbuns, artista, e de novo ao salvar.
+
+Quando a nota está no backlog, o aviso é "Já está no backlog: <nota>" e, em vez de **Registrar de novo**, aparece **Começar agora**, que roda o [Começar item do backlog](#começar-item-do-backlog) nela e abre a nota.
 
 **Registrar de novo** é o [Novo registro](#novo-registro-rejogar--reassistir--reler) da nota que já existe, em vez de uma segunda nota: a janela abre por cima do formulário com **Onde** do formulário (vazio: o da nota) e **Início** do formulário (vazio: hoje). Ao gravar, o modal fecha e a nota abre; **Cancelar** volta ao formulário. Numa nota que não está concluída, só aparece o aviso, como no comando.
 
@@ -96,6 +99,27 @@ A lista nova é: o `title`, o título do país (quando é diferente) e depois to
 Em livros e álbuns, ou sem país configurado, o comando não abre o modal: grava na hora a lista com o `title` primeiro e os outros aliases depois, e um aviso confirma (ou diz que nada mudou).
 
 A gravação usa `processFrontMatter`. O Obsidian regrava o frontmatter inteiro: as aspas somem e as listas viram listas em bloco (`- item`), como já acontece no **Trocar capa** e no **Terminei**. Os valores e a ordem das chaves ficam iguais.
+
+### Backlog
+
+O vault separa o que ainda não comecei (pasta do backlog, template `backlog-item.md`) do que estou consumindo ou já consumi (pasta do catálogo). Com **Adicionar a** em **Backlog**, o formulário esconde **Status**, **Início**, **Fim**, **Nota**, **Episódios**, **Horas**, **Páginas** e **Livro técnico**, e a nota vai para a pasta do backlog com:
+
+- `status: backlog`, `priority` vazio, `added` com a data de hoje, `recommended_by` vazio e `tags: [entertainment, backlog]` (ver [Frontmatter](#frontmatter));
+- o corpo do template `backlog-item.md` da pasta de templates do Obsidian (sem ele, `## Por que quero`) e a linha da fonte;
+- álbuns sem `## Faixas`: a lista entra quando o item começa.
+
+Os valores digitados nos campos escondidos ficam no formulário: voltar para **Catálogo** mostra todos de novo.
+
+### Começar item do backlog
+
+Aparece só com uma nota da pasta do backlog (subpastas incluídas) aberta. Na ordem:
+
+1. Move a nota para a pasta do catálogo com o mesmo nome, por `fileManager.renameFile`, então os links para ela são atualizados. Se a pasta do catálogo já tem uma nota com esse nome, um aviso pede para renomear uma delas e nada muda.
+2. `## Por que quero` vira `## Impressões`, com o texto que estava embaixo. Numa nota que já tem `## Impressões`, os títulos ficam como estão; numa sem nenhum dos dois, `## Impressões` entra no fim.
+3. As propriedades: `status: in-progress`, `started` com a data de hoje (logo depois de `status`), sem `priority` e `recommended_by` e sem a tag `backlog`. `added` fica.
+4. Álbuns, com **Incluir lista de faixas em álbuns** ligado: as faixas são buscadas pelo link da fonte da nota (`- MusicBrainz: …` ou `- iTunes: …`, na edição principal) e a seção `## Faixas` entra antes de `## Impressões`, como numa nota nova. Sem o link, ou se a fonte falhar, um aviso explica e abre o **Atualizar faixas do álbum** para você escolher o álbum.
+
+Depois a nota abre. Um item do backlog que você desistiu de começar vai para a lixeira, não para `dropped` (regra do vault).
 
 ### Terminei
 
@@ -201,16 +225,25 @@ Cada tipo grava só as suas chaves, nesta ordem (álbuns podem ter também `trac
 | `book` | `kind, title, aliases, author, year, status, rating, started, finished, platform, pages, reference, cover, tags` |
 | `album` | `kind, title, aliases, author, year, status, rating, started, finished, platform, cover, tags` |
 
+Notas do backlog seguem o template `backlog-item.md`, sem os campos de um registro:
+
+| `kind` | Chaves (backlog) |
+|---|---|
+| `movie`, `book`, `album` | `kind, title, aliases, author, year, status, platform, priority, added, recommended_by, cover, tags` |
+| `series` | `kind, title, aliases, year, season, status, platform, priority, added, recommended_by, cover, tags` |
+| `game` | `kind, title, aliases, year, status, platform, priority, added, recommended_by, cover, tags` |
+
 | Valor | Formato |
 |---|---|
-| `kind`, `status` | Sem aspas, sempre em inglês: `movie`, `series`, `game`, `book`, `album`; `backlog`, `in-progress`, `done`, `dropped`. |
+| `kind`, `status` | Sem aspas, sempre em inglês: `movie`, `series`, `game`, `book`, `album`; `in-progress`, `done`, `dropped` no catálogo e `backlog` só no backlog. |
 | `title`, `author`, `platform`, `reference` | Sempre entre aspas duplas, `""` quando vazios. Vários autores ficam separados por vírgula. Em filmes, `author` traz os diretores (`"Ilsa Marrow, Teodoro Brann"`); em álbuns, o artista ou a banda. Em séries, `title` é o nome da série seguido da temporada com dois dígitos: `"Horta Selvagem (S02)"`. |
 | `aliases` | Lista com itens entre aspas duplas: o `title` e, quando há e é diferente, o título do país configurado (ver [Aliases e título alternativo](#aliases-e-título-alternativo)). |
 | `year`, `season`, `episodes`, `rating`, `hours`, `pages` | Número. Vazio vira `rating:` sem valor. |
-| `started`, `finished` | `AAAA-MM-DD` sem aspas, ou vazio. |
+| `started`, `finished`, `added` | `AAAA-MM-DD` sem aspas, ou vazio. `added` só no backlog, com a data do cadastro. |
+| `priority`, `recommended_by` | Só no backlog, vazios no cadastro (`priority:` e `recommended_by: ""`): você preenche (`high`, `medium` ou `low`; quem indicou). |
 | `finished_dates` | Não existe em notas novas: só o **Novo registro** cria, logo depois de `finished` (ver [Novo registro](#novo-registro-rejogar--reassistir--reler)). |
 | `cover` | URL `https://` sem aspas, `"[[<nota>-cover.<ext>]]"` quando baixada, `""` sem capa. |
-| `tags` | `[entertainment]` |
+| `tags` | `[entertainment]`; no backlog, `[entertainment, backlog]`. |
 | `tracks` | Só álbuns, só com **Propriedade com o número de faixas** ligada e a lista de faixas conhecida: o número de faixas (todos os discos), logo depois de `year`. |
 
 Exemplo, com a série fictícia do dev-vault:
@@ -336,10 +369,11 @@ A nota do catálogo recebe `reference: "[[1 - Knowledge/Software Development/_Re
 
 | Opção | Padrão | O que faz |
 |---|---|---|
-| Pasta do catálogo | `1 - Knowledge/Entertainment/DB` | Onde as notas novas são criadas e onde as duplicatas são procuradas. Vazio volta ao padrão. |
+| Pasta do catálogo | `1 - Knowledge/Entertainment/DB` | Onde as notas novas são criadas (exceto as do backlog) e para onde **Começar item do backlog** move a nota. Vazio volta ao padrão. |
+| Pasta do backlog | `1 - Knowledge/Entertainment/Backlog/DB` | Onde ficam as notas com destino **Backlog**. As duplicatas são procuradas nas duas pastas. Vazio volta ao padrão. |
 | Template | vazio | Nota cujo corpo entra em cada nota nova. Vazio: `media.md` na pasta de templates do Obsidian. |
 | Link para a fonte | ligado | Adiciona a linha `- <Fonte>: <link>` no fim da nota. |
-| Status padrão | Em andamento | Status que o formulário sugere. |
+| Status padrão | Em andamento | Status que o formulário sugere para o catálogo (Em andamento, Concluído ou Abandonado). Um `backlog` salvo por versões antigas vira Em andamento. |
 | País do título alternativo | Nenhum | País (código ISO 3166-1, como `BR`, `PT`, `ES`, `FR`, `JP`) cujo título entra como segundo alias de filmes, séries e jogos. A lista mostra os países pelo nome, no idioma do Obsidian. Nenhum: o único alias é o título. |
 | Baixar capas por padrão | desligado | Deixa **Baixar para os anexos** selecionado no formulário e no **Trocar capa**. |
 | Fonte de livros | Open Library | Fonte selecionada primeiro na busca de livros. Trocar a fonte no modal também muda esta opção. |

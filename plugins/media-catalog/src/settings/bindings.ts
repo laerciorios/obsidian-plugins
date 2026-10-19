@@ -1,6 +1,6 @@
-import { ALBUM_SOURCES, BOOK_SOURCES, STATUSES } from '../constants';
+import { ALBUM_SOURCES, BOOK_SOURCES, CATALOG_STATUSES } from '../constants';
 import type { CatalogSettings } from '../types';
-import { aliasCountry, catalogFolder, flag, oneOf, vaultPath } from './settings';
+import { aliasCountry, backlogFolder, catalogFolder, flag, oneOf, vaultPath } from './settings';
 
 /**
  * Settings edited through declarative controls. The keys are the settings
@@ -9,6 +9,7 @@ import { aliasCountry, catalogFolder, flag, oneOf, vaultPath } from './settings'
  */
 export const CONTROL_KEYS = [
 	'folder',
+	'backlogFolder',
 	'templateFile',
 	'addSourceLink',
 	'defaultStatus',
@@ -35,6 +36,9 @@ const WRITERS: { [K in ControlKey]: (settings: CatalogSettings, value: unknown) 
 	folder: (settings, value) => {
 		settings.folder = catalogFolder(value, settings.folder);
 	},
+	backlogFolder: (settings, value) => {
+		settings.backlogFolder = backlogFolder(value, settings.backlogFolder);
+	},
 	templateFile: (settings, value) => {
 		settings.templateFile = vaultPath(value, settings.templateFile);
 	},
@@ -42,7 +46,7 @@ const WRITERS: { [K in ControlKey]: (settings: CatalogSettings, value: unknown) 
 		settings.addSourceLink = flag(value, settings.addSourceLink);
 	},
 	defaultStatus: (settings, value) => {
-		settings.defaultStatus = oneOf(value, STATUSES, settings.defaultStatus);
+		settings.defaultStatus = oneOf(value, CATALOG_STATUSES, settings.defaultStatus);
 	},
 	downloadCovers: (settings, value) => {
 		settings.downloadCovers = flag(value, settings.downloadCovers);

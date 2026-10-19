@@ -1,4 +1,5 @@
 import { Notice, Plugin, debounce } from 'obsidian';
+import { isInFolder } from './catalog/backlog';
 import { readCatalogNote } from './catalog/catalog-note';
 import { markFinished } from './catalog/updates';
 import { COMMAND_IDS, SAVE_DEBOUNCE_MS } from './constants';
@@ -6,6 +7,7 @@ import { t } from './i18n';
 import { CatalogModal } from './modal/catalog-modal';
 import { newRun } from './modal/new-run';
 import { askRating } from './modal/rating-modal';
+import { startBacklogItem } from './modal/start-item';
 import { updateNoteAliases } from './modal/update-aliases';
 import { createProviders, userAgentFor } from './providers';
 import { googleBooksKey, igdbCredentials } from './settings/secrets';
@@ -94,6 +96,17 @@ export default class MediaCatalogPlugin extends Plugin implements CatalogContext
 				return true;
 			},
 		});
+		this.addCommand({
+			id: COMMAND_IDS.startBacklogItem,
+			name: t('command.startBacklogItem'),
+			icon: 'play',
+			checkCallback: (checking) => {
+				const note = this.activeNote();
+				if (!note || !isInFolder(note.file.path, this.settings.backlogFolder)) return false;
+				if (!checking) void this.start(note);
+				return true;
+			},
+		});
 
 		this.addSettingTab(new MediaCatalogSettingTab(this.app, this));
 	}
@@ -109,6 +122,10 @@ export default class MediaCatalogPlugin extends Plugin implements CatalogContext
 
 	private activeNote(): CatalogNoteInfo | null {
 		return readCatalogNote(this.app, this.app.workspace.getActiveFile());
+	}
+
+	private async start(note: CatalogNoteInfo): Promise<void> {
+		if (await startBacklogItem(this, note.file)) void this.app.workspace.getLeaf(false).openFile(note.file);
 	}
 
 	private async finish(note: CatalogNoteInfo): Promise<void> {

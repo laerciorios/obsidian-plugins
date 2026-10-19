@@ -1,8 +1,10 @@
 import type { App, TFile } from 'obsidian';
-import type { ALBUM_SOURCES, AliasCountry, BOOK_SOURCES, KINDS, PROVIDER_IDS, STATUSES } from './constants';
+import type { ALBUM_SOURCES, AliasCountry, BOOK_SOURCES, CATALOG_STATUSES, DESTINATIONS, KINDS, PROVIDER_IDS, STATUSES } from './constants';
 
 export type MediaKind = (typeof KINDS)[number];
 export type Status = (typeof STATUSES)[number];
+export type CatalogStatus = (typeof CATALOG_STATUSES)[number];
+export type Destination = (typeof DESTINATIONS)[number];
 export type ProviderId = (typeof PROVIDER_IDS)[number];
 export type BookSource = (typeof BOOK_SOURCES)[number];
 export type AlbumSource = (typeof ALBUM_SOURCES)[number];
@@ -116,6 +118,8 @@ export interface SeasonProvider extends Provider {
 
 /** What the confirm step hands to the note writer. */
 export interface CatalogDraft {
+	/** Catalog folder (a run started) or backlog folder (not started: status backlog, no run fields). */
+	destination: Destination;
 	kind: MediaKind;
 	title: string;
 	year: number | null;
@@ -150,10 +154,13 @@ export interface CatalogDraft {
 export interface CatalogSettings {
 	version: 1;
 	folder: string;
+	/** Things not started yet: notes with `status: backlog`, moved to `folder` when they start. */
+	backlogFolder: string;
 	/** Vault path of the template file. Empty: `<core Templates folder>/media.md`. */
 	templateFile: string;
 	addSourceLink: boolean;
-	defaultStatus: Status;
+	/** Status suggested for catalog notes (backlog is a destination, not a status of the form). */
+	defaultStatus: CatalogStatus;
 	downloadCovers: boolean;
 	bookSource: BookSource;
 	/** Source selected first when searching albums. */

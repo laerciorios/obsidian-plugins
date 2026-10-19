@@ -13,6 +13,7 @@ export const en = {
 	'command.updateTracks': 'Update album tracks',
 	'command.updateAliases': 'Update aliases of the current note',
 	'command.newRun': 'New run (replay / rewatch / reread)',
+	'command.startBacklogItem': 'Start backlog item',
 
 	// ---- kinds and statuses (labels only; notes store the English values) --
 	'kind.movie': 'Movie',
@@ -20,7 +21,6 @@ export const en = {
 	'kind.game': 'Game',
 	'kind.book': 'Book',
 	'kind.album': 'Album',
-	'status.backlog': 'Backlog',
 	'status.in-progress': 'In progress',
 	'status.done': 'Done',
 	'status.dropped': 'Dropped',
@@ -105,6 +105,10 @@ export const en = {
 	'field.year.descBook': 'Year of first publication.',
 	'field.year.descBookEdition': 'Year of this edition. The catalog uses the year of first publication: adjust if you know it.',
 	'field.year.descAlbum': 'Year of the original release, not of a reissue or remaster.',
+	'field.destination.name': 'Add to',
+	'field.destination.desc': 'Backlog: not started yet. Only what you know before starting is saved; dates come when it starts.',
+	'destination.catalog': 'Catalog',
+	'destination.backlog': 'Backlog',
 	'field.status.name': 'Status',
 	'field.started.name': 'Started',
 	'field.finished.name': 'Finished',
@@ -139,6 +143,8 @@ export const en = {
 	'field.cover.download': 'Download to attachments',
 	'field.cover.none': 'No cover found. The note is created without one.',
 	'confirm.duplicate': 'Already in the catalog: {name}.',
+	'confirm.duplicateBacklog': 'Already in the backlog: {name}.',
+	'confirm.start': 'Start now',
 	'confirm.open': 'Open existing note',
 	'confirm.registerAgain': 'Register again',
 	'confirm.create': 'Create note',
@@ -185,6 +191,7 @@ export const en = {
 
 	// ---- notices ------------------------------------------------------------
 	'notice.created': 'Media Catalog: created "{name}".',
+	'notice.createdBacklog': 'Media Catalog: "{name}" added to the backlog.',
 	'notice.createFailed': 'Media Catalog: could not create the note.',
 	'notice.duplicate': 'Media Catalog: "{name}" is already in the catalog.',
 	'notice.coverUpdated': 'Media Catalog: cover of "{name}" updated.',
@@ -204,19 +211,25 @@ export const en = {
 	'notice.aliasesUpdated': 'Media Catalog: aliases of "{name}" updated.',
 	'notice.aliasesUnchanged': 'Media Catalog: "{name}" already has these aliases.',
 	'notice.aliasesFailed': 'Media Catalog: could not update the aliases of "{name}".',
+	'notice.started': 'Media Catalog: "{name}" started and moved to the catalog.',
+	'notice.startFailed': 'Media Catalog: could not start "{name}".',
+	'notice.startNameTaken': 'Media Catalog: the catalog folder already has "{path}". Rename one of the notes and try again.',
+	'notice.startPickAlbum': 'Media Catalog: the album source of "{name}" is unknown. Pick the album to fill in its tracks.',
 	'notice.folderIsFile': 'Media Catalog: "{path}" is a file, not a folder. Check the catalog folder setting.',
 
 	// ---- settings -----------------------------------------------------------
 	'settings.notes.heading': 'Notes',
 	'settings.folder.name': 'Catalog folder',
-	'settings.folder.desc': 'New notes are created here, and duplicates are looked for here.',
+	'settings.folder.desc': 'Things you are consuming or have consumed. New notes go here unless you pick the backlog.',
+	'settings.backlogFolder.name': 'Backlog folder',
+	'settings.backlogFolder.desc': 'Things not started yet. "Start backlog item" moves a note from here to the catalog folder. Duplicates are looked for in both folders.',
 	'settings.templateFile.name': 'Template',
 	'settings.templateFile.desc':
 		'Its body (everything after the properties) goes into each new note. Empty: media.md in the core templates folder.',
 	'settings.addSourceLink.name': 'Link to the source',
 	'settings.addSourceLink.desc': 'Adds a line like "- IMDb: <link>" at the end of the note.',
 	'settings.defaultStatus.name': 'Default status',
-	'settings.defaultStatus.desc': 'Status suggested in the form. Started is filled with today unless the status is backlog.',
+	'settings.defaultStatus.desc': 'Status suggested in the form for catalog notes. Started is filled with today.',
 	'settings.aliasCountry.name': 'Alternative title country',
 	'settings.aliasCountry.desc':
 		'New movie, series and game notes also get the title released in this country as their second alias, when it differs from the title. None: the title is the only alias.',

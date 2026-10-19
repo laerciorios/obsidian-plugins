@@ -16,6 +16,7 @@ const IMDB = { id: 'imdb', name: 'IMDb', kinds: ['movie'], search: () => Promise
 
 function draft(overrides: Partial<CatalogDraft>): CatalogDraft {
 	return {
+		destination: 'catalog',
 		kind: 'movie',
 		title: 'Fern Road',
 		year: 1984,
