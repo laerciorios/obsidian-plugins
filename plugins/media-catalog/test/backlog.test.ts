@@ -114,13 +114,15 @@ describe('Starting a backlog item', () => {
 			kind: 'game',
 			title: 'Moss Engine',
 			status: 'in-progress',
+			rating: null,
 			started: '2031-06-01',
+			finished: null,
 			platform: 'PC',
 			added: '2031-01-10',
 			cover: '',
 			tags: ['entertainment'],
 		});
-		assert.deepEqual(Object.keys(frontmatter).slice(2, 4), ['status', 'started']);
+		assert.deepEqual(Object.keys(frontmatter).slice(2, 6), ['status', 'rating', 'started', 'finished']);
 	});
 
 	test('a started key already there is set in place', () => {
@@ -128,8 +130,23 @@ describe('Starting a backlog item', () => {
 		applyStart(frontmatter, '2031-06-01');
 		assert.deepEqual(Object.entries(frontmatter), [
 			['status', 'in-progress'],
+			['rating', null],
 			['started', '2031-06-01'],
+			['finished', null],
 			['tags', 'entertainment'],
+		]);
+	});
+
+	test('rating and finished already there keep their values and places', () => {
+		const frontmatter: Record<string, unknown> = { status: 'backlog', finished: '', platform: 'PC', rating: 7, estimated_hours: 33.5 };
+		applyStart(frontmatter, '2031-06-01');
+		assert.deepEqual(Object.entries(frontmatter), [
+			['status', 'in-progress'],
+			['finished', ''],
+			['platform', 'PC'],
+			['rating', 7],
+			['started', '2031-06-01'],
+			['estimated_hours', 33.5],
 		]);
 	});
 

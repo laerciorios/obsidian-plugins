@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { addToHistory, formatHours, historyHasRun, historyLine, parseHistoryLine, sameRun } from '../src/catalog/history';
 import type { Run } from '../src/catalog/history';
-import { replaceTracklistSection } from '../src/catalog/tracklist';
+import { renderTracklist, replaceTracklistSection, trackText } from '../src/catalog/tracklist';
 
 function run(fields: Partial<Run>): Run {
 	return { started: null, finished: null, platform: '', hours: null, rating: null, ...fields };
@@ -155,10 +155,10 @@ describe('## Histórico in a note', () => {
 	});
 
 	test('created after the tracklist of an album, still right before ## Impressões', () => {
-		const note = `${FRONTMATTER}## Faixas\n\n1. Orvalho — 3:12\n\n## Impressões\n`;
+		const note = `${FRONTMATTER}## Faixas\n\n1. Orvalho - 3:12\n\n## Impressões\n`;
 		assert.equal(
 			addToHistory(note, current),
-			`${FRONTMATTER}## Faixas\n\n1. Orvalho — 3:12\n\n## Histórico\n- 2026-03-05 → 2026-04-18 · PC · 42 h · nota 9\n\n## Impressões\n`,
+			`${FRONTMATTER}## Faixas\n\n1. Orvalho - 3:12\n\n## Histórico\n- 2026-03-05 → 2026-04-18 · PC · 42 h · nota 9\n\n## Impressões\n`,
 		);
 	});
 
@@ -227,15 +227,37 @@ describe('tracklist next to the history', () => {
 	test('a new tracklist goes before ## Histórico, which stays right before ## Impressões', () => {
 		const note = `${FRONTMATTER}## Histórico\n- 2024-01-02 · Vinil\n\n## Impressões\n`;
 		assert.equal(
-			replaceTracklistSection(note, '## Tracks\n\n1. Orvalho — 3:12'),
-			`${FRONTMATTER}## Tracks\n\n1. Orvalho — 3:12\n\n## Histórico\n- 2024-01-02 · Vinil\n\n## Impressões\n`,
+			replaceTracklistSection(note, '## Tracks\n\n1. Orvalho - 3:12'),
+			`${FRONTMATTER}## Tracks\n\n1. Orvalho - 3:12\n\n## Histórico\n- 2024-01-02 · Vinil\n\n## Impressões\n`,
 		);
 	});
 
 	test('without a history, before ## Impressões as before', () => {
 		assert.equal(
-			replaceTracklistSection(`${FRONTMATTER}## Impressões\n`, '## Tracks\n\n1. Orvalho — 3:12'),
-			`${FRONTMATTER}## Tracks\n\n1. Orvalho — 3:12\n\n## Impressões\n`,
+			replaceTracklistSection(`${FRONTMATTER}## Impressões\n`, '## Tracks\n\n1. Orvalho - 3:12'),
+			`${FRONTMATTER}## Tracks\n\n1. Orvalho - 3:12\n\n## Impressões\n`,
 		);
+	});
+});
+
+describe('Tracklist lines', () => {
+	const t = (key: string, params?: Record<string, string | number>): string =>
+		key === 'note.tracks.heading' ? 'Faixas' : `Disco ${params?.n ?? ''}`;
+
+	test('title and length separated by a plain hyphen', () => {
+		assert.equal(trackText({ disc: 1, position: 1, title: 'Orvalho', lengthMs: 192_000 }), 'Orvalho - 3:12');
+		assert.equal(trackText({ disc: 1, position: 2, title: 'Sem tempo' }), 'Sem tempo');
+	});
+
+	test('the section has no dashes besides the hyphen', () => {
+		const section = renderTracklist(
+			[
+				{ disc: 1, position: 1, title: 'Orvalho', lengthMs: 192_000 },
+				{ disc: 1, position: 2, title: 'Maré', lengthMs: 3_725_000 },
+			],
+			t,
+		);
+		assert.equal(section, '## Faixas\n\n1. Orvalho - 3:12\n2. Maré - 1:02:05');
+		assert.doesNotMatch(section, /[\u2013\u2014]/);
 	});
 });

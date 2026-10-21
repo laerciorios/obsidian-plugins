@@ -129,7 +129,7 @@ Aparece só com uma nota da pasta do backlog (subpastas incluídas) aberta. Na o
 
 1. Move a nota para a pasta do catálogo com o mesmo nome, por `fileManager.renameFile`, então os links para ela são atualizados. Se a pasta do catálogo já tem uma nota com esse nome, um aviso pede para renomear uma delas e nada muda.
 2. `## Por que quero` vira `## Impressões`, com o texto que estava embaixo. Numa nota que já tem `## Impressões`, os títulos ficam como estão; numa sem nenhum dos dois, `## Impressões` entra no fim.
-3. As propriedades: `status: in-progress`, `started` com a data de hoje (logo depois de `status`), sem `priority` e `recommended_by`. As tags do backlog dão lugar às do catálogo, na posição da primeira: `[backlog]` vira `[entertainment]`, `[to-play, backlog, rpg]` vira `[to-play, entertainment, rpg]`, e `#backlog` também conta. Uma lista continua lista e um valor único continua valor; uma tag do catálogo que a nota já tem não se repete (`[entertainment, backlog]` vira `[entertainment]`). `added` fica.
+3. As propriedades: `status: in-progress` e, logo depois, `rating` vazio, `started` com a data de hoje e `finished` vazio, na ordem das notas do catálogo (um `rating` ou `finished` que a nota já tenha fica com o valor e o lugar dele); sem `priority` e `recommended_by`. As tags do backlog dão lugar às do catálogo, na posição da primeira: `[backlog]` vira `[entertainment]`, `[to-play, backlog, rpg]` vira `[to-play, entertainment, rpg]`, e `#backlog` também conta. Uma lista continua lista e um valor único continua valor; uma tag do catálogo que a nota já tem não se repete (`[entertainment, backlog]` vira `[entertainment]`). `added` fica.
 4. Álbuns, com **Incluir lista de faixas em álbuns** ligado: as faixas são buscadas pelo link da fonte da nota (`- MusicBrainz: …` ou `- iTunes: …`, na edição principal) e a seção `## Faixas` entra antes de `## Impressões`, como numa nota nova. Sem o link, ou se a fonte falhar, um aviso explica e abre o **Atualizar faixas do álbum** para você escolher o álbum.
 
 Depois a nota abre. Um item do backlog que você desistiu de começar vai para a lixeira, não para `dropped` (regra do vault).
@@ -320,13 +320,13 @@ Com **Link para a fonte** ligado, o corpo termina, depois de uma linha em branco
 
 ### Lista de faixas
 
-Com **Incluir lista de faixas em álbuns** ligado (o padrão), a nota de um álbum ganha a lista de faixas antes de `## Impressões`. Cada faixa é um item numerado pela posição, com a duração em `m:ss` (ou `h:mm:ss`) depois de um travessão com espaços; sem duração, só o título. Uma linha em branco separa a seção das vizinhas.
+Com **Incluir lista de faixas em álbuns** ligado (o padrão), a nota de um álbum ganha a lista de faixas antes de `## Impressões`. Cada faixa é um item numerado pela posição, com a duração em `m:ss` (ou `h:mm:ss`) depois de um hífen com espaços (`Orvalho - 3:12`); sem duração, só o título. Notas criadas antes da 0.8.1 têm um travessão no lugar do hífen e continuam assim até o **Atualizar faixas do álbum**, que regrava a seção com hífen. Uma linha em branco separa a seção das vizinhas.
 
 ```markdown
 ## Faixas
 
-1. Broto de Samambaia — 3:12
-2. Orvalho na Janela — 4:05
+1. Broto de Samambaia - 3:12
+2. Orvalho na Janela - 4:05
 3. Musgo Azul
 
 ## Impressões
@@ -339,12 +339,12 @@ Com mais de um disco, cada disco ganha um `### Disco N`, e a numeração recome�
 
 ### Disco 1
 
-1. Estufa — 3:40
-2. Raiz Funda — 5:02
+1. Estufa - 3:40
+2. Raiz Funda - 5:02
 
 ### Disco 2
 
-1. Estufa (demo) — 3:31
+1. Estufa (demo) - 3:31
 
 ## Impressões
 ```

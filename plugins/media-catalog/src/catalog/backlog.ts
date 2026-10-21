@@ -57,8 +57,9 @@ export function swapTags(tags: unknown, swap: StartTags): unknown {
 
 /**
  * The properties of a started item, in place (processFrontMatter writes the
- * keys in object order): `status: in-progress`, `started` right after
- * `status` (or where the note already has it), no `priority` or
+ * keys in object order): `status: in-progress`, then empty `rating`,
+ * `started` = today and empty `finished`, in that order right after `status`
+ * (keys the note already has stay where they are), no `priority` or
  * `recommended_by`, and the backlog tags swapped for the catalog tags in
  * their place (see swapTags). `added` and everything else stay as they are.
  */
@@ -66,7 +67,15 @@ export function applyStart(frontmatter: Record<string, unknown>, today: string, 
 	for (const key of BACKLOG_ONLY_KEYS) Reflect.deleteProperty(frontmatter, key);
 	if ('tags' in frontmatter) frontmatter.tags = swapTags(frontmatter.tags, tags);
 	frontmatter.status = IN_PROGRESS;
-	setAfter(frontmatter, 'started', today, 'status');
+	// The keys of a run, in the order of catalog notes (`status, rating, started, finished`):
+	// `rating` and `finished` empty, to fill in later; values the note already has stay.
+	if (!hasKey(frontmatter, 'rating')) setAfter(frontmatter, 'rating', null, 'status');
+	setAfter(frontmatter, 'started', today, 'rating');
+	if (!hasKey(frontmatter, 'finished')) setAfter(frontmatter, 'finished', null, 'started');
+}
+
+function hasKey(frontmatter: Record<string, unknown>, key: string): boolean {
+	return Object.prototype.hasOwnProperty.call(frontmatter, key);
 }
 
 /**

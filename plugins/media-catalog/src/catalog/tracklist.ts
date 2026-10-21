@@ -73,11 +73,11 @@ export function trackTitle(title: string): string {
 		);
 }
 
-/** `15 Step — 3:57`, or the title alone when the length is unknown (no number). */
+/** `15 Step - 3:57` (a plain hyphen), or the title alone when the length is unknown (no number). */
 export function trackText(track: Track): string {
 	const ms = lengthOf(track);
 	const title = trackTitle(track.title);
-	return ms === null ? title : `${title} — ${formatDuration(ms)}`;
+	return ms === null ? title : `${title} - ${formatDuration(ms)}`;
 }
 
 /**
