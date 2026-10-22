@@ -1,0 +1,61 @@
+/* Graph Kit: settings tab and modals. The graph itself is drawn by PIXI, not styled here. */
+.gk-warning {
+	color: var(--text-error);
+}
+
+.gk-warning:empty {
+	display: none;
+}
+
+.gk-rule-off .setting-item-name,
+.gk-rule-off .setting-item-description {
+	opacity: 0.5;
+}
+
+/* Rule modal: one condition per row, its fields side by side. */
+.gk-conditions {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-2);
+	margin-bottom: var(--size-4-6);
+}
+
+.gk-condition.setting-item {
+	padding: var(--size-2-3) 0;
+	border-top: none;
+}
+
+.gk-condition .setting-item-info {
+	display: none;
+}
+
+.gk-condition .setting-item-control {
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	gap: var(--size-2-3);
+}
+
+.gk-condition input[type='text'] {
+	flex: 1 1 10em;
+	min-width: 8em;
+}
+
+.gk-flag-label {
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+/* Export and import. */
+.gk-json {
+	width: 100%;
+	font-family: var(--font-monospace);
+	font-size: var(--font-ui-smaller);
+	resize: vertical;
+}
+
+.gk-import-summary {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-1);
+	margin-top: var(--size-4-2);
+}
