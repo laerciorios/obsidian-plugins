@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { folderCss } from '../src/css/folder-css';
-import { defaultSettings } from '../src/settings';
+import { defaultSettings } from '../src/settings/settings';
 import type { FolderStyle, FolderStyleSettings } from '../src/types';
 
 const BOOK_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 3h6"/></svg>';

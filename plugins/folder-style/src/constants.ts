@@ -7,3 +7,17 @@ export const ACTIVE_OPACITY_STEP = 0.12;
 
 /** Space between the symbol and the folder name. */
 export const SYMBOL_GAP = '0.3em';
+
+export const SAVE_DEBOUNCE_MS = 400;
+
+/** Classes of the settings tab (styles.css). */
+export const CLS = {
+	preview: 'fs-preview',
+	previewColored: 'fs-preview-colored',
+	previewSymbol: 'fs-preview-symbol',
+	warning: 'fs-warning',
+} as const;
+
+/** The folder color's `rgb()` channels and the row opacity on a settings preview (styles.css). */
+export const PREVIEW_COLOR_VAR = '--fs-color-rgb';
+export const PREVIEW_ALPHA_VAR = '--fs-color-alpha';

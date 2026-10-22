@@ -14,6 +14,9 @@ export interface FolderStyle {
 	color?: FolderColor;
 }
 
+/** Folder styles keyed by the folder's full vault path. */
+export type FolderStyles = Record<string, FolderStyle>;
+
 /** SVG markup of a Lucide icon bundled with Obsidian, or null when Obsidian does not have it. */
 export type IconLookup = (id: string) => string | null;
 
@@ -25,6 +28,5 @@ export interface FolderStyleSettings {
 	tintChildren: boolean;
 	/** Symbol size as a factor of the folder name's font size. */
 	symbolSize: number;
-	/** Keyed by the folder's full vault path. */
-	folders: Record<string, FolderStyle>;
+	folders: FolderStyles;
 }

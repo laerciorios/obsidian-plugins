@@ -10,6 +10,9 @@ Nada é inserido no DOM do explorador. O plugin gera CSS a partir do `data.json`
 - Ícone Lucide: o SVG de `getIcon()` vira uma máscara (`mask-image`) pintada com a cor da pasta ou do tema. Sem rede.
 - Cor: presets das variáveis do tema (`--color-red-rgb`…) ou hex; linha com a opacidade base (12 %), hover +6 pontos, pasta ativa ou selecionada +12, subárvore com metade.
 - Desligar o plugin remove a stylesheet e todo o visual.
+- Renomear ou mover uma pasta pelo Obsidian leva o estilo junto, também das subpastas; apagar remove a entrada.
+- Aba de configurações: intensidade da cor, colorir o conteúdo da pasta, tamanho do símbolo e a lista das pastas personalizadas (remover, aviso de ícone inexistente ou de pasta que não existe mais).
+- `data.json` alterado fora do Obsidian (sincronização) é recarregado em vez de sobrescrito.
 
 ## Dados
 
@@ -46,4 +49,4 @@ Todo texto da interface passa por `t()` de `src/i18n/`: inglês em `en.ts` (font
 
 ## Status
 
-Em desenvolvimento: geração e aplicação do CSS prontas; aba de configurações, eventos de pasta e modal "Personalizar pasta…" a seguir. Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/folder-style-spec.md`.
+Em desenvolvimento: CSS, dados, eventos de pasta e aba de configurações prontos; modal "Personalizar pasta…" a seguir. Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/folder-style-spec.md`.

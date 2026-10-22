@@ -1,1 +1,30 @@
-/* Folder Style: the folder rules are generated from the settings (src/css). Use only Obsidian CSS variables here. */
+/*
+ * Folder Style: the explorer rules are generated from the settings (src/css). This file only
+ * styles the settings tab, with Obsidian CSS variables. A folder color arrives as
+ * --fs-color-rgb (comma-separated channels, like the theme's --color-*-rgb) and the row
+ * opacity setting as --fs-color-alpha.
+ */
+.fs-preview {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-4-1);
+	padding: var(--size-2-1) var(--size-4-2);
+	border-radius: var(--radius-s);
+}
+
+.fs-preview-colored {
+	background-color: rgba(var(--fs-color-rgb), var(--fs-color-alpha));
+}
+
+.fs-preview-colored .fs-preview-symbol {
+	color: rgb(var(--fs-color-rgb));
+}
+
+.fs-preview-symbol {
+	display: inline-flex;
+	--icon-size: var(--icon-s);
+}
+
+.fs-warning {
+	color: var(--text-error);
+}
