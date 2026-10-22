@@ -1,10 +1,10 @@
 # Graph Kit
 
-Personaliza o graph nativo do Obsidian (graph global e local graph) com funcionalidades independentes, cada uma com toggle próprio, toggle por graph e regras por nota. A versão atual traz os **rótulos**: o nó mostra o valor de uma propriedade (como o `title` das notas `index.md`) no lugar do nome do arquivo.
+Personaliza o graph nativo do Obsidian (graph global e local graph) com funcionalidades independentes, cada uma com toggle próprio, toggle por graph e regras por nota: **rótulos** (o nó mostra o valor de uma propriedade, como o `title` das notas `index.md`, no lugar do nome do arquivo) e **tipos de link** (cor e estilo das arestas pela propriedade de onde o link vem).
 
 ## Como funciona
 
-O graph não tem API pública. Todo acesso aos internals fica em [`src/graph-internals.ts`](src/graph-internals.ts), conferido no Obsidian 1.14.4:
+O graph não tem API pública. Todo acesso aos internals fica em [`src/graph-internals/`](src/graph-internals), conferido no Obsidian 1.14.4:
 
 - As views `graph` e `localgraph` usam as mesmas classes de renderer, nó e aresta (PIXI 7). O plugin envolve métodos do protótipo (um wrapper por método, guardando o original) e descobre qual graph é qual pelas folhas abertas.
 - O texto do nó vem de `node.getDisplayText()`, chamado uma vez ao desenhar o nó. Para mudanças ao vivo, o plugin atualiza o texto dos nós já desenhados.
@@ -18,6 +18,16 @@ O graph não tem API pública. Todo acesso aos internals fica em [`src/graph-int
 - Notas: todas, ou só as que casam uma regra. Sem valor, fica o nome do arquivo.
 - Tamanho máximo opcional, com reticências.
 - Busca e filtros do graph, anexos, links não resolvidos e tags não mudam.
+
+## Tipos de link
+
+Desligado ao instalar.
+
+- Cada tipo diz de onde vêm os links: uma propriedade do frontmatter (`projects`, `attendees`, `parent`, `blocked_by`, `reference`…) ou o corpo da nota. Tem cor (a do graph, uma cor do tema ou hex), linha contínua, tracejada ou pontilhada e pode ser escondido.
+- Os tipos ficam em ordem de prioridade: um link que vem de mais de uma origem usa o primeiro tipo da lista. Num link mútuo (A liga B e B liga A), o graph desenha uma linha só; uma propriedade de qualquer um dos lados vence o corpo.
+- "Detectar propriedades com links" cria um tipo para cada propriedade que tem links em alguma nota.
+- Legenda opcional num canto do graph: clicar num tipo esconde ou mostra aqueles links só naquele graph (global ou local).
+- Esconder só apaga o desenho; o layout continua considerando o link.
 
 ## Regras
 
@@ -35,7 +45,7 @@ Nos rótulos, o efeito é outra lista de propriedades ou "manter o nome do arqui
 
 ## Comandos
 
-`Ligar/desligar rótulos`, `Desligar tudo`, `Religar o Graph Kit`, `Exportar configuração` e `Importar configuração`.
+`Ligar/desligar rótulos`, `Ligar/desligar tipos de link`, `Desligar tudo`, `Religar o Graph Kit`, `Exportar configuração` e `Importar configuração`.
 
 ## Configuração
 
@@ -71,7 +81,7 @@ Valores inválidos voltam ao padrão um a um; chaves desconhecidas são ignorada
 
 ## Próximas fases
 
-Tipos de link, imagens nos nós, presets, forma e opacidade, ícones e tamanho por propriedade. Cada uma entra como um módulo em `src/features/<nome>/`, desligada por padrão. Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/graph-kit-spec.md`.
+Imagens nos nós, presets, forma e opacidade, ícones e tamanho por propriedade. Cada uma entra como um módulo em `src/features/<nome>/`, desligada por padrão. Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/graph-kit-spec.md`.
 
 ## Desenvolvimento
 

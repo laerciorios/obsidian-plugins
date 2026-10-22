@@ -1,4 +1,5 @@
 import type { LabelsConfig } from '../features/labels/config';
+import type { LinkTypesConfig } from '../features/link-types/config';
 
 /** The two native graph views. */
 export type GraphKind = 'global' | 'local';
@@ -16,10 +17,11 @@ export interface FeatureConfigBase {
 }
 
 /** Stable ids: keys in data.json and in command ids. */
-export type FeatureId = 'labels';
+export type FeatureId = keyof FeatureConfigs;
 
 export interface FeatureConfigs {
 	labels: LabelsConfig;
+	'link-types': LinkTypesConfig;
 }
 
 export const CONFIG_VERSION = 1;

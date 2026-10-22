@@ -31,6 +31,8 @@ export interface SectionSpec<E> {
 	/** The feature's own options, shown only while it is on. */
 	options: SettingGroupItem[];
 	rules?: RulesSpec<E>;
+	/** More items after the section (lists of the feature's own data), given its on/off state. */
+	after?: (on: () => boolean) => SettingDefinitionItem[];
 }
 
 /**
@@ -86,8 +88,8 @@ export function featureSection<E>(host: SectionHost, spec: SectionSpec<E>): Sett
 						.setIcon('rotate-ccw')
 						.setTooltip(t('settings.resetSection'))
 						.onClick(() => {
-							// Rules are the user's data, not options: they stay.
-							host.config.features[id] = { ...defaultFeatureConfig(id), rules: feature().rules };
+							// Rules and lists are the user's data, not options: they stay.
+							resetOptions(host.config, id);
 							host.changed(true);
 						}),
 			],
@@ -95,7 +97,16 @@ export function featureSection<E>(host: SectionHost, spec: SectionSpec<E>): Sett
 		},
 	];
 	if (spec.rules) section.push(rulesList(host, spec.rules, on));
+	if (spec.after) section.push(...spec.after(on));
 	return section;
+}
+
+/** Back to the defaults, keeping rules, link types and presets. */
+function resetOptions(config: GraphKitConfig, id: FeatureId): void {
+	const kept = config.features[id] as unknown as Record<string, unknown>;
+	const fresh = defaultFeatureConfig(id) as unknown as Record<string, unknown>;
+	for (const key of ['rules', 'types', 'items', 'hidden']) if (key in kept) fresh[key] = kept[key];
+	(config.features as unknown as Record<string, unknown>)[id] = fresh;
 }
 
 function rulesList<E>(host: SectionHost, spec: RulesSpec<E>, visible: () => boolean): SettingDefinitionItem {

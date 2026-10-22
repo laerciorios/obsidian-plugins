@@ -38,6 +38,6 @@ export function summarize(config: GraphKitConfig): ImportSummary {
 	return {
 		enabled: config.enabled,
 		featuresOn: entries.filter(([, feature]) => feature.enabled).map(([id]) => id),
-		rules: entries.reduce((count, [, feature]) => count + feature.rules.length, 0),
+		rules: entries.reduce((count, [, feature]) => count + ('rules' in feature ? feature.rules.length : 0), 0),
 	};
 }

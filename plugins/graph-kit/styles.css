@@ -59,3 +59,79 @@
 	gap: var(--size-2-1);
 	margin-top: var(--size-4-2);
 }
+
+/* Link types: legend over the graph, and the same swatch in the settings. */
+.gk-legend {
+	position: absolute;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-1);
+	padding: var(--size-2-2) var(--size-2-3);
+	border: var(--border-width) solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background-color: var(--background-primary);
+	font-size: var(--font-ui-smaller);
+}
+
+.gk-legend-top-left {
+	top: var(--size-4-3);
+	left: var(--size-4-3);
+}
+
+.gk-legend-top-right {
+	top: var(--size-4-3);
+	right: var(--size-4-3);
+}
+
+.gk-legend-bottom-left {
+	bottom: var(--size-4-3);
+	left: var(--size-4-3);
+}
+
+.gk-legend-bottom-right {
+	bottom: var(--size-4-3);
+	right: var(--size-4-3);
+}
+
+.gk-legend button.gk-legend-item {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: var(--size-2-3);
+	height: auto;
+	padding: var(--size-2-1) var(--size-2-2);
+	background-color: transparent;
+	box-shadow: none;
+	color: var(--text-normal);
+	font-size: inherit;
+}
+
+.gk-legend button.gk-legend-item:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.gk-legend button.gk-legend-item.is-off {
+	color: var(--text-faint);
+	text-decoration: line-through;
+}
+
+.gk-legend-swatch {
+	display: inline-block;
+	flex: none;
+	width: 1.6em;
+	border-top: 2px solid var(--gk-line-color, var(--text-muted));
+	vertical-align: middle;
+}
+
+.gk-legend-swatch.gk-line-dashed {
+	border-top-style: dashed;
+}
+
+.gk-legend-swatch.gk-line-dotted {
+	border-top-style: dotted;
+}
+
+.gk-name-swatch {
+	margin-right: var(--size-4-2);
+}

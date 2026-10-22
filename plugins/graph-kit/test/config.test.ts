@@ -53,7 +53,7 @@ describe('loading data.json', () => {
 			},
 		};
 		const { config, warnings } = normalizeConfig(saved);
-		assert.deepEqual(config, saved);
+		assert.deepEqual(config, { ...saved, features: { ...defaultConfig().features, ...saved.features } });
 		assert.deepEqual(warnings, []);
 	});
 

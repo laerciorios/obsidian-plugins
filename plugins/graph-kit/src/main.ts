@@ -25,7 +25,7 @@ export default class GraphKitPlugin extends Plugin {
 		this.host = this.addChild(
 			new GraphHost({
 				app: this.app,
-				features: createFeatures(facts, () => this.config),
+				features: createFeatures({ app: this.app, facts, config: () => this.config, changed: () => this.configChanged(true) }),
 				config: () => this.config,
 				facts,
 				statusChanged: () => this.settingTab?.update(),

@@ -16,7 +16,7 @@ Notas fictícias para os rótulos do graph. Os projetos se chamam todos `index.m
 | [[Graph Kit/Reuniões/2026-10-20-abertura-da-estufa]] | `title` em link | Abertura da Estufa |
 | [[Graph Kit/Notas/caderno-de-ideias]] | `title`, tag `#ideia/solta` | Caderno de ideias |
 
-Também há um anexo (`canvas-shapes-horta.png`, no Viveiro) e um link não resolvido (`Projeto Fantasma`, na Horta).
+Os cards em `Graph Kit/Cards/` têm `parent`, `projects` e `blocked_by`, a reunião tem `attendees` e `projects`, e o Caderno tem `reference`. Também há um anexo (`canvas-shapes-horta.png`, no Viveiro) e um link não resolvido (`Projeto Fantasma`, na Horta).
 
 ## Preparação
 
@@ -52,6 +52,15 @@ Também há um anexo (`canvas-shapes-horta.png`, no Viveiro) e um link não reso
 - [ ] Comando "Ligar/desligar rótulos": volta ao nativo e religa, na hora.
 - [ ] Comando "Desligar tudo": o graph volta ao nativo; "Religar o Graph Kit" volta como estava.
 - [ ] Desative o plugin em Plugins da comunidade: o graph aberto volta ao nativo sem reabrir a aba.
+
+## Tipos de link
+
+- [ ] Em Configurações → Graph Kit → Tipos de link, ligue e clique em "Detectar propriedades com links": entram `attendees`, `blocked_by`, `parent`, `projects` e `reference`, cada um com uma cor.
+- [ ] Deixe `projects` tracejado e `blocked_by` pontilhado: as arestas dos cards e da reunião mudam na hora, nos dois graphs.
+- [ ] A legenda aparece no canto: clique em `attendees` no graph global; as arestas da reunião para as pessoas somem só nele, e o local graph continua igual.
+- [ ] Arraste `parent` para baixo de `projects`: a aresta do card Montar as bancadas para a Estufa (que tem os dois) passa a usar a cor de `projects`.
+- [ ] Adicione `reference: "[[Graph Kit/Projetos/Horta Vertical/index]]"` em `teo-brisa`: a aresta para a Horta vira a de `reference` na hora. Apague a propriedade.
+- [ ] Desligue a funcionalidade: cores, tracejados e legenda somem sem reabrir o graph.
 
 ## Exportar e importar
 

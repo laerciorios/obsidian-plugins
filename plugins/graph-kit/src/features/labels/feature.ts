@@ -1,5 +1,5 @@
-import type { GraphRenderer } from '../../graph-internals';
 import { refreshNodeLabels } from '../../graph-internals';
+import type { OpenGraph } from '../../graph-internals';
 import type { NoteFactsCache } from '../../note-facts';
 import { GraphFeature } from '../feature';
 import type { LabelsConfig } from './config';
@@ -33,7 +33,7 @@ export class LabelsFeature extends GraphFeature {
 		else for (const path of paths) this.labels.delete(path);
 	}
 
-	redraw(renderer: GraphRenderer, paths: ReadonlySet<string> | null): void {
-		refreshNodeLabels(renderer, paths);
+	redraw(graph: OpenGraph, paths: ReadonlySet<string> | null): void {
+		refreshNodeLabels(graph.renderer, paths);
 	}
 }

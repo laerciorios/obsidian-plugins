@@ -3,6 +3,7 @@ import type { App, Plugin, SettingDefinitionItem } from 'obsidian';
 import { defaultConfig } from '../config/normalize';
 import type { FeatureId, GraphKitConfig } from '../config/types';
 import { labelsSettings } from '../features/labels/settings';
+import { linkTypesSettings } from '../features/link-types/settings';
 import type { FeatureStatus } from '../graph-host';
 import { t } from '../i18n';
 import type { SectionHost } from './feature-section';
@@ -42,7 +43,7 @@ export class GraphKitSettingTab extends PluginSettingTab implements SectionHost 
 	}
 
 	getSettingDefinitions(): SettingDefinitionItem[] {
-		return [this.general(), ...labelsSettings(this)];
+		return [this.general(), ...labelsSettings(this), ...linkTypesSettings(this)];
 	}
 
 	private general(): SettingDefinitionItem {
