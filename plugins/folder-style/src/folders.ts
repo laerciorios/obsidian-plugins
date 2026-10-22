@@ -1,6 +1,7 @@
 import type { FolderStyles } from './types';
 
-function isInside(path: string, folder: string): boolean {
+/** The path is the folder itself or something under it. */
+export function isInside(path: string, folder: string): boolean {
 	return path === folder || path.startsWith(`${folder}/`);
 }
 

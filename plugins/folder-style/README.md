@@ -13,6 +13,7 @@ Nada é inserido no DOM do explorador. O plugin gera CSS a partir do `data.json`
 - Renomear ou mover uma pasta pelo Obsidian leva o estilo junto, também das subpastas; apagar remove a entrada.
 - Aba de configurações: intensidade da cor, colorir o conteúdo da pasta, tamanho do símbolo e a lista das pastas personalizadas (remover, aviso de ícone inexistente ou de pasta que não existe mais).
 - `data.json` alterado fora do Obsidian (sincronização) é recarregado em vez de sobrescrito.
+- "Personalizar pasta…" no menu de contexto da pasta (desktop e mobile) e "Editar" na aba de configurações abrem um modal: símbolo (nenhum, texto ou ícone Lucide com busca), cor (8 presets do tema, hex ou nenhuma), prévia ao vivo com o mesmo CSS do explorador, Salvar, Cancelar e "Remover personalização".
 
 ## Dados
 
@@ -49,4 +50,4 @@ Todo texto da interface passa por `t()` de `src/i18n/`: inglês em `en.ts` (font
 
 ## Status
 
-Em desenvolvimento: CSS, dados, eventos de pasta e aba de configurações prontos; modal "Personalizar pasta…" a seguir. Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/folder-style-spec.md`.
+Em desenvolvimento: CSS, dados, eventos de pasta, aba de configurações e modal prontos; falta a verificação final e o release 0.1.0. Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/folder-style-spec.md`.

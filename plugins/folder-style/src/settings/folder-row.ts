@@ -10,6 +10,7 @@ export interface FolderRowContext {
 	opacity(): number;
 	hasMissingIcon(path: string): boolean;
 	folderExists(path: string): boolean;
+	editFolder(path: string): void;
 }
 
 /** One customized folder: its symbol and color as in the explorer, the full path, and warnings. */
@@ -53,4 +54,6 @@ function renderRow(setting: Setting, context: FolderRowContext, path: string): v
 	setting.descEl.createDiv({ text: summary(style) });
 	if (missingIcon) setting.descEl.createDiv({ cls: CLS.warning, text: t('folder.missingIcon', { name: symbol.value }) });
 	if (!context.folderExists(path)) setting.descEl.createDiv({ cls: CLS.warning, text: t('folder.missingFolder') });
+
+	setting.addExtraButton((button) => button.setIcon('pencil').setTooltip(t('settings.folder.edit')).onClick(() => context.editFolder(path)));
 }

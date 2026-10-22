@@ -1,16 +1,16 @@
 import { PluginSettingTab } from 'obsidian';
 import type { App, Plugin, SettingDefinitionItem } from 'obsidian';
-import type { FolderStyle, FolderStyleSettings, FolderStyles } from '../types';
+import type { FolderStyle, FolderStyleSettings } from '../types';
+import { FolderStyleModal } from '../ui/folder-style-modal';
+import type { ModalHost } from '../ui/folder-style-modal';
 import { key, settingDefinitions } from './definitions';
 import type { DefinitionContext } from './definitions';
 
-export interface SettingsHost extends Plugin {
+export interface SettingsHost extends Plugin, ModalHost {
 	settings: FolderStyleSettings;
 	missingIcons: ReadonlySet<string>;
 	/** Settings changed: regenerate the stylesheet and save. */
 	settingsChanged(): void;
-	/** The folder styles were replaced: regenerate, save and redraw this tab. */
-	foldersChanged(folders: FolderStyles): void;
 }
 
 /** Declarative settings (Obsidian 1.13+): global options and the list of customized folders. */
@@ -69,8 +69,11 @@ export class FolderStyleSettingTab extends PluginSettingTab implements Definitio
 		return this.plugin.settings.opacity;
 	}
 
+	editFolder(path: string): void {
+		new FolderStyleModal(this.app, this.plugin, path).open();
+	}
+
 	removeFolder(path: string): void {
-		const { [path]: _removed, ...folders } = this.plugin.settings.folders;
-		this.plugin.foldersChanged(folders);
+		this.plugin.setFolderStyle(path, null);
 	}
 }

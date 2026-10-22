@@ -6,7 +6,8 @@ import { lucideSvg } from './icons';
 import { defaultSettings, normalizeSettings } from './settings/settings';
 import { FolderStyleSettingTab } from './settings/settings-tab';
 import { FolderStyleSheet } from './style-sheet';
-import type { FolderStyleSettings, FolderStyles } from './types';
+import type { FolderStyle, FolderStyleSettings, FolderStyles } from './types';
+import { registerFolderMenu } from './ui/folder-menu';
 
 export default class FolderStylePlugin extends Plugin {
 	settings: FolderStyleSettings = defaultSettings();
@@ -28,6 +29,7 @@ export default class FolderStylePlugin extends Plugin {
 		this.registerEvent(this.app.workspace.on('window-close', (_win, window) => this.sheet.detach(window.document)));
 
 		registerFolderEvents(this);
+		registerFolderMenu(this);
 		this.settingTab = new FolderStyleSettingTab(this.app, this);
 		this.addSettingTab(this.settingTab);
 	}
@@ -53,6 +55,12 @@ export default class FolderStylePlugin extends Plugin {
 		this.settings.folders = folders;
 		this.settingsChanged();
 		this.refreshSettingTab();
+	}
+
+	/** Customize one folder; null removes its customization. */
+	setFolderStyle(path: string, style: FolderStyle | null): void {
+		const { [path]: _previous, ...others } = this.settings.folders;
+		this.foldersChanged(style ? { ...others, [path]: style } : others);
 	}
 
 	refreshSettingTab(): void {

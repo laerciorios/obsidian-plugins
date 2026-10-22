@@ -10,12 +10,31 @@ export const SYMBOL_GAP = '0.3em';
 
 export const SAVE_DEBOUNCE_MS = 400;
 
-/** Classes of the settings tab (styles.css). */
+/** Most icons the modal grid shows at once; the search narrows the rest. */
+export const ICON_RESULTS_LIMIT = 120;
+
+export const HEX_PLACEHOLDER = '#d97706';
+/** Enough for a few characters or one composed emoji (a family emoji is 11 UTF-16 units). */
+export const SYMBOL_TEXT_MAX_LENGTH = 16;
+/** Where the color picker starts when there is no hex yet. */
+export const HEX_PICKER_DEFAULT = '#808080';
+
+/** Classes of the settings tab and the modal (styles.css). */
 export const CLS = {
 	preview: 'fs-preview',
 	previewColored: 'fs-preview-colored',
 	previewSymbol: 'fs-preview-symbol',
 	warning: 'fs-warning',
+	modal: 'fs-modal',
+	modalPreview: 'fs-modal-preview',
+	iconPicker: 'fs-icon-picker',
+	iconSelected: 'fs-icon-selected',
+	iconGrid: 'fs-icon-grid',
+	iconHint: 'fs-icon-hint',
+	colorSetting: 'fs-color-setting',
+	chips: 'fs-chips',
+	chip: 'fs-chip',
+	swatch: 'fs-swatch',
 } as const;
 
 /** The folder color's `rgb()` channels and the row opacity on a settings preview (styles.css). */

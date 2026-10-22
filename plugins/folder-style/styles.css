@@ -28,3 +28,67 @@
 .fs-warning {
 	color: var(--text-error);
 }
+
+/* "Customize folder" modal. The preview reuses the file explorer's classes. */
+.fs-modal-preview.nav-files-container {
+	flex-grow: 0;
+	overflow: visible;
+	margin-bottom: var(--size-4-3);
+	padding: var(--size-4-2);
+	border: var(--border-width) solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background-color: var(--background-secondary);
+}
+
+.fs-icon-picker {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-2);
+	padding-bottom: var(--size-4-3);
+	border-bottom: var(--border-width) solid var(--background-modifier-border);
+}
+
+.fs-icon-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--size-4-9), 1fr));
+	gap: var(--size-4-1);
+	max-height: 14em;
+	overflow-y: auto;
+}
+
+.fs-icon-selected,
+.fs-icon-hint {
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+.fs-chips {
+	display: flex;
+	justify-content: flex-end;
+	gap: var(--size-2-1);
+}
+
+.fs-chips .fs-chip.clickable-icon {
+	padding: var(--size-2-2);
+}
+
+/* The chips stay on one row and the description wraps instead; on phones the chips wrap. */
+.fs-color-setting .setting-item-control {
+	flex-shrink: 0;
+}
+
+.is-phone .fs-chips {
+	flex-wrap: wrap;
+}
+
+.fs-swatch {
+	display: block;
+	width: var(--size-4-4);
+	height: var(--size-4-4);
+	border-radius: 50%;
+	background-color: rgb(var(--fs-color-rgb));
+}
+
+.fs-chip.is-active {
+	box-shadow: 0 0 0 var(--border-width) var(--text-normal);
+}
