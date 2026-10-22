@@ -107,6 +107,21 @@ A Estufa Lunar tem `icon: sprout` (Lucide) e a Iara `icon: "🌻"`.
 - [ ] Regra "kind = movie" → "Sem ícone": Girassóis perde o 🎬.
 - [ ] Desligue: os ícones somem sem reabrir o graph.
 
+## Tamanho
+
+As notas do Catálogo têm `rating` de 1 a 5 (outras notas do dev-vault também têm `rating`).
+
+- [ ] Ligue Tamanho: Girassóis (5) fica maior que Musgo Sonoro (4), Horta Selvagem (3), Jardim de Pedra (2) e Enxada Quest (1); notas sem `rating` ficam com o tamanho nativo.
+- [ ] Troque a escala para raiz quadrada: as notas de nota baixa crescem mais.
+- [ ] Valores fixos de 0 a 5: o Girassóis vira o maior nó possível.
+- [ ] Mude o `rating` da Enxada Quest para 5: ela cresce na hora.
+- [ ] Desligue: todos voltam ao tamanho por quantidade de links.
+
+## Tudo ligado
+
+- [ ] Ligue todas as funcionalidades e navegue pelo graph global inteiro (sem busca): sem travadas perceptíveis.
+- [ ] "Desligar tudo": o graph volta ao nativo de uma vez; "Religar o Graph Kit" volta com tudo.
+
 ## Exportar e importar
 
 - [ ] "Exportar configuração…": copie e salve como `graph-kit-config.json`. Com o arquivo já existente, o botão vira "Sobrescrever" com um aviso.

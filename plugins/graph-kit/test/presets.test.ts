@@ -13,7 +13,7 @@ describe('presets', () => {
 	test('a snapshot copies every feature but presets, deeply', () => {
 		const config = defaultConfig();
 		const saved = snapshot(config, PRESET_FEATURE_IDS);
-		assert.deepEqual(Object.keys(saved), ['labels', 'link-types', 'images', 'shapes', 'opacity', 'icons']);
+		assert.deepEqual(Object.keys(saved), ['labels', 'link-types', 'images', 'shapes', 'opacity', 'icons', 'size']);
 		config.features.labels.properties.push('aliases');
 		assert.deepEqual(saved.labels?.properties, ['title']);
 	});

@@ -16,10 +16,12 @@ import { defaultPresets } from './presets/config';
 import { PresetsFeature } from './presets/feature';
 import { defaultShapes } from './shapes/config';
 import { ShapesFeature } from './shapes/feature';
+import { defaultSize } from './size/config';
+import { SizeFeature } from './size/feature';
 import { PRESET_FEATURE_IDS } from '../config/normalize';
 
 /** Features in roadmap order: settings sections and commands follow it. */
-export const FEATURE_IDS: readonly FeatureId[] = ['labels', 'link-types', 'images', 'presets', 'shapes', 'opacity', 'icons'];
+export const FEATURE_IDS: readonly FeatureId[] = ['labels', 'link-types', 'images', 'presets', 'shapes', 'opacity', 'icons', 'size'];
 
 const DEFAULTS: { [K in FeatureId]: () => FeatureConfigs[K] } = {
 	labels: defaultLabels,
@@ -29,6 +31,7 @@ const DEFAULTS: { [K in FeatureId]: () => FeatureConfigs[K] } = {
 	shapes: defaultShapes,
 	opacity: defaultOpacity,
 	icons: defaultIcons,
+	size: defaultSize,
 };
 
 /** What features may need from the plugin. */
@@ -55,6 +58,7 @@ export function createFeatures(context: FeatureContext): GraphFeature[] {
 		new ShapesFeature(facts, () => config().features.shapes),
 		new OpacityFeature(facts, () => config().features.opacity),
 		new IconsFeature(app, facts, () => config().features.icons),
+		new SizeFeature(app, facts, () => config().features.size),
 	];
 }
 

@@ -5,6 +5,7 @@ import type { LinkTypesConfig } from '../features/link-types/config';
 import type { OpacityConfig } from '../features/opacity/config';
 import type { PresetsConfig } from '../features/presets/config';
 import type { ShapesConfig } from '../features/shapes/config';
+import type { SizeConfig } from '../features/size/config';
 
 /** The two native graph views. */
 export type GraphKind = 'global' | 'local';
@@ -32,6 +33,7 @@ export interface FeatureConfigs {
 	shapes: ShapesConfig;
 	opacity: OpacityConfig;
 	icons: IconsConfig;
+	size: SizeConfig;
 }
 
 export const CONFIG_VERSION = 1;

@@ -13,6 +13,7 @@ import type { GraphFeature } from '../features/feature';
 import { IconsFeature } from '../features/icons/feature';
 import { iconsSettings } from '../features/icons/settings';
 import { shapesSettings } from '../features/shapes/settings';
+import { sizeSettings } from '../features/size/settings';
 import type { FeatureStatus } from '../graph-host';
 import { t } from '../i18n';
 import type { SectionHost } from './feature-section';
@@ -54,7 +55,7 @@ export class GraphKitSettingTab extends PluginSettingTab implements SectionHost 
 	}
 
 	getSettingDefinitions(): SettingDefinitionItem[] {
-		return [this.general(), ...labelsSettings(this), ...linkTypesSettings(this), ...imagesSettings(this), ...this.presetSection(), ...shapesSettings(this), ...opacitySettings(this), ...iconsSettings(this, () => this.plugin.featureOf(IconsFeature)?.folderStyleState() ?? 'off')];
+		return [this.general(), ...labelsSettings(this), ...linkTypesSettings(this), ...imagesSettings(this), ...this.presetSection(), ...shapesSettings(this), ...opacitySettings(this), ...iconsSettings(this, () => this.plugin.featureOf(IconsFeature)?.folderStyleState() ?? 'off'), ...sizeSettings(this)];
 	}
 
 	private presetSection(): SettingDefinitionItem[] {

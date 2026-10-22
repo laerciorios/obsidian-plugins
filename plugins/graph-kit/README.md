@@ -61,6 +61,14 @@ Desligado ao instalar.
 - De onde vem: a primeira regra que casar (ícone fixo, outra propriedade ou nenhum), senão a propriedade `icon` (configurável), senão, se ligado, o símbolo que o **Folder Style** dá à pasta da nota (ou à pasta acima mais próxima). O Graph Kit só lê o `data.json` do Folder Style; os dois plugins não dependem um do outro.
 - O ícone usa a cor de fundo do tema, para aparecer sobre o nó nos temas claro e escuro, e acompanha a opacidade do nó.
 
+## Tamanho
+
+Desligado ao instalar.
+
+- Tamanho do nó por uma propriedade numérica (padrão `rating`) no lugar da quantidade de links. Aceita números e texto numérico (`4`, `4.5`, `4,5`).
+- Menor e maior nó configuráveis (os nós nativos vão de 8 a 30), escala linear, raiz quadrada ou logarítmica, e os valores de referência: o menor e o maior do vault (automático) ou fixos.
+- Regras podem usar outra propriedade ou manter o tamanho nativo. Notas sem valor ficam com o tamanho nativo. O "Tamanho do nó" do graph continua multiplicando.
+
 ## Regras
 
 Condição → efeito, em ordem; a primeira regra ligada que casar vence. Condições combináveis com "todas" ou "qualquer", cada uma com "não":
@@ -77,7 +85,7 @@ Nos rótulos, o efeito é outra lista de propriedades ou "manter o nome do arqui
 
 ## Comandos
 
-`Ligar/desligar rótulos`, `Ligar/desligar tipos de link`, `Ligar/desligar imagens nos nós`, `Ligar/desligar presets`, `Ligar/desligar formas`, `Ligar/desligar opacidade`, `Ligar/desligar ícones`, `Aplicar preset…`, `Salvar o estado atual como preset…`, `Desligar tudo`, `Religar o Graph Kit`, `Exportar configuração` e `Importar configuração`.
+`Ligar/desligar rótulos`, `Ligar/desligar tipos de link`, `Ligar/desligar imagens nos nós`, `Ligar/desligar presets`, `Ligar/desligar formas`, `Ligar/desligar opacidade`, `Ligar/desligar ícones`, `Ligar/desligar tamanho por propriedade`, `Aplicar preset…`, `Salvar o estado atual como preset…`, `Desligar tudo`, `Religar o Graph Kit`, `Exportar configuração` e `Importar configuração`.
 
 ## Configuração
 
@@ -110,10 +118,6 @@ Tudo fica no `data.json`, que também é o formato de exportação (copiar ou sa
 ```
 
 Valores inválidos voltam ao padrão um a um; chaves desconhecidas são ignoradas e listadas na importação.
-
-## Próximas fases
-
-Tamanho por propriedade. Cada uma entra como um módulo em `src/features/<nome>/`, desligada por padrão. Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/graph-kit-spec.md`.
 
 ## Desenvolvimento
 

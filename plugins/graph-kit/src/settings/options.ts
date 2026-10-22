@@ -84,6 +84,21 @@ export function integerOption(host: OptionHost, spec: OptionSpec<number> & { min
 	});
 }
 
+/** A number that may have decimals. */
+export function numberOption(host: OptionHost, spec: OptionSpec<number>): SettingDefinitionRender {
+	return option(host, spec, (setting) => {
+		setting.addText((text) => {
+			text.inputEl.type = 'number';
+			text.setValue(String(spec.get())).onChange((value) => {
+				const number = Number(value.replace(',', '.'));
+				if (value.trim() === '' || !Number.isFinite(number)) return;
+				spec.set(number);
+				host.changed(false);
+			});
+		});
+	});
+}
+
 /** One short text (a property name, say); empty falls back to the default. */
 export function textOption(host: OptionHost, spec: OptionSpec<string> & { placeholder?: string }): SettingDefinitionRender {
 	return option(host, spec, (setting) => {

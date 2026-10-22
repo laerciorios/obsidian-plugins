@@ -46,7 +46,12 @@ export function featureSection<E>(host: SectionHost, spec: SectionSpec<E>): Sett
 	const on = () => feature().enabled;
 	const status = host.featureStatus(id);
 	const defaults = defaultFeatureConfig(id);
-	const showOptions = (item: SettingGroupItem): SettingGroupItem => ('type' in item ? item : { ...item, visible: on });
+	// Options show only while the feature is on (and while their own condition holds).
+	const showOptions = (item: SettingGroupItem): SettingGroupItem => {
+		if ('type' in item) return item;
+		const own = item.visible;
+		return { ...item, visible: () => on() && (typeof own === 'function' ? own() : own !== false) };
+	};
 
 	const items: SettingGroupItem[] = [
 		toggleOption(host, {
