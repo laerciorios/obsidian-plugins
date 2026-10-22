@@ -84,6 +84,19 @@ export function integerOption(host: OptionHost, spec: OptionSpec<number> & { min
 	});
 }
 
+/** One short text (a property name, say); empty falls back to the default. */
+export function textOption(host: OptionHost, spec: OptionSpec<string> & { placeholder?: string }): SettingDefinitionRender {
+	return option(host, spec, (setting) => {
+		setting.addText((text) => {
+			if (spec.placeholder) text.setPlaceholder(spec.placeholder);
+			text.setValue(spec.get()).onChange((value) => {
+				spec.set(value.trim() || spec.defaultValue);
+				host.changed(false);
+			});
+		});
+	});
+}
+
 /** A list of names typed comma-separated, in order. */
 export function listOption(host: OptionHost, spec: OptionSpec<string[]> & { placeholder?: string }): SettingDefinitionRender {
 	return option(host, spec, (setting) => {

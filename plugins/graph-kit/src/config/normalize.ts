@@ -1,3 +1,4 @@
+import { defaultIcons, readIcons } from '../features/icons/config';
 import { defaultImages, readImages } from '../features/images/config';
 import { defaultLabels, readLabels } from '../features/labels/config';
 import { defaultLinkTypes, readLinkTypes } from '../features/link-types/config';
@@ -10,11 +11,11 @@ import { CONFIG_VERSION } from './types';
 import type { GraphKitConfig } from './types';
 
 export function defaultConfig(): GraphKitConfig {
-	return { version: CONFIG_VERSION, enabled: true, features: { labels: defaultLabels(), 'link-types': defaultLinkTypes(), images: defaultImages(), presets: defaultPresets(), shapes: defaultShapes(), opacity: defaultOpacity() } };
+	return { version: CONFIG_VERSION, enabled: true, features: { labels: defaultLabels(), 'link-types': defaultLinkTypes(), images: defaultImages(), presets: defaultPresets(), shapes: defaultShapes(), opacity: defaultOpacity(), icons: defaultIcons() } };
 }
 
 /** Features with their own reader, in roadmap order; presets store copies of them. */
-export const PRESET_FEATURE_IDS: readonly PresetFeatureId[] = ['labels', 'link-types', 'images', 'shapes', 'opacity'];
+export const PRESET_FEATURE_IDS: readonly PresetFeatureId[] = ['labels', 'link-types', 'images', 'shapes', 'opacity', 'icons'];
 
 function readFeature(reader: Reader): FeatureReader {
 	return (id, raw, path) => {
@@ -29,6 +30,8 @@ function readFeature(reader: Reader): FeatureReader {
 				return readShapes(raw, reader, path);
 			case 'opacity':
 				return readOpacity(raw, reader, path);
+			case 'icons':
+				return readIcons(raw, reader, path);
 		}
 	};
 }

@@ -97,6 +97,16 @@ As notas em `Graph Kit/Catálogo/` têm `cover` em formatos diferentes: `[[...]]
 - [ ] Mude o `status` da Horta Vertical para `active`: ela volta ao normal na hora.
 - [ ] Desligue as duas: círculos e opacidade normal voltam sem reabrir o graph.
 
+## Ícones
+
+A Estufa Lunar tem `icon: sprout` (Lucide) e a Iara `icon: "🌻"`.
+
+- [ ] Ligue Ícones: o broto aparece no nó da Estufa e o girassol no da Iara, nos dois graphs.
+- [ ] Ponha `icon: users` em `teo-brisa`: o ícone aparece na hora. Apague.
+- [ ] No Folder Style, dê o símbolo `🎬` à pasta `Graph Kit/Catálogo` e o ícone `check-square` a `Graph Kit/Cards`. Ligue "Símbolos do Folder Style": as notas dessas pastas ganham o símbolo.
+- [ ] Regra "kind = movie" → "Sem ícone": Girassóis perde o 🎬.
+- [ ] Desligue: os ícones somem sem reabrir o graph.
+
 ## Exportar e importar
 
 - [ ] "Exportar configuração…": copie e salve como `graph-kit-config.json`. Com o arquivo já existente, o botão vira "Sobrescrever" com um aviso.

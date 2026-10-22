@@ -9,6 +9,9 @@ import { PRESET_FEATURE_IDS } from '../config/normalize';
 import type { PresetsFeature } from '../features/presets/feature';
 import { presetsSettings } from '../features/presets/settings';
 import { opacitySettings } from '../features/opacity/settings';
+import type { GraphFeature } from '../features/feature';
+import { IconsFeature } from '../features/icons/feature';
+import { iconsSettings } from '../features/icons/settings';
 import { shapesSettings } from '../features/shapes/settings';
 import type { FeatureStatus } from '../graph-host';
 import { t } from '../i18n';
@@ -24,6 +27,7 @@ export interface SettingsHost extends Plugin {
 	openExport(): void;
 	openImport(): void;
 	presets(): PresetsFeature | null;
+	featureOf<T extends GraphFeature>(type: abstract new (...args: never[]) => T): T | null;
 }
 
 /** Declarative settings (1.13): General, then one section per feature in roadmap order. */
@@ -50,7 +54,7 @@ export class GraphKitSettingTab extends PluginSettingTab implements SectionHost 
 	}
 
 	getSettingDefinitions(): SettingDefinitionItem[] {
-		return [this.general(), ...labelsSettings(this), ...linkTypesSettings(this), ...imagesSettings(this), ...this.presetSection(), ...shapesSettings(this), ...opacitySettings(this)];
+		return [this.general(), ...labelsSettings(this), ...linkTypesSettings(this), ...imagesSettings(this), ...this.presetSection(), ...shapesSettings(this), ...opacitySettings(this), ...iconsSettings(this, () => this.plugin.featureOf(IconsFeature)?.folderStyleState() ?? 'off')];
 	}
 
 	private presetSection(): SettingDefinitionItem[] {

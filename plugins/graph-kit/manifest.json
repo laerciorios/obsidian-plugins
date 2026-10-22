@@ -1,7 +1,7 @@
 {
 	"id": "graph-kit",
 	"name": "Graph Kit",
-	"version": "0.5.0",
+	"version": "0.6.0",
 	"minAppVersion": "1.13.0",
 	"description": "Customizes the native graph view: note labels from properties and more, each feature toggled on its own.",
 	"author": "Laercio Rios",

@@ -2,6 +2,8 @@ import type { App } from 'obsidian';
 import type { FeatureConfigs, FeatureId, GraphKind, GraphKitConfig } from '../config/types';
 import type { NoteFactsCache } from '../note-facts';
 import type { GraphFeature } from './feature';
+import { defaultIcons } from './icons/config';
+import { IconsFeature } from './icons/feature';
 import { defaultImages } from './images/config';
 import { ImagesFeature } from './images/feature';
 import { defaultLabels } from './labels/config';
@@ -17,7 +19,7 @@ import { ShapesFeature } from './shapes/feature';
 import { PRESET_FEATURE_IDS } from '../config/normalize';
 
 /** Features in roadmap order: settings sections and commands follow it. */
-export const FEATURE_IDS: readonly FeatureId[] = ['labels', 'link-types', 'images', 'presets', 'shapes', 'opacity'];
+export const FEATURE_IDS: readonly FeatureId[] = ['labels', 'link-types', 'images', 'presets', 'shapes', 'opacity', 'icons'];
 
 const DEFAULTS: { [K in FeatureId]: () => FeatureConfigs[K] } = {
 	labels: defaultLabels,
@@ -26,6 +28,7 @@ const DEFAULTS: { [K in FeatureId]: () => FeatureConfigs[K] } = {
 	presets: defaultPresets,
 	shapes: defaultShapes,
 	opacity: defaultOpacity,
+	icons: defaultIcons,
 };
 
 /** What features may need from the plugin. */
@@ -51,6 +54,7 @@ export function createFeatures(context: FeatureContext): GraphFeature[] {
 		new PresetsFeature({ app, config, changed, ids: PRESET_FEATURE_IDS }),
 		new ShapesFeature(facts, () => config().features.shapes),
 		new OpacityFeature(facts, () => config().features.opacity),
+		new IconsFeature(app, facts, () => config().features.icons),
 	];
 }
 

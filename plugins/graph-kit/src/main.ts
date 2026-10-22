@@ -73,7 +73,12 @@ export default class GraphKitPlugin extends Plugin {
 	}
 
 	presets(): PresetsFeature | null {
-		return this.features.find((feature): feature is PresetsFeature => feature instanceof PresetsFeature) ?? null;
+		return this.featureOf(PresetsFeature);
+	}
+
+	/** The running instance of a feature class (for settings and commands). */
+	featureOf<T extends GraphFeature>(type: abstract new (...args: never[]) => T): T | null {
+		return this.features.find((feature): feature is T => feature instanceof type) ?? null;
 	}
 
 	openExport(): void {

@@ -2,6 +2,7 @@
 title: Estufa Lunar
 type: project
 status: active
+icon: sprout
 aliases: [estufa-lunar]
 tags: [project]
 ---

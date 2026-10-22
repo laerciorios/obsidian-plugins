@@ -1,4 +1,5 @@
 import type { LabelsConfig } from '../features/labels/config';
+import type { IconsConfig } from '../features/icons/config';
 import type { ImagesConfig } from '../features/images/config';
 import type { LinkTypesConfig } from '../features/link-types/config';
 import type { OpacityConfig } from '../features/opacity/config';
@@ -30,6 +31,7 @@ export interface FeatureConfigs {
 	presets: PresetsConfig;
 	shapes: ShapesConfig;
 	opacity: OpacityConfig;
+	icons: IconsConfig;
 }
 
 export const CONFIG_VERSION = 1;
