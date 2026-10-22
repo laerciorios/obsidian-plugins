@@ -19,6 +19,7 @@ Este é o vault de desenvolvimento do monorepo `obsidian-plugins`. Ele existe pa
 - Casos de teste do Daily Work Log: [[Daily Work Log/index|Daily Work Log]], com dailies fictícias de 14 a 18/09/2026, atas do dia 17 e [[Daily Work Log/resumo|resumos]]
 - Casos de teste do Daily Calendar: [[Daily Calendar/index|Daily Calendar]], com dailies, atas, cards e catálogo fictícios de agosto de 2026
 - Casos de teste do Vault Structure: [[Vault Structure/index|Vault Structure]], com a área fictícia `1 - Knowledge/Gardening/` cheia de nomes fora das regras
+- Casos de teste do Folder Style: [[Folder Style/index|Folder Style]], com uma árvore fictícia de pastas (aspas, acentos, o mesmo nome em níveis diferentes)
 - Catálogo fictício de filmes, séries, jogos e livros: `1 - Knowledge/Entertainment/DB/`. Casos de teste do [[1 - Knowledge/Entertainment/index|Media Catalog]]
 - Templates: `_Templates/` (card, pessoa, projeto, daily e media)
 - `.obsidian/plugins/` é gerada pelos scripts de build e fica fora do git.

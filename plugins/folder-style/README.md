@@ -50,4 +50,4 @@ Todo texto da interface passa por `t()` de `src/i18n/`: inglês em `en.ts` (font
 
 ## Status
 
-Em desenvolvimento: CSS, dados, eventos de pasta, aba de configurações e modal prontos; falta a verificação final e o release 0.1.0. Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/folder-style-spec.md`.
+0.1.0: MVP completo, verificado no Obsidian 1.14.4 (desktop, mobile emulado, temas claro e escuro). Casos de teste em `dev-vault/Folder Style/index.md`. Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/folder-style-spec.md`.
