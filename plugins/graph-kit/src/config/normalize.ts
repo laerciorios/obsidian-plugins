@@ -1,3 +1,4 @@
+import { defaultImages, readImages } from '../features/images/config';
 import { defaultLabels, readLabels } from '../features/labels/config';
 import { defaultLinkTypes, readLinkTypes } from '../features/link-types/config';
 import { Reader, newRuleId } from './reader';
@@ -5,7 +6,7 @@ import { CONFIG_VERSION } from './types';
 import type { GraphKitConfig } from './types';
 
 export function defaultConfig(): GraphKitConfig {
-	return { version: CONFIG_VERSION, enabled: true, features: { labels: defaultLabels(), 'link-types': defaultLinkTypes() } };
+	return { version: CONFIG_VERSION, enabled: true, features: { labels: defaultLabels(), 'link-types': defaultLinkTypes(), images: defaultImages() } };
 }
 
 export interface Normalized {
@@ -33,6 +34,7 @@ export function normalizeConfig(saved: unknown, newId: () => string = newRuleId)
 		reader.unknownKeys(features, Object.keys(config.features), 'features');
 		config.features.labels = readLabels(reader.record(features.labels, 'features.labels'), reader, 'features.labels');
 		config.features['link-types'] = readLinkTypes(reader.record(features['link-types'], 'features.link-types'), reader, 'features.link-types');
+		config.features.images = readImages(reader.record(features.images, 'features.images'), reader, 'features.images');
 	}
 	return { config, warnings: reader.warnings };
 }

@@ -2,6 +2,7 @@ import { PluginSettingTab } from 'obsidian';
 import type { App, Plugin, SettingDefinitionItem } from 'obsidian';
 import { defaultConfig } from '../config/normalize';
 import type { FeatureId, GraphKitConfig } from '../config/types';
+import { imagesSettings } from '../features/images/settings';
 import { labelsSettings } from '../features/labels/settings';
 import { linkTypesSettings } from '../features/link-types/settings';
 import type { FeatureStatus } from '../graph-host';
@@ -43,7 +44,7 @@ export class GraphKitSettingTab extends PluginSettingTab implements SectionHost 
 	}
 
 	getSettingDefinitions(): SettingDefinitionItem[] {
-		return [this.general(), ...labelsSettings(this), ...linkTypesSettings(this)];
+		return [this.general(), ...labelsSettings(this), ...linkTypesSettings(this), ...imagesSettings(this)];
 	}
 
 	private general(): SettingDefinitionItem {

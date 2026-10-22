@@ -62,6 +62,16 @@ Os cards em `Graph Kit/Cards/` têm `parent`, `projects` e `blocked_by`, a reuni
 - [ ] Adicione `reference: "[[Graph Kit/Projetos/Horta Vertical/index]]"` em `teo-brisa`: a aresta para a Horta vira a de `reference` na hora. Apague a propriedade.
 - [ ] Desligue a funcionalidade: cores, tracejados e legenda somem sem reabrir o graph.
 
+## Imagens nos nós
+
+As notas em `Graph Kit/Catálogo/` têm `cover` em formatos diferentes: `[[...]]` (Girassóis), `![[...]]` (Horta Selvagem), caminho do vault (Jardim de Pedra), URL (Musgo Sonoro) e vazia (Enxada Quest).
+
+- [ ] Ligue Imagens: Girassóis, Horta Selvagem e Jardim de Pedra ganham a capa dentro do nó, com a cor do nó como anel. Aumente o zoom ou o "Tamanho do nó" do graph para ver melhor.
+- [ ] Musgo Sonoro fica sem imagem (URL, sem rede). Enxada Quest também (sem capa).
+- [ ] Ponha `cover: "[[capa-provisoria.png]]"` em Enxada Quest: a imagem aparece na hora. Volte para vazio.
+- [ ] Regra "kind = book" com efeito "Sem imagem": o Jardim de Pedra perde a imagem.
+- [ ] Desligue: as imagens somem sem reabrir o graph; religue e elas voltam.
+
 ## Exportar e importar
 
 - [ ] "Exportar configuração…": copie e salve como `graph-kit-config.json`. Com o arquivo já existente, o botão vira "Sobrescrever" com um aviso.

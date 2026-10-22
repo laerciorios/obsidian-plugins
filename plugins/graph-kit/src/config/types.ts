@@ -1,4 +1,5 @@
 import type { LabelsConfig } from '../features/labels/config';
+import type { ImagesConfig } from '../features/images/config';
 import type { LinkTypesConfig } from '../features/link-types/config';
 
 /** The two native graph views. */
@@ -22,6 +23,7 @@ export type FeatureId = keyof FeatureConfigs;
 export interface FeatureConfigs {
 	labels: LabelsConfig;
 	'link-types': LinkTypesConfig;
+	images: ImagesConfig;
 }
 
 export const CONFIG_VERSION = 1;

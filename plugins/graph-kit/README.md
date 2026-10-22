@@ -1,6 +1,6 @@
 # Graph Kit
 
-Personaliza o graph nativo do Obsidian (graph global e local graph) com funcionalidades independentes, cada uma com toggle próprio, toggle por graph e regras por nota: **rótulos** (o nó mostra o valor de uma propriedade, como o `title` das notas `index.md`, no lugar do nome do arquivo) e **tipos de link** (cor e estilo das arestas pela propriedade de onde o link vem).
+Personaliza o graph nativo do Obsidian (graph global e local graph) com funcionalidades independentes, cada uma com toggle próprio, toggle por graph e regras por nota: **rótulos** (o nó mostra o valor de uma propriedade, como o `title` das notas `index.md`, no lugar do nome do arquivo) **tipos de link** (cor e estilo das arestas pela propriedade de onde o link vem) e **imagens nos nós** (a capa de uma propriedade como `cover`).
 
 ## Como funciona
 
@@ -29,6 +29,15 @@ Desligado ao instalar.
 - Legenda opcional num canto do graph: clicar num tipo esconde ou mostra aqueles links só naquele graph (global ou local).
 - Esconder só apaga o desenho; o layout continua considerando o link.
 
+## Imagens nos nós
+
+Desligado ao instalar.
+
+- Imagem dentro do nó a partir de propriedades em ordem de prioridade (padrão `cover`): `[[capa.jpg]]`, `![[capa.jpg]]`, um caminho do vault, uma imagem em Markdown ou uma URL. Regras podem trocar as propriedades, fixar uma imagem ou tirar a imagem.
+- **Sem rede por padrão**: URLs só carregam com "Imagens da internet" ligado (via `requestUrl`).
+- A imagem é recortada no centro, reduzida para um quadrado (padrão 128 px) e guardada em cache por arquivo e data de modificação; arquivos acima do limite (padrão 2 MB) são ignorados. Só os nós que o graph já desenhou (perto da tela) carregam imagem.
+- A cor do nó continua visível como um anel em volta da imagem.
+
 ## Regras
 
 Condição → efeito, em ordem; a primeira regra ligada que casar vence. Condições combináveis com "todas" ou "qualquer", cada uma com "não":
@@ -45,7 +54,7 @@ Nos rótulos, o efeito é outra lista de propriedades ou "manter o nome do arqui
 
 ## Comandos
 
-`Ligar/desligar rótulos`, `Ligar/desligar tipos de link`, `Desligar tudo`, `Religar o Graph Kit`, `Exportar configuração` e `Importar configuração`.
+`Ligar/desligar rótulos`, `Ligar/desligar tipos de link`, `Ligar/desligar imagens nos nós`, `Desligar tudo`, `Religar o Graph Kit`, `Exportar configuração` e `Importar configuração`.
 
 ## Configuração
 
@@ -81,7 +90,7 @@ Valores inválidos voltam ao padrão um a um; chaves desconhecidas são ignorada
 
 ## Próximas fases
 
-Imagens nos nós, presets, forma e opacidade, ícones e tamanho por propriedade. Cada uma entra como um módulo em `src/features/<nome>/`, desligada por padrão. Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/graph-kit-spec.md`.
+Presets, forma e opacidade, ícones e tamanho por propriedade. Cada uma entra como um módulo em `src/features/<nome>/`, desligada por padrão. Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/graph-kit-spec.md`.
 
 ## Desenvolvimento
 

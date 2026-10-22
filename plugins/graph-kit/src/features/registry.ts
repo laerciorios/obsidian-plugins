@@ -2,17 +2,20 @@ import type { App } from 'obsidian';
 import type { FeatureConfigs, FeatureId, GraphKind, GraphKitConfig } from '../config/types';
 import type { NoteFactsCache } from '../note-facts';
 import type { GraphFeature } from './feature';
+import { defaultImages } from './images/config';
+import { ImagesFeature } from './images/feature';
 import { defaultLabels } from './labels/config';
 import { LabelsFeature } from './labels/feature';
 import { defaultLinkTypes } from './link-types/config';
 import { LinkTypesFeature } from './link-types/feature';
 
 /** Features in roadmap order: settings sections and commands follow it. */
-export const FEATURE_IDS: readonly FeatureId[] = ['labels', 'link-types'];
+export const FEATURE_IDS: readonly FeatureId[] = ['labels', 'link-types', 'images'];
 
 const DEFAULTS: { [K in FeatureId]: () => FeatureConfigs[K] } = {
 	labels: defaultLabels,
 	'link-types': defaultLinkTypes,
+	images: defaultImages,
 };
 
 /** What features may need from the plugin. */
@@ -31,7 +34,11 @@ export function createFeatures(context: FeatureContext): GraphFeature[] {
 		hidden[kind] = hidden[kind].includes(typeId) ? hidden[kind].filter((id) => id !== typeId) : [...hidden[kind], typeId];
 		changed();
 	};
-	return [new LabelsFeature(facts, () => config().features.labels), new LinkTypesFeature(app, () => config().features['link-types'], toggleHidden)];
+	return [
+		new LabelsFeature(facts, () => config().features.labels),
+		new LinkTypesFeature(app, () => config().features['link-types'], toggleHidden),
+		new ImagesFeature(app, facts, () => config().features.images),
+	];
 }
 
 export function defaultFeatureConfig<K extends FeatureId>(id: K): FeatureConfigs[K] {
