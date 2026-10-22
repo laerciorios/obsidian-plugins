@@ -4,7 +4,7 @@ import { colorNumber } from '../../colors';
 import type { GraphKind } from '../../config/types';
 import { lineSizeMultiplier, pixi, rebuildLinks, rendererScale } from '../../graph-internals';
 import type { LinkRef, OpenGraph } from '../../graph-internals';
-import type { PixiTexture, PixiTilingSprite } from '../../pixi';
+import type { PixiSprite, PixiTexture } from '../../pixi';
 import { GraphFeature } from '../feature';
 import { kindsByTarget, typeForLink } from './classify';
 import type { LinkKinds } from './classify';
@@ -14,14 +14,23 @@ import { LinkLegend } from './legend';
 interface LinkStyle {
 	type: LinkType;
 	color: number | null;
-	tiled: PixiTilingSprite | null;
+	/** Dashed or dotted line: a sprite showing part of a long pattern texture of its own. */
+	dashed: { sprite: PixiSprite; texture: PixiTexture } | null;
 }
 
-/** Pattern of a dashed or dotted line: a 2 px tall canvas repeated along the line. */
+/** One period of a dashed or dotted line, in texture pixels (2 px tall). */
 const PATTERNS: Record<Exclude<LineStyle, 'solid'>, { width: number; on: number }> = {
 	dashed: { width: 20, on: 12 },
 	dotted: { width: 8, on: 2 },
 };
+
+/**
+ * Length of the shared pattern texture. Each dashed line shows the first part of it, as long
+ * as the line is on screen, so dashes keep their size; lines longer than this on screen
+ * stretch their dashes. Plain sprites sharing one texture batch into a single draw call
+ * (tiling sprites did not, and slowed the graph down with many dashed links).
+ */
+const PATTERN_LENGTH = 4096;
 
 /** Color, dash and visibility of each link from the frontmatter property it comes from (or the body). */
 export class LinkTypesFeature extends GraphFeature {
@@ -71,11 +80,12 @@ export class LinkTypesFeature extends GraphFeature {
 		this.styles.set(link, style);
 		if (!style || style.type.style === 'solid') return;
 		const lib = pixi();
-		const texture = this.texture(style.type.style);
-		if (!lib || !texture) return;
-		const tiled = new lib.TilingSprite(texture, 1, 1);
-		link.replaceLine(tiled);
-		style.tiled = tiled;
+		const pattern = this.texture(style.type.style);
+		if (!lib || !pattern) return;
+		const texture = new lib.Texture(pattern.baseTexture, new lib.Rectangle(0, 0, PATTERN_LENGTH, 2));
+		const sprite = new lib.Sprite(texture);
+		link.replaceLine(sprite);
+		style.dashed = { sprite, texture };
 	}
 
 	linkRender(link: LinkRef, kind: GraphKind): void {
@@ -92,9 +102,8 @@ export class LinkTypesFeature extends GraphFeature {
 			line.tint = style.color;
 			if (arrow) arrow.tint = style.color;
 		}
-		// Keep dashes the same size on screen: the line is `lineSize / zoom` thick in graph units.
 		const renderer = link.renderer;
-		if (style.tiled && renderer) style.tiled.tileScale.set(lineSizeMultiplier(renderer) / rendererScale(renderer) / 2);
+		if (style.dashed && renderer && !style.dashed.sprite.destroyed) this.fitDashes(style.dashed, renderer);
 	}
 
 	private resolve(link: LinkRef): LinkStyle | null {
@@ -105,7 +114,26 @@ export class LinkTypesFeature extends GraphFeature {
 		const backward = link.mutual && target.isNote ? this.kinds(target.id).get(source.id) : undefined;
 		const type = typeForLink(forward, backward, this.config().types);
 		if (!type) return null;
-		return { type, color: type.color ? colorNumber(type.color) : null, tiled: null };
+		return { type, color: type.color ? colorNumber(type.color) : null, dashed: null };
+	}
+
+	/**
+	 * Show as much of the pattern as the line is long on screen, so one texture pixel stays
+	 * half a line thickness long whatever the zoom. The graph has already set the sprite's
+	 * size for this frame; it is set again because the frame is also the sprite's original size.
+	 */
+	private fitDashes(dashed: { sprite: PixiSprite; texture: PixiTexture }, renderer: NonNullable<LinkRef['renderer']>): void {
+		const { sprite, texture } = dashed;
+		const width = sprite.width;
+		const height = sprite.height;
+		const pixelsPerTexel = lineSizeMultiplier(renderer) / 2;
+		const length = Math.min(PATTERN_LENGTH, Math.max(1, (width * rendererScale(renderer)) / pixelsPerTexel));
+		if (Math.abs(texture.frame.width - length) > 0.5) {
+			texture.frame.width = length;
+			texture.updateUvs();
+		}
+		sprite.width = width;
+		sprite.height = height;
 	}
 
 	/** Outgoing links of a note by target, from the metadata cache. */
@@ -132,13 +160,13 @@ export class LinkTypesFeature extends GraphFeature {
 		if (!lib) return null;
 		const { width, on } = PATTERNS[style];
 		const canvas = createEl('canvas');
-		canvas.width = width;
+		canvas.width = PATTERN_LENGTH;
 		canvas.height = 2;
 		const context = canvas.getContext('2d');
 		if (!context) return null;
 		context.fillStyle = '#ffffff';
-		context.fillRect(0, 0, on, 2);
-		const texture = lib.Texture.from(canvas, { wrapMode: lib.WRAP_MODES.REPEAT });
+		for (let x = 0; x < PATTERN_LENGTH; x += width) context.fillRect(x, 0, on, 2);
+		const texture = lib.Texture.from(canvas);
 		this.textures.set(style, texture);
 		return texture;
 	}

@@ -1,6 +1,6 @@
 {
 	"name": "graph-kit",
-	"version": "0.7.0",
+	"version": "0.7.1",
 	"private": true,
 	"description": "Customizes the native graph view: note labels from properties and more, each feature toggled on its own.",
 	"main": "dist/main.js",

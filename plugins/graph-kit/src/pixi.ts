@@ -40,9 +40,25 @@ export interface PixiGraphics extends PixiContainer {
 	drawPolygon(points: number[]): this;
 }
 
+export interface PixiRectangle {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+}
+
+export interface PixiBaseTexture {
+	readonly width: number;
+	readonly height: number;
+}
+
 export interface PixiTexture {
 	readonly width: number;
 	readonly height: number;
+	readonly baseTexture: PixiBaseTexture;
+	/** The part of the base texture shown; also its `orig` unless given apart. */
+	frame: PixiRectangle;
+	updateUvs(): void;
 	destroy(destroyBase?: boolean): void;
 }
 
@@ -52,10 +68,6 @@ export interface PixiSprite extends PixiContainer {
 	height: number;
 	texture: PixiTexture;
 	readonly anchor: PixiPoint;
-}
-
-export interface PixiTilingSprite extends PixiSprite {
-	readonly tileScale: PixiPoint;
 }
 
 export interface PixiText extends PixiSprite {
@@ -72,11 +84,11 @@ export interface Pixi {
 	Graphics: new () => PixiGraphics;
 	Container: new () => PixiContainer;
 	Sprite: new (texture?: PixiTexture) => PixiSprite;
-	TilingSprite: new (texture: PixiTexture, width?: number, height?: number) => PixiTilingSprite;
 	Text: new (text: string, style?: PixiTextStyle) => PixiText;
+	Rectangle: new (x: number, y: number, width: number, height: number) => PixiRectangle;
 	Texture: {
-		from(source: HTMLCanvasElement | string, options?: { wrapMode?: number }): PixiTexture;
+		new (base: PixiBaseTexture, frame: PixiRectangle): PixiTexture;
+		from(source: HTMLCanvasElement | string): PixiTexture;
 		WHITE: PixiTexture;
 	};
-	WRAP_MODES: { REPEAT: number };
 }

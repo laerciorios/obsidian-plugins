@@ -21,7 +21,7 @@ Planejamento e specs ficam no vault, em `1 - Knowledge/Projects/Obsidian Plugins
 | [Daily Calendar](plugins/daily-calendar) | `daily-calendar` | em desenvolvimento | Calendário do mês no painel lateral: clique abre a daily ou cria pelo template das daily notes nativas; marcadores de daily, projetos do dia, reuniões, cards concluídos e itens do catálogo terminados, com a lista de cada dia no hover (toque longo no mobile). |
 | [Canvas Shapes](plugins/canvas-shapes) | `canvas-shapes` | em desenvolvimento | Formas (retângulo, quadrado, círculo, losango, cilindro) e estilo/espessura de seta no Canvas nativo, por barra flutuante, menu e comandos, e um painel de elementos no topo como o do Excalidraw, com o arquivo em JSON Canvas válido; exporta para SVG/PNG e para web (visualizador offline). |
 | [Folder Style](plugins/folder-style) | `folder-style` | em desenvolvimento | Símbolo (emoji, caractere ou ícone Lucide) e cor com transparência nas pastas do explorador de arquivos, por CSS gerado, sem renomear a pasta. |
-| [Graph Kit](plugins/graph-kit) | `graph-kit` | em desenvolvimento | Personaliza o graph nativo (global e local) com funcionalidades independentes e regras por nota. Por enquanto, rótulos: o nó mostra uma propriedade (como o `title` das notas `index.md`) no lugar do nome do arquivo. |
+| [Graph Kit](plugins/graph-kit) | `graph-kit` | em desenvolvimento | Personaliza o graph nativo (global e local) com funcionalidades independentes e regras por nota: rótulos por propriedade (como o `title` das notas `index.md`), tipos de link, imagens, presets, forma, opacidade, ícones e tamanho. |
 <!-- plugins:end -->
 
 ## Estrutura

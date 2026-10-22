@@ -81,7 +81,7 @@ describe('images config', () => {
 describe('texture cache', () => {
 	function fake(): PixiTexture & { destroyed: boolean } {
 		const texture = { width: 1, height: 1, destroyed: false, destroy: () => (texture.destroyed = true) };
-		return texture;
+		return texture as unknown as PixiTexture & { destroyed: boolean };
 	}
 
 	test('shared by key, loaded once', async () => {

@@ -1,6 +1,17 @@
 # Graph Kit
 
-Personaliza o graph nativo do Obsidian (graph global e local graph) com funcionalidades independentes, cada uma com toggle próprio, toggle por graph e regras por nota: **rótulos** (o nó mostra o valor de uma propriedade, como o `title` das notas `index.md`, no lugar do nome do arquivo) **tipos de link** (cor e estilo das arestas pela propriedade de onde o link vem) **imagens nos nós** (a capa de uma propriedade como `cover`) e **presets** (combinações nomeadas das configurações).
+Personaliza o graph nativo do Obsidian (graph global e local graph) com oito funcionalidades independentes, cada uma com toggle próprio, toggle por graph e, quando depende da nota, regras:
+
+| Funcionalidade | O que faz | Ao instalar |
+|---|---|---|
+| Rótulos | O nó mostra uma propriedade (como o `title` das notas `index.md`) no lugar do nome do arquivo | ligado |
+| Tipos de link | Cor, tracejado e visibilidade das arestas pela propriedade de onde o link vem, com legenda | desligado |
+| Imagens nos nós | A capa de uma propriedade como `cover` dentro do nó | desligado |
+| Presets | Combinações nomeadas das configurações (e dos filtros do graph) | desligado |
+| Formas | Quadrado, losango, triângulo ou hexágono por regra | desligado |
+| Opacidade | Nós (e links) apagados por regra | desligado |
+| Ícones | Emoji, caractere ou ícone Lucide no nó; opcionalmente os símbolos do Folder Style | desligado |
+| Tamanho | Tamanho do nó por uma propriedade numérica como `rating` | desligado |
 
 ## Como funciona
 
@@ -8,9 +19,11 @@ O graph não tem API pública. Todo acesso aos internals fica em [`src/graph-int
 
 - As views `graph` e `localgraph` usam as mesmas classes de renderer, nó e aresta (PIXI 7). O plugin envolve métodos do protótipo (um wrapper por método, guardando o original) e descobre qual graph é qual pelas folhas abertas.
 - O texto do nó vem de `node.getDisplayText()`, chamado uma vez ao desenhar o nó. Para mudanças ao vivo, o plugin atualiza o texto dos nós já desenhados.
-- Cada funcionalidade declara os campos internos de que precisa. Se algum sumir numa versão nova do Obsidian, só ela se desliga, com um aviso no console e uma nota nas configurações; o graph nativo fica intacto. Um erro dentro de uma funcionalidade tem o mesmo efeito.
+- Cada funcionalidade declara os campos internos de que precisa (texto do nó, gráficos do nó e da aresta, tamanho, PIXI). Se algum sumir numa versão nova do Obsidian, só ela se desliga, com um aviso no console e uma nota nas configurações; o graph nativo fica intacto. Um erro dentro de uma funcionalidade tem o mesmo efeito.
 - Nenhum patch existe enquanto todas as funcionalidades estão desligadas. Desligar uma funcionalidade, "Desligar tudo" ou desativar o plugin restaura o graph nativo na hora, sem reabrir a aba.
 - Os dados vêm só do `metadataCache` (nunca lendo arquivos), com cache por caminho invalidado por mudança de frontmatter, renomear, mover e apagar.
+- Formas, imagens e ícones são desenhados quando o graph cria o nó; os nós só são recriados quando a configuração daquela funcionalidade muda.
+- Desempenho medido no dev-vault (731 nós, 1316 arestas) com tudo ligado: 60 fps, igual ao nativo.
 
 ## Rótulos
 

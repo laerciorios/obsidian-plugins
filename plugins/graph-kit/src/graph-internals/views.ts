@@ -63,9 +63,9 @@ export function setEngineOptions(graph: OpenGraph, options: Record<string, unkno
 export function pixi(): Pixi | null {
 	const lib = bag((window as unknown as Bag).PIXI);
 	if (!lib) return null;
-	for (const name of ['Graphics', 'Container', 'Sprite', 'TilingSprite', 'Text']) if (typeof lib[name] !== 'function') return null;
+	for (const name of ['Graphics', 'Container', 'Sprite', 'Text', 'Rectangle']) if (typeof lib[name] !== 'function') return null;
 	// Texture is a class: a function with static members.
 	const texture: unknown = lib.Texture;
-	if (typeof texture !== 'function' || typeof (texture as unknown as Bag).from !== 'function' || !bag(lib.WRAP_MODES)) return null;
+	if (typeof texture !== 'function' || typeof (texture as unknown as Bag).from !== 'function') return null;
 	return lib as unknown as Pixi;
 }
