@@ -8,18 +8,24 @@ import { defaultLabels } from './labels/config';
 import { LabelsFeature } from './labels/feature';
 import { defaultLinkTypes } from './link-types/config';
 import { LinkTypesFeature } from './link-types/feature';
+import { defaultOpacity } from './opacity/config';
+import { OpacityFeature } from './opacity/feature';
 import { defaultPresets } from './presets/config';
 import { PresetsFeature } from './presets/feature';
+import { defaultShapes } from './shapes/config';
+import { ShapesFeature } from './shapes/feature';
 import { PRESET_FEATURE_IDS } from '../config/normalize';
 
 /** Features in roadmap order: settings sections and commands follow it. */
-export const FEATURE_IDS: readonly FeatureId[] = ['labels', 'link-types', 'images', 'presets'];
+export const FEATURE_IDS: readonly FeatureId[] = ['labels', 'link-types', 'images', 'presets', 'shapes', 'opacity'];
 
 const DEFAULTS: { [K in FeatureId]: () => FeatureConfigs[K] } = {
 	labels: defaultLabels,
 	'link-types': defaultLinkTypes,
 	images: defaultImages,
 	presets: defaultPresets,
+	shapes: defaultShapes,
+	opacity: defaultOpacity,
 };
 
 /** What features may need from the plugin. */
@@ -43,6 +49,8 @@ export function createFeatures(context: FeatureContext): GraphFeature[] {
 		new LinkTypesFeature(app, () => config().features['link-types'], toggleHidden),
 		new ImagesFeature(app, facts, () => config().features.images),
 		new PresetsFeature({ app, config, changed, ids: PRESET_FEATURE_IDS }),
+		new ShapesFeature(facts, () => config().features.shapes),
+		new OpacityFeature(facts, () => config().features.opacity),
 	];
 }
 

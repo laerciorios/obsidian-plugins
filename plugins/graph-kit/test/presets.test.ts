@@ -13,7 +13,7 @@ describe('presets', () => {
 	test('a snapshot copies every feature but presets, deeply', () => {
 		const config = defaultConfig();
 		const saved = snapshot(config, PRESET_FEATURE_IDS);
-		assert.deepEqual(Object.keys(saved), ['labels', 'link-types', 'images']);
+		assert.deepEqual(Object.keys(saved), ['labels', 'link-types', 'images', 'shapes', 'opacity']);
 		config.features.labels.properties.push('aliases');
 		assert.deepEqual(saved.labels?.properties, ['title']);
 	});
@@ -64,7 +64,7 @@ describe('presets', () => {
 					enabled: true,
 					current: 'w',
 					items: [
-						{ id: 'w', name: 'Work', features: { labels: { properties: ['name'], scope: 'nope' }, shapes: {} }, native: { search: 'x', forces: 1 } },
+						{ id: 'w', name: 'Work', features: { labels: { properties: ['name'], scope: 'nope' }, sparkles: {} }, native: { search: 'x', forces: 1 } },
 						{ id: 'w', name: 'Duplicate' },
 						{ id: 'e', name: '  ' },
 					],
@@ -78,7 +78,7 @@ describe('presets', () => {
 		assert.deepEqual(work?.native, { search: 'x' });
 		assert.equal(config.features.presets.current, 'w');
 		assert.deepEqual(warnings, [
-			'features.presets.items[0].features.shapes',
+			'features.presets.items[0].features.sparkles',
 			'features.presets.items[0].features.labels.scope',
 			'features.presets.items[1]',
 			'features.presets.items[2]',

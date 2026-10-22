@@ -46,6 +46,13 @@ Desligado ao instalar.
 - Opcional: incluir a busca, os filtros e os grupos de cor do graph global (não a tela nem as forças).
 - Aplicar pelo comando "Aplicar preset…" ou pelo seletor no canto inferior direito do graph. Com o graph global fechado, os filtros entram quando ele abrir.
 
+## Forma e opacidade
+
+Duas funcionalidades independentes, desligadas ao instalar, cada uma com as suas regras.
+
+- **Formas**: círculo, quadrado, losango, triângulo ou hexágono por regra (ex.: `type = project` quadrado, `type = meeting` losango). O clique e o anel de hover seguem a forma; no mobile, a área de toque nativa continua.
+- **Opacidade**: de 5 % a 100 % por regra (ex.: `status = done` em 25 %, `status = paused` em 40 %). Apaga o nó e o rótulo; "Apagar os links também" apaga as arestas do nó (vale a ponta mais apagada). Imagens acompanham a opacidade do nó.
+
 ## Regras
 
 Condição → efeito, em ordem; a primeira regra ligada que casar vence. Condições combináveis com "todas" ou "qualquer", cada uma com "não":
@@ -62,7 +69,7 @@ Nos rótulos, o efeito é outra lista de propriedades ou "manter o nome do arqui
 
 ## Comandos
 
-`Ligar/desligar rótulos`, `Ligar/desligar tipos de link`, `Ligar/desligar imagens nos nós`, `Ligar/desligar presets`, `Aplicar preset…`, `Salvar o estado atual como preset…`, `Desligar tudo`, `Religar o Graph Kit`, `Exportar configuração` e `Importar configuração`.
+`Ligar/desligar rótulos`, `Ligar/desligar tipos de link`, `Ligar/desligar imagens nos nós`, `Ligar/desligar presets`, `Ligar/desligar formas`, `Ligar/desligar opacidade`, `Aplicar preset…`, `Salvar o estado atual como preset…`, `Desligar tudo`, `Religar o Graph Kit`, `Exportar configuração` e `Importar configuração`.
 
 ## Configuração
 
@@ -98,7 +105,7 @@ Valores inválidos voltam ao padrão um a um; chaves desconhecidas são ignorada
 
 ## Próximas fases
 
-Forma e opacidade, ícones e tamanho por propriedade. Cada uma entra como um módulo em `src/features/<nome>/`, desligada por padrão. Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/graph-kit-spec.md`.
+Ícones e tamanho por propriedade. Cada uma entra como um módulo em `src/features/<nome>/`, desligada por padrão. Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/graph-kit-spec.md`.
 
 ## Desenvolvimento
 

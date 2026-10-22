@@ -1,7 +1,9 @@
 import type { LabelsConfig } from '../features/labels/config';
 import type { ImagesConfig } from '../features/images/config';
 import type { LinkTypesConfig } from '../features/link-types/config';
+import type { OpacityConfig } from '../features/opacity/config';
 import type { PresetsConfig } from '../features/presets/config';
+import type { ShapesConfig } from '../features/shapes/config';
 
 /** The two native graph views. */
 export type GraphKind = 'global' | 'local';
@@ -26,6 +28,8 @@ export interface FeatureConfigs {
 	'link-types': LinkTypesConfig;
 	images: ImagesConfig;
 	presets: PresetsConfig;
+	shapes: ShapesConfig;
+	opacity: OpacityConfig;
 }
 
 export const CONFIG_VERSION = 1;

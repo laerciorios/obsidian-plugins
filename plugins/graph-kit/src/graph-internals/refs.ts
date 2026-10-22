@@ -133,6 +133,11 @@ export class LinkRef {
 		return (bag(this.raw.line) as PixiSprite | null) ?? null;
 	}
 
+	/** Holds the line; its alpha multiplies the line's (which the graph animates every frame). */
+	get container(): PixiContainer | null {
+		return (bag(this.raw.px) as PixiContainer | null) ?? null;
+	}
+
 	get arrow(): PixiGraphics | null {
 		return (bag(this.raw.arrow) as PixiGraphics | null) ?? null;
 	}
@@ -163,6 +168,11 @@ export class LinkRef {
 /** Zoom of a renderer (1 = 100 %). */
 export function rendererScale(renderer: GraphRenderer): number {
 	return num(rawOf(renderer).scale, 1);
+}
+
+/** Extra scale the graph applies to nodes at some zoom levels (`renderer.nodeScale`). */
+export function nodeScale(renderer: GraphRenderer): number {
+	return num(rawOf(renderer).nodeScale, 1);
 }
 
 /** The "Line thickness" multiplier of the graph's display options. */

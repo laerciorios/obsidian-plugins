@@ -61,7 +61,7 @@ describe('loading data.json', () => {
 		const { config, warnings } = normalizeConfig({
 			enabled: 'yes',
 			extra: 1,
-			features: { labels: { scope: 'some', maxLength: 2.5, properties: ['title', 3, ' title '], graphs: { global: 0 } }, shapes: {} },
+			features: { labels: { scope: 'some', maxLength: 2.5, properties: ['title', 3, ' title '], graphs: { global: 0 } }, sparkles: {} },
 		});
 		assert.equal(config.enabled, true);
 		assert.equal(config.features.labels.scope, 'all');
@@ -75,7 +75,7 @@ describe('loading data.json', () => {
 			'features.labels.maxLength',
 			'features.labels.properties[1]',
 			'features.labels.scope',
-			'features.shapes',
+			'features.sparkles',
 		]);
 	});
 

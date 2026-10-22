@@ -8,6 +8,8 @@ import { linkTypesSettings } from '../features/link-types/settings';
 import { PRESET_FEATURE_IDS } from '../config/normalize';
 import type { PresetsFeature } from '../features/presets/feature';
 import { presetsSettings } from '../features/presets/settings';
+import { opacitySettings } from '../features/opacity/settings';
+import { shapesSettings } from '../features/shapes/settings';
 import type { FeatureStatus } from '../graph-host';
 import { t } from '../i18n';
 import type { SectionHost } from './feature-section';
@@ -48,7 +50,7 @@ export class GraphKitSettingTab extends PluginSettingTab implements SectionHost 
 	}
 
 	getSettingDefinitions(): SettingDefinitionItem[] {
-		return [this.general(), ...labelsSettings(this), ...linkTypesSettings(this), ...imagesSettings(this), ...this.presetSection()];
+		return [this.general(), ...labelsSettings(this), ...linkTypesSettings(this), ...imagesSettings(this), ...this.presetSection(), ...shapesSettings(this), ...opacitySettings(this)];
 	}
 
 	private presetSection(): SettingDefinitionItem[] {

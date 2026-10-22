@@ -1,10 +1,11 @@
 import { requestUrl } from 'obsidian';
 import type { App } from 'obsidian';
 import { pixi, rebuildNodes, requestFrame } from '../../graph-internals';
-import type { GraphRenderer, NodeRef, OpenGraph } from '../../graph-internals';
+import type { NodeRef, OpenGraph } from '../../graph-internals';
 import type { NoteFactsCache } from '../../note-facts';
 import type { PixiGraphics, PixiSprite, PixiTexture } from '../../pixi';
 import { GraphFeature } from '../feature';
+import { RebuildGate } from '../rebuild-gate';
 import type { ImagesConfig } from './config';
 import { centerSquare, imageSourceFor } from './source';
 import type { ImageSource } from './source';
@@ -30,9 +31,7 @@ export class ImagesFeature extends GraphFeature {
 	private readonly sources = new Map<string, ImageSource | null>();
 	private readonly images = new Map<NodeRef, NodeImage>();
 	private readonly textures = new TextureCache(CACHE_LIMIT);
-	/** Graphs already rebuilt with the current config. */
-	private drawn = new WeakSet<GraphRenderer>();
-	private applied = '';
+	private readonly gate = new RebuildGate();
 	private running = false;
 
 	constructor(
@@ -45,8 +44,7 @@ export class ImagesFeature extends GraphFeature {
 
 	onload(): void {
 		this.running = true;
-		this.applied = JSON.stringify(this.config());
-		this.drawn = new WeakSet();
+		this.gate.reset();
 	}
 
 	onunload(): void {
@@ -66,11 +64,8 @@ export class ImagesFeature extends GraphFeature {
 		if (!this.running) return requestFrame(graph.renderer);
 		// Closed graphs destroy their stage with our sprites in it.
 		for (const [node, image] of this.images) if (image.sprite.destroyed) this.nodeClear(node);
-		const fingerprint = JSON.stringify(this.config());
-		if (paths === null && fingerprint === this.applied && this.drawn.has(graph.renderer)) return requestFrame(graph.renderer);
-		this.applied = fingerprint;
-		this.drawn.add(graph.renderer);
-		rebuildNodes(graph.renderer, paths);
+		if (this.gate.needed(graph.renderer, this.config(), paths)) rebuildNodes(graph.renderer, paths);
+		else requestFrame(graph.renderer);
 	}
 
 	nodeInit(node: NodeRef): void {

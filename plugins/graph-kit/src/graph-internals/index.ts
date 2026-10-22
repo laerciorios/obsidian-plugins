@@ -12,7 +12,7 @@
  * - `renderer.changed()` asks for frames; the loop stops after 60 idle frames.
  */
 export type { GraphRenderer } from './raw';
-export { LinkRef, NodeRef, lineSizeMultiplier, nodeSizeMultiplier, rendererScale, themeColor } from './refs';
+export { LinkRef, NodeRef, lineSizeMultiplier, nodeScale, nodeSizeMultiplier, rendererScale, themeColor } from './refs';
 export { checkCapability } from './capabilities';
 export type { Capability, CapabilityCheck } from './capabilities';
 export { installHook, patchTarget } from './patches';

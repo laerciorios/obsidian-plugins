@@ -88,6 +88,15 @@ As notas em `Graph Kit/Catálogo/` têm `cover` em formatos diferentes: `[[...]]
 - [ ] No seletor do canto inferior direito do graph, escolha Entretenimento: o contrário. O seletor mostra o preset atual.
 - [ ] Salve de novo como "trabalho" (minúsculas): o aviso diz que substitui, e a lista continua com dois presets.
 
+## Forma e opacidade
+
+- [ ] Ligue Formas com as regras `type = project` → quadrado, `type = meeting` → losango, `type = card` → triângulo e "kind existe" → hexágono: os nós mudam nos dois graphs; pessoas e notas continuam círculos.
+- [ ] Passe o mouse num projeto: o anel de destaque também é quadrado, e o clique abre a nota.
+- [ ] Ligue Opacidade com `status = done` → 25 % e `status = paused` → 40 %: Montar as bancadas, Girassóis, Musgo Sonoro e a Horta Vertical ficam apagados, com o rótulo e os links.
+- [ ] Desligue "Apagar os links também": só os nós ficam apagados.
+- [ ] Mude o `status` da Horta Vertical para `active`: ela volta ao normal na hora.
+- [ ] Desligue as duas: círculos e opacidade normal voltam sem reabrir o graph.
+
 ## Exportar e importar
 
 - [ ] "Exportar configuração…": copie e salve como `graph-kit-config.json`. Com o arquivo já existente, o botão vira "Sobrescrever" com um aviso.
