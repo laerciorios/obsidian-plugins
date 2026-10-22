@@ -135,3 +135,21 @@
 .gk-name-swatch {
 	margin-right: var(--size-4-2);
 }
+
+/* Presets: picker over the graph, "current" mark in the settings list. */
+.gk-preset-picker {
+	position: absolute;
+	z-index: 2;
+	right: var(--size-4-3);
+	bottom: var(--size-4-3);
+	max-width: 14em;
+}
+
+.gk-current {
+	margin-left: var(--size-4-2);
+	padding: 0 var(--size-4-1);
+	border-radius: var(--radius-s);
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+	font-size: var(--font-ui-smaller);
+}

@@ -8,14 +8,18 @@ import { defaultLabels } from './labels/config';
 import { LabelsFeature } from './labels/feature';
 import { defaultLinkTypes } from './link-types/config';
 import { LinkTypesFeature } from './link-types/feature';
+import { defaultPresets } from './presets/config';
+import { PresetsFeature } from './presets/feature';
+import { PRESET_FEATURE_IDS } from '../config/normalize';
 
 /** Features in roadmap order: settings sections and commands follow it. */
-export const FEATURE_IDS: readonly FeatureId[] = ['labels', 'link-types', 'images'];
+export const FEATURE_IDS: readonly FeatureId[] = ['labels', 'link-types', 'images', 'presets'];
 
 const DEFAULTS: { [K in FeatureId]: () => FeatureConfigs[K] } = {
 	labels: defaultLabels,
 	'link-types': defaultLinkTypes,
 	images: defaultImages,
+	presets: defaultPresets,
 };
 
 /** What features may need from the plugin. */
@@ -38,6 +42,7 @@ export function createFeatures(context: FeatureContext): GraphFeature[] {
 		new LabelsFeature(facts, () => config().features.labels),
 		new LinkTypesFeature(app, () => config().features['link-types'], toggleHidden),
 		new ImagesFeature(app, facts, () => config().features.images),
+		new PresetsFeature({ app, config, changed, ids: PRESET_FEATURE_IDS }),
 	];
 }
 

@@ -2,6 +2,8 @@ import { Plugin, debounce } from 'obsidian';
 import { registerCommands } from './commands';
 import { defaultConfig, normalizeConfig } from './config/normalize';
 import type { FeatureId, GraphKitConfig } from './config/types';
+import type { GraphFeature } from './features/feature';
+import { PresetsFeature } from './features/presets/feature';
 import { createFeatures } from './features/registry';
 import { GraphHost } from './graph-host';
 import type { FeatureStatus } from './graph-host';
@@ -16,16 +18,18 @@ const SAVE_DEBOUNCE_MS = 400;
 export default class GraphKitPlugin extends Plugin {
 	config: GraphKitConfig = defaultConfig();
 	private host: GraphHost | null = null;
+	private features: GraphFeature[] = [];
 	private settingTab: GraphKitSettingTab | null = null;
 	private readonly saveSoon = debounce(() => void this.saveData(this.config), SAVE_DEBOUNCE_MS, true);
 
 	async onload(): Promise<void> {
 		this.config = normalizeConfig(await this.loadData()).config;
 		const facts = new NoteFactsCache(this.app);
+		this.features = createFeatures({ app: this.app, facts, config: () => this.config, changed: () => this.configChanged(true) });
 		this.host = this.addChild(
 			new GraphHost({
 				app: this.app,
-				features: createFeatures({ app: this.app, facts, config: () => this.config, changed: () => this.configChanged(true) }),
+				features: this.features,
 				config: () => this.config,
 				facts,
 				statusChanged: () => this.settingTab?.update(),
@@ -66,6 +70,10 @@ export default class GraphKitPlugin extends Plugin {
 	replaceConfig(config: GraphKitConfig): void {
 		this.config = config;
 		this.configChanged(true);
+	}
+
+	presets(): PresetsFeature | null {
+		return this.features.find((feature): feature is PresetsFeature => feature instanceof PresetsFeature) ?? null;
 	}
 
 	openExport(): void {

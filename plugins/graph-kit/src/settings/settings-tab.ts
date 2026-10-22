@@ -5,6 +5,9 @@ import type { FeatureId, GraphKitConfig } from '../config/types';
 import { imagesSettings } from '../features/images/settings';
 import { labelsSettings } from '../features/labels/settings';
 import { linkTypesSettings } from '../features/link-types/settings';
+import { PRESET_FEATURE_IDS } from '../config/normalize';
+import type { PresetsFeature } from '../features/presets/feature';
+import { presetsSettings } from '../features/presets/settings';
 import type { FeatureStatus } from '../graph-host';
 import { t } from '../i18n';
 import type { SectionHost } from './feature-section';
@@ -18,6 +21,7 @@ export interface SettingsHost extends Plugin {
 	configChanged(): void;
 	openExport(): void;
 	openImport(): void;
+	presets(): PresetsFeature | null;
 }
 
 /** Declarative settings (1.13): General, then one section per feature in roadmap order. */
@@ -44,7 +48,12 @@ export class GraphKitSettingTab extends PluginSettingTab implements SectionHost 
 	}
 
 	getSettingDefinitions(): SettingDefinitionItem[] {
-		return [this.general(), ...labelsSettings(this), ...linkTypesSettings(this), ...imagesSettings(this)];
+		return [this.general(), ...labelsSettings(this), ...linkTypesSettings(this), ...imagesSettings(this), ...this.presetSection()];
+	}
+
+	private presetSection(): SettingDefinitionItem[] {
+		const presets = this.plugin.presets();
+		return presets ? presetsSettings(this, presets, PRESET_FEATURE_IDS) : [];
 	}
 
 	private general(): SettingDefinitionItem {

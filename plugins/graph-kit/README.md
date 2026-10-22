@@ -1,6 +1,6 @@
 # Graph Kit
 
-Personaliza o graph nativo do Obsidian (graph global e local graph) com funcionalidades independentes, cada uma com toggle próprio, toggle por graph e regras por nota: **rótulos** (o nó mostra o valor de uma propriedade, como o `title` das notas `index.md`, no lugar do nome do arquivo) **tipos de link** (cor e estilo das arestas pela propriedade de onde o link vem) e **imagens nos nós** (a capa de uma propriedade como `cover`).
+Personaliza o graph nativo do Obsidian (graph global e local graph) com funcionalidades independentes, cada uma com toggle próprio, toggle por graph e regras por nota: **rótulos** (o nó mostra o valor de uma propriedade, como o `title` das notas `index.md`, no lugar do nome do arquivo) **tipos de link** (cor e estilo das arestas pela propriedade de onde o link vem) **imagens nos nós** (a capa de uma propriedade como `cover`) e **presets** (combinações nomeadas das configurações).
 
 ## Como funciona
 
@@ -38,6 +38,14 @@ Desligado ao instalar.
 - A imagem é recortada no centro, reduzida para um quadrado (padrão 128 px) e guardada em cache por arquivo e data de modificação; arquivos acima do limite (padrão 2 MB) são ignorados. Só os nós que o graph já desenhou (perto da tela) carregam imagem.
 - A cor do nó continua visível como um anel em volta da imagem.
 
+## Presets
+
+Desligado ao instalar.
+
+- "Salvar o estado atual como preset…" guarda uma cópia das configurações das outras funcionalidades (rótulos, tipos de link, imagens…) com um nome, como "trabalho", "entretenimento" ou "estudo". Salvar com um nome que já existe substitui o preset.
+- Opcional: incluir a busca, os filtros e os grupos de cor do graph global (não a tela nem as forças).
+- Aplicar pelo comando "Aplicar preset…" ou pelo seletor no canto inferior direito do graph. Com o graph global fechado, os filtros entram quando ele abrir.
+
 ## Regras
 
 Condição → efeito, em ordem; a primeira regra ligada que casar vence. Condições combináveis com "todas" ou "qualquer", cada uma com "não":
@@ -54,7 +62,7 @@ Nos rótulos, o efeito é outra lista de propriedades ou "manter o nome do arqui
 
 ## Comandos
 
-`Ligar/desligar rótulos`, `Ligar/desligar tipos de link`, `Ligar/desligar imagens nos nós`, `Desligar tudo`, `Religar o Graph Kit`, `Exportar configuração` e `Importar configuração`.
+`Ligar/desligar rótulos`, `Ligar/desligar tipos de link`, `Ligar/desligar imagens nos nós`, `Ligar/desligar presets`, `Aplicar preset…`, `Salvar o estado atual como preset…`, `Desligar tudo`, `Religar o Graph Kit`, `Exportar configuração` e `Importar configuração`.
 
 ## Configuração
 
@@ -90,7 +98,7 @@ Valores inválidos voltam ao padrão um a um; chaves desconhecidas são ignorada
 
 ## Próximas fases
 
-Presets, forma e opacidade, ícones e tamanho por propriedade. Cada uma entra como um módulo em `src/features/<nome>/`, desligada por padrão. Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/graph-kit-spec.md`.
+Forma e opacidade, ícones e tamanho por propriedade. Cada uma entra como um módulo em `src/features/<nome>/`, desligada por padrão. Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/graph-kit-spec.md`.
 
 ## Desenvolvimento
 

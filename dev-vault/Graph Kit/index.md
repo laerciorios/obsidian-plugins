@@ -72,6 +72,22 @@ As notas em `Graph Kit/Catálogo/` têm `cover` em formatos diferentes: `[[...]]
 - [ ] Regra "kind = book" com efeito "Sem imagem": o Jardim de Pedra perde a imagem.
 - [ ] Desligue: as imagens somem sem reabrir o graph; religue e elas voltam.
 
+## Presets
+
+- [ ] Ligue Presets. Com tipos de link ligados e imagens desligadas, busque `path:"Graph Kit"` no graph e salve o preset "Trabalho" com "Incluir os filtros e grupos do graph".
+- [ ] Desligue os tipos de link, ligue as imagens, busque `path:"Graph Kit/Catálogo"` e salve "Entretenimento".
+- [ ] Comando "Aplicar preset…" → Trabalho: tipos de link voltam, imagens somem e a busca do graph volta para `path:"Graph Kit"`.
+- [ ] No seletor do canto inferior direito do graph, escolha Entretenimento: o contrário. O seletor mostra o preset atual.
+- [ ] Salve de novo como "trabalho" (minúsculas): o aviso diz que substitui, e a lista continua com dois presets.
+
+## Presets
+
+- [ ] Ligue Presets. Com tipos de link ligados e imagens desligadas, busque `path:"Graph Kit"` no graph e salve o preset "Trabalho" com "Incluir os filtros e grupos do graph".
+- [ ] Desligue os tipos de link, ligue as imagens, busque `path:"Graph Kit/Catálogo"` e salve "Entretenimento".
+- [ ] Comando "Aplicar preset…" → Trabalho: tipos de link voltam, imagens somem e a busca do graph volta para `path:"Graph Kit"`.
+- [ ] No seletor do canto inferior direito do graph, escolha Entretenimento: o contrário. O seletor mostra o preset atual.
+- [ ] Salve de novo como "trabalho" (minúsculas): o aviso diz que substitui, e a lista continua com dois presets.
+
 ## Exportar e importar
 
 - [ ] "Exportar configuração…": copie e salve como `graph-kit-config.json`. Com o arquivo já existente, o botão vira "Sobrescrever" com um aviso.

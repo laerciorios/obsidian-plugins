@@ -1,12 +1,30 @@
 import { defaultImages, readImages } from '../features/images/config';
 import { defaultLabels, readLabels } from '../features/labels/config';
 import { defaultLinkTypes, readLinkTypes } from '../features/link-types/config';
+import { defaultPresets, readPresets } from '../features/presets/config';
+import type { FeatureReader, PresetFeatureId } from '../features/presets/config';
 import { Reader, newRuleId } from './reader';
 import { CONFIG_VERSION } from './types';
 import type { GraphKitConfig } from './types';
 
 export function defaultConfig(): GraphKitConfig {
-	return { version: CONFIG_VERSION, enabled: true, features: { labels: defaultLabels(), 'link-types': defaultLinkTypes(), images: defaultImages() } };
+	return { version: CONFIG_VERSION, enabled: true, features: { labels: defaultLabels(), 'link-types': defaultLinkTypes(), images: defaultImages(), presets: defaultPresets() } };
+}
+
+/** Features with their own reader, in roadmap order; presets store copies of them. */
+export const PRESET_FEATURE_IDS: readonly PresetFeatureId[] = ['labels', 'link-types', 'images'];
+
+function readFeature(reader: Reader): FeatureReader {
+	return (id, raw, path) => {
+		switch (id) {
+			case 'labels':
+				return readLabels(raw, reader, path);
+			case 'link-types':
+				return readLinkTypes(raw, reader, path);
+			case 'images':
+				return readImages(raw, reader, path);
+		}
+	};
 }
 
 export interface Normalized {
@@ -32,9 +50,10 @@ export function normalizeConfig(saved: unknown, newId: () => string = newRuleId)
 	const features = reader.record(raw.features, 'features');
 	if (features) {
 		reader.unknownKeys(features, Object.keys(config.features), 'features');
-		config.features.labels = readLabels(reader.record(features.labels, 'features.labels'), reader, 'features.labels');
-		config.features['link-types'] = readLinkTypes(reader.record(features['link-types'], 'features.link-types'), reader, 'features.link-types');
-		config.features.images = readImages(reader.record(features.images, 'features.images'), reader, 'features.images');
+		for (const id of PRESET_FEATURE_IDS) {
+			(config.features as unknown as Record<string, unknown>)[id] = readFeature(reader)(id, reader.record(features[id], `features.${id}`), `features.${id}`);
+		}
+		config.features.presets = readPresets(reader.record(features.presets, 'features.presets'), reader, 'features.presets', readFeature(reader), PRESET_FEATURE_IDS);
 	}
 	return { config, warnings: reader.warnings };
 }

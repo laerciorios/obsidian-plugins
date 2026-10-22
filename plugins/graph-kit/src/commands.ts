@@ -1,6 +1,9 @@
 import { Notice } from 'obsidian';
 import type { Plugin } from 'obsidian';
 import type { FeatureId, GraphKitConfig } from './config/types';
+import { PresetPicker } from './features/presets/modals';
+import type { PresetsFeature } from './features/presets/feature';
+import { openSavePreset } from './features/presets/settings';
 import { FEATURE_IDS } from './features/registry';
 import type { FeatureStatus } from './graph-host';
 import { t } from './i18n';
@@ -11,6 +14,7 @@ export interface CommandHost extends Plugin {
 	configChanged(rerender?: boolean): void;
 	openExport(): void;
 	openImport(): void;
+	presets(): PresetsFeature | null;
 }
 
 /** Command ids are stable API: `toggle-<feature>`, `disable-all`, `enable-all`, `export-config`, `import-config`. */
@@ -56,6 +60,27 @@ export function registerCommands(plugin: CommandHost): void {
 				plugin.configChanged(true);
 				new Notice(t('notice.allOn'));
 			}
+			return true;
+		},
+	});
+	plugin.addCommand({
+		id: 'apply-preset',
+		name: t('command.applyPreset'),
+		checkCallback: (checking) => {
+			const presets = plugin.presets();
+			const { enabled, items } = plugin.config.features.presets;
+			if (!presets || !enabled || items.length === 0) return false;
+			if (!checking) new PresetPicker(plugin.app, items, (preset) => presets.apply(preset)).open();
+			return true;
+		},
+	});
+	plugin.addCommand({
+		id: 'save-preset',
+		name: t('command.savePreset'),
+		checkCallback: (checking) => {
+			const presets = plugin.presets();
+			if (!presets || !plugin.config.features.presets.enabled) return false;
+			if (!checking) openSavePreset({ app: plugin.app, config: plugin.config }, presets);
 			return true;
 		},
 	});
