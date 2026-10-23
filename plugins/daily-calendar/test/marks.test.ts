@@ -73,6 +73,23 @@ describe('catalog: finish dates', () => {
 		assert.deepEqual(catalogDays([pomar]), {});
 	});
 
+	test('notes in subfolders at any depth (a folder per kind, a folder per series)', () => {
+		const notes = [
+			note('girassois-em-marte', { title: 'Girassóis em Marte', finished: '2026-08-02' }, `${CATALOG}/Movies`),
+			note('pomar-de-neon-s01', { title: 'Pomar de Neon (S01)', finished_dates: ['2026-08-10'] }, `${CATALOG}/Series/Pomar de Neon`),
+			note('maré-alta', { title: 'Maré Alta', finished: '2026-08-10' }, `${CATALOG}/Albums/Old/2026`),
+		];
+		assert.deepEqual(catalogDays(notes), {
+			'2026-08-02': ['Girassóis em Marte'],
+			'2026-08-10': ['Maré Alta', 'Pomar de Neon (S01)'],
+		});
+	});
+
+	test('a folder that only starts with the catalog name is not the catalog', () => {
+		const outside = note('pomar-de-neon', { title: 'Pomar de Neon', finished: '2026-08-10' }, `${CATALOG} old/Movies`);
+		assert.deepEqual(catalogDays([outside]), {});
+	});
+
 	test('only notes in the catalog folder', () => {
 		const outside = note('pomar-de-neon', { title: 'Pomar de Neon', finished_dates: ['2026-08-10'] }, 'Inbox');
 		assert.deepEqual(catalogDays([outside]), {});

@@ -77,7 +77,7 @@ A linha **Daily notes** mostra pasta, formato e template das daily notes, lidos 
 | `src/daily/open.ts` | Clique no dia: abrir a daily ou criar pelo template (`createDailyNote` do pacote). |
 | `src/index/marks.ts` | Funções puras: marcações de cada dia a partir de fatos das notas (caminho, nome, frontmatter, tags, links do frontmatter). |
 | `src/index/values.ts` | Funções puras: data de uma propriedade, dia no começo de um nome, pastas, tags, itens de `projects`. |
-| `test/` | Testes de unidade (`pnpm --filter daily-calendar test`): datas de término do catálogo (`finished` e `finished_dates`) e a configuração da propriedade. |
+| `test/` | Testes de unidade (`pnpm --filter daily-calendar test`): datas de término do catálogo (`finished` e `finished_dates`, em subpastas de qualquer profundidade) e a configuração da propriedade. |
 | `src/index/month-index.ts` | Lê a lista de notas e o cache de metadados para as funções puras. |
 | `src/view/calendar-view.ts` | A view: cabeçalho, grade, destaques, eventos do vault. |
 | `src/view/day-cell.ts` | Marcadores de um dia, o resumo para leitor de tela e a legenda. |
