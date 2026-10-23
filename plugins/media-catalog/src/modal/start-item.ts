@@ -3,6 +3,7 @@ import type { TFile } from 'obsidian';
 import { albumSourceOf, applyStart, setAfter, startBody } from '../catalog/backlog';
 import { readCatalogNote } from '../catalog/catalog-note';
 import { todayIso } from '../catalog/dates';
+import { destinationFolder } from '../catalog/kind-folders';
 import { ensureFolder } from '../catalog/note-writer';
 import { joinPath } from '../catalog/paths';
 import { renderTracklist, replaceTracklistSection } from '../catalog/tracklist';
@@ -55,13 +56,14 @@ async function addTracks(context: CatalogContext, note: CatalogNoteInfo): Promis
 }
 
 /**
- * "Start backlog item": the note moves to the catalog folder with
+ * "Start backlog item": the note moves to its kind folder in the catalog
+ * (series: the folder of the series, see destinationFolder) with
  * fileManager.renameFile (links are updated), keeping its name; then
  * `status: in-progress`, `started` = today, no `priority` or
  * `recommended_by` (`added` stays), the backlog tags become the catalog
  * tags, and `## Por que quero` becomes
  * `## Impressões`. Albums then get their tracklist. A note with the same
- * name in the catalog folder stops it before anything changes. Resolves
+ * name in that folder stops it before anything changes. Resolves
  * true once the note is moved and updated.
  */
 export async function startBacklogItem(context: CatalogContext, file: TFile): Promise<boolean> {
@@ -69,7 +71,7 @@ export async function startBacklogItem(context: CatalogContext, file: TFile): Pr
 	const note = readCatalogNote(app, file);
 	if (!note) return false;
 	try {
-		const folder = await ensureFolder(app, settings.folder);
+		const folder = await ensureFolder(app, destinationFolder(app, settings, 'catalog', note.kind, note.title));
 		const target = joinPath(folder, file.name);
 		if (app.vault.getAbstractFileByPath(target)) {
 			new Notice(t('notice.startNameTaken', { path: target }));

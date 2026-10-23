@@ -2,7 +2,7 @@ import { TFile, TFolder } from 'obsidian';
 import type { App } from 'obsidian';
 import type { MediaKind } from '../types';
 import { frontmatterOf, numberOf, textOf } from './catalog-note';
-import { folderAt, joinPath } from './paths';
+import { folderAt } from './paths';
 import { bareTitle } from './series-title';
 import { hasSlug, seasonSuffix, slugify } from './slug';
 
@@ -63,21 +63,17 @@ function sameEntry(frontmatter: Record<string, unknown>, query: DuplicateQuery, 
 
 /**
  * Existing catalog note with the same kind + normalized title (+ season, +
- * artist for albums), searched only inside `folder` (subfolders included).
- * The note at the path a new note would take counts too when kind (+ season,
- * + artist) match, even if its title was edited. Reads the metadata cache
- * only, never the files.
+ * artist for albums), searched only inside `folder`, kind folders and any
+ * other subfolder included. The note with the name a new note would take
+ * counts too when kind (+ season, + artist) match, even if its title was
+ * edited, and wins over a title match. Reads the metadata cache only, never the files.
  */
 export function findDuplicate(app: App, folder: string, query: DuplicateQuery): TFile | null {
 	const root = folderAt(app, folder);
 	if (!root) return null;
 
-	const target = app.vault.getFileByPath(joinPath(folder, `${baseName(query.kind, query.title, query.season)}.md`));
-	if (target) {
-		const frontmatter = frontmatterOf(app, target);
-		if (frontmatter && sameEntry(frontmatter, query, false)) return target;
-	}
-
+	const name = baseName(query.kind, query.title, query.season).toLowerCase();
+	let byTitle: TFile | null = null;
 	const pending: TFolder[] = [root];
 	for (let current = pending.pop(); current; current = pending.pop()) {
 		for (const child of current.children) {
@@ -85,11 +81,13 @@ export function findDuplicate(app: App, folder: string, query: DuplicateQuery): 
 				pending.push(child);
 			} else if (child instanceof TFile && child.extension === 'md') {
 				const frontmatter = frontmatterOf(app, child);
-				if (frontmatter && sameEntry(frontmatter, query, true)) return child;
+				if (!frontmatter) continue;
+				if (child.basename.toLowerCase() === name && sameEntry(frontmatter, query, false)) return child;
+				if (!byTitle && sameEntry(frontmatter, query, true)) byTitle = child;
 			}
 		}
 	}
-	return null;
+	return byTitle;
 }
 
 /** findDuplicate in the catalog folder, then in the backlog folder: an item lives in one of them. */

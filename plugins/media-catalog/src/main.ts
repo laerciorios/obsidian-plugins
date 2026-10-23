@@ -5,6 +5,7 @@ import { markFinished } from './catalog/updates';
 import { COMMAND_IDS, SAVE_DEBOUNCE_MS } from './constants';
 import { t } from './i18n';
 import { CatalogModal } from './modal/catalog-modal';
+import { kindFolderTarget, moveToKindFolder } from './modal/move-to-kind-folder';
 import { newRun } from './modal/new-run';
 import { askRating } from './modal/rating-modal';
 import { startBacklogItem } from './modal/start-item';
@@ -119,6 +120,18 @@ export default class MediaCatalogPlugin extends Plugin implements CatalogContext
 				const note = this.activeNote();
 				if (note?.kind !== 'game') return false;
 				if (!checking) void updateEstimate(this, note);
+				return true;
+			},
+		});
+
+		this.addCommand({
+			id: COMMAND_IDS.moveToKindFolder,
+			name: t('command.moveToKindFolder'),
+			icon: 'folder-input',
+			checkCallback: (checking) => {
+				const note = this.activeNote();
+				if (!note || !kindFolderTarget(this, note)) return false;
+				if (!checking) void moveToKindFolder(this, note);
 				return true;
 			},
 		});

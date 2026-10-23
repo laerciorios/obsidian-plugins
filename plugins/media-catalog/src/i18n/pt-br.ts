@@ -11,6 +11,7 @@ export const ptBR: Translation<typeof en> = {
 	'command.newRun': 'Novo registro (rejogar / reassistir / reler)',
 	'command.startBacklogItem': 'Começar item do backlog',
 	'command.updateEstimate': 'Atualizar tempo estimado (HowLongToBeat)',
+	'command.moveToKindFolder': 'Mover para a pasta do tipo',
 
 	// ---- kinds and statuses -------------------------------------------------
 	'kind.movie': 'Filme',
@@ -239,13 +240,16 @@ export const ptBR: Translation<typeof en> = {
 	'notice.estimateFailed': 'Media Catalog: o HowLongToBeat não respondeu. Tente de novo mais tarde.',
 	'notice.estimateWriteFailed': 'Media Catalog: não foi possível atualizar o tempo estimado de "{name}".',
 	'notice.folderIsFile': 'Media Catalog: "{path}" é um arquivo, não uma pasta. Confira a pasta do catálogo nas configurações.',
+	'notice.moved': 'Media Catalog: "{name}" foi para "{path}".',
+	'notice.moveFailed': 'Media Catalog: não foi possível mover "{name}".',
+	'notice.moveNameTaken': 'Media Catalog: "{path}" já existe. Renomeie uma das notas e tente de novo.',
 
 	// ---- settings -----------------------------------------------------------
 	'settings.notes.heading': 'Notas',
 	'settings.folder.name': 'Pasta do catálogo',
-	'settings.folder.desc': 'O que você está consumindo ou já consumiu. As notas novas vão para cá, exceto quando você escolhe o backlog.',
+	'settings.folder.desc': 'O que você está consumindo ou já consumiu. As notas novas vão para cá, exceto quando você escolhe o backlog, numa pasta por tipo (Movies, Series/<série>, Games, Books, Albums).',
 	'settings.backlogFolder.name': 'Pasta do backlog',
-	'settings.backlogFolder.desc': 'O que você ainda não começou. "Começar item do backlog" move a nota daqui para a pasta do catálogo. As duplicatas são procuradas nas duas pastas.',
+	'settings.backlogFolder.desc': 'O que você ainda não começou. "Começar item do backlog" move a nota daqui para a pasta do tipo no catálogo. Aqui também há uma pasta por tipo. As duplicatas são procuradas nas duas pastas.',
 	'settings.catalogTags.name': 'Tags do catálogo',
 	'settings.catalogTags.desc': 'Tags das notas novas do catálogo, separadas por vírgula. "Começar item do backlog" põe estas no lugar das tags do backlog. Vazio: entertainment.',
 	'settings.backlogTags.name': 'Tags do backlog',

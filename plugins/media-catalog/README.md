@@ -16,6 +16,7 @@ Spec no vault: `1 - Knowledge/Projects/Obsidian Plugins/_Discovery/AI Generated/
 | **Atualizar aliases da nota atual** | com uma nota do catálogo aberta | Busca de novo o título lançado no país configurado e regrava `aliases`, mantendo os aliases que você adicionou. |
 | **Começar item do backlog** | com uma nota da pasta do backlog aberta | Move a nota para a pasta do catálogo e começa o registro (ver [Backlog](#backlog)). |
 | **Atualizar tempo estimado (HowLongToBeat)** | com uma nota de jogo aberta (`kind: game`) | Busca o jogo no HowLongToBeat e grava `estimated_hours` (ver [Tempo estimado](#tempo-estimado-howlongtobeat)). |
+| **Mover para a pasta do tipo** | com uma nota do catálogo ou do backlog fora da pasta do tipo dela | Move a nota para a pasta do tipo, mantendo o nome (ver [Pastas por tipo](#pastas-por-tipo)). |
 
 Uma nota é do catálogo quando o frontmatter tem `kind` igual a `movie`, `series`, `game`, `book` ou `album`, em qualquer pasta.
 
@@ -127,7 +128,7 @@ Jogos do backlog guardam em `estimated_hours` o tempo para zerar do [HowLongToBe
 
 Aparece só com uma nota da pasta do backlog (subpastas incluídas) aberta. Na ordem:
 
-1. Move a nota para a pasta do catálogo com o mesmo nome, por `fileManager.renameFile`, então os links para ela são atualizados. Se a pasta do catálogo já tem uma nota com esse nome, um aviso pede para renomear uma delas e nada muda.
+1. Move a nota para a pasta do tipo dela no catálogo (`Movies/`, `Games/`… e, em séries, a pasta da série, ver [Pastas por tipo](#pastas-por-tipo)), com o mesmo nome, por `fileManager.renameFile`, então os links para ela são atualizados. Se essa pasta já tem uma nota com esse nome, um aviso pede para renomear uma delas e nada muda.
 2. `## Por que quero` vira `## Impressões`, com o texto que estava embaixo. Numa nota que já tem `## Impressões`, os títulos ficam como estão; numa sem nenhum dos dois, `## Impressões` entra no fim.
 3. As propriedades: `status: in-progress` e, logo depois, `rating` vazio, `started` com a data de hoje e `finished` vazio, na ordem das notas do catálogo (um `rating` ou `finished` que a nota já tenha fica com o valor e o lugar dele); sem `priority` e `recommended_by`. As tags do backlog dão lugar às do catálogo, na posição da primeira: `[backlog]` vira `[entertainment]`, `[to-play, backlog, rpg]` vira `[to-play, entertainment, rpg]`, e `#backlog` também conta. Uma lista continua lista e um valor único continua valor; uma tag do catálogo que a nota já tem não se repete (`[entertainment, backlog]` vira `[entertainment]`). `added` fica.
 4. Álbuns, com **Incluir lista de faixas em álbuns** ligado: as faixas são buscadas pelo link da fonte da nota (`- MusicBrainz: …` ou `- iTunes: …`, na edição principal) e a seção `## Faixas` entra antes de `## Impressões`, como numa nota nova. Sem o link, ou se a fonte falhar, um aviso explica e abre o **Atualizar faixas do álbum** para você escolher o álbum.
@@ -221,11 +222,19 @@ Sem chave, a busca avisa que a fonte precisa de uma chave de API. Chave recusada
 
 - Slug do título: minúsculas, sem acentos, cada sequência de caracteres que não são letras nem dígitos vira `-`, sem `-` nas pontas. "Samambaia: O Retorno" vira `samambaia-o-retorno`; um título sem letras nem dígitos vira `untitled`.
 - Séries usam o slug do nome da série, sem a temporada do `title`, e ganham a temporada com dois dígitos: `Horta Selvagem (S02)` vira `horta-selvagem-s02`.
-- Se o nome já existe (e não é duplicata, como outro ano), entra o ano: `samambaia-o-retorno-2031`. Séries mantêm `-sNN` no fim: `horta-selvagem-2031-s01`.
+- O nome é único **no vault inteiro**, não só na pasta: o Obsidian resolve os links pelo nome do arquivo. O plugin procura o nome em todas as notas, sem diferenciar maiúsculas.
+- Se o nome é de uma nota de outro tipo (ou de qualquer nota que não é do catálogo), entra o tipo, uma vez: `samambaia-o-retorno-movie`, `-series`, `-game`, `-book` ou `-album`. Séries mantêm `-sNN` no fim: `horta-selvagem-series-s01`.
+- Se o nome é de uma nota do mesmo tipo (e não é duplicata, como outro ano), entra o ano: `samambaia-o-retorno-2031`; séries, `horta-selvagem-2031-s01`.
 - Se ainda assim existe, ou não há ano, entra um contador: `samambaia-o-retorno-2031-2`.
 - Álbuns tentam o artista antes do ano: `mare-de-musgo`, depois `mare-de-musgo-lia-broto`, depois `mare-de-musgo-lia-broto-2019`, depois o contador (`mare-de-musgo-lia-broto-2019-2`). Num álbum homônimo (o slug do artista é igual ao do título), o artista é pulado: `os-samambaias`, depois `os-samambaias-2001`. Sem artista, é como nos outros tipos. Filmes e livros nunca põem o diretor ou o autor no nome.
 
-A nota fica na **Pasta do catálogo**, criada se não existir.
+### Pastas por tipo
+
+Dentro da **Pasta do catálogo** e da **Pasta do backlog**, cada tipo tem a sua pasta: `Movies/`, `Games/`, `Books/`, `Albums/` e `Series/<nome da série>/`, uma pasta por série. As pastas que faltam são criadas.
+
+- A pasta da série tem o nome da série, sem a temporada e sem os caracteres que o Obsidian recusa em nomes: `:` e `?` somem, uma sequência de `*` vira `-` (e `"`, `\`, `/`, `<`, `>` e `|` também somem). "Horta Selvagem: Origens (S02)" vai para `Series/Horta Selvagem Origens/horta-selvagem-origens-s02.md`.
+- Se outra temporada da série já está numa pasta de `Series/` (no catálogo ou no backlog), a nota nova usa o nome dessa pasta.
+- **Mover para a pasta do tipo** arruma uma nota que ficou fora da pasta do tipo (na raiz da pasta do catálogo, por exemplo), por `fileManager.renameFile`, mantendo o nome. Uma temporada que já está em alguma pasta de `Series/` fica onde está. Notas fora das duas pastas não mudam.
 
 ### Frontmatter
 
@@ -384,8 +393,8 @@ A nota do catálogo recebe `reference: "[[1 - Knowledge/Software Development/_Re
 
 | Opção | Padrão | O que faz |
 |---|---|---|
-| Pasta do catálogo | `1 - Knowledge/Entertainment/DB` | Onde as notas novas são criadas (exceto as do backlog) e para onde **Começar item do backlog** move a nota. Vazio volta ao padrão. |
-| Pasta do backlog | `1 - Knowledge/Entertainment/Backlog/DB` | Onde ficam as notas com destino **Backlog**. As duplicatas são procuradas nas duas pastas. Vazio volta ao padrão. |
+| Pasta do catálogo | `1 - Knowledge/Entertainment/DB` | Onde as notas novas são criadas (exceto as do backlog), numa pasta por tipo, e para onde **Começar item do backlog** move a nota. Vazio volta ao padrão. |
+| Pasta do backlog | `1 - Knowledge/Entertainment/Backlog/DB` | Onde ficam as notas com destino **Backlog**, também numa pasta por tipo. As duplicatas são procuradas nas duas pastas, com as subpastas. Vazio volta ao padrão. |
 | Tags do catálogo | `entertainment` | Tags das notas novas do catálogo, separadas por vírgula (um `#` no começo é ignorado). **Começar item do backlog** põe estas no lugar das tags do backlog. Vazio volta ao padrão. |
 | Tags do backlog | `backlog` | Tags das notas novas do backlog, separadas por vírgula. São as que **Começar item do backlog** troca pelas do catálogo. Vazio volta ao padrão. |
 | Template | vazio | Nota cujo corpo entra em cada nota nova. Vazio: `media.md` na pasta de templates do Obsidian. |
@@ -439,7 +448,7 @@ Um idioma novo é um arquivo novo em `src/i18n/`, com todas as chaves de `src/i1
 
 | Arquivo | Papel |
 |---|---|
-| `src/main.ts` | Carrega as configurações, cria as fontes e registra os seis comandos e a aba de configurações. |
+| `src/main.ts` | Carrega as configurações, cria as fontes e registra os comandos e a aba de configurações. |
 | `src/constants.ts` | Tipos, status, ordem das chaves por tipo, pasta padrão, hosts permitidos e textos da nota de referência. |
 | `src/providers/http.ts` | O único módulo que acessa a rede: `requestUrl`, só `https://`, só hosts da lista. |
 | `src/providers/imdb.ts`, `tvmaze.ts`, `open-library.ts`, `google-books.ts`, `igdb.ts`, `musicbrainz.ts`, `itunes.ts` | Uma fonte por arquivo: monta a requisição e converte a resposta em resultados. O MusicBrainz também completa o resultado escolhido (`resolve`: capa no Cover Art Archive ou no iTunes), e o IMDb busca os diretores do filme escolhido (`directors`). |
@@ -455,7 +464,8 @@ Um idioma novo é um arquivo novo em `src/i18n/`, com todas as chaves de `src/i1
 | `src/modal/cover-step.ts`, `rating-modal.ts` | Último passo do **Trocar capa** (capa atual e nova); pergunta da nota do **Terminei**. |
 | `src/modal/new-run.ts`, `new-run-modal.ts` | **Novo registro**: confere se a nota está concluída, pede início e onde (com a linha que vai para o histórico) e grava; usado pelo comando e pelo **Registrar de novo** do banner de duplicata. |
 | `src/modal/aliases-step.ts`, `update-aliases.ts` | Último passo e entrada do **Atualizar aliases da nota atual** (modal, ou gravação direta em livros, álbuns e sem país). |
-| `src/catalog/note-writer.ts` | Cria a nota: pasta, nome livre, capa, nota de referência, corpo e um único `vault.create`. |
+| `src/catalog/note-writer.ts` | Cria a nota: pasta, nome único no vault, capa, nota de referência, corpo e um único `vault.create`. |
+| `src/catalog/kind-folders.ts`, `src/modal/move-to-kind-folder.ts` | Pasta de cada tipo e de cada série; o comando **Mover para a pasta do tipo**. |
 | `src/catalog/slug.ts`, `duplicates.ts` | Nome do arquivo; busca de duplicatas no cache de metadados, sem ler arquivos (álbuns comparam também o artista). |
 | `src/catalog/frontmatter.ts`, `yaml.ts` | Chaves na ordem do tipo e YAML no estilo do catálogo. |
 | `src/catalog/aliases.ts` | Regras puras dos aliases: quando o segundo entra, a lista do **Atualizar aliases** e a posição da chave. |
@@ -465,7 +475,7 @@ Um idioma novo é um arquivo novo em `src/i18n/`, com todas as chaves de `src/i1
 | `src/catalog/markdown.ts` | Linhas e títulos das seções que o plugin escreve (`## Faixas`, `## Histórico`), fora de blocos de código. |
 | `src/catalog/cover-download.ts`, `reference-note.ts` | Download da capa para os anexos; nota de referência do livro técnico. |
 | `src/catalog/updates.ts`, `catalog-note.ts` | **Trocar capa**, **Terminei**, **Atualizar aliases** e **Novo registro** via `processFrontMatter` (e `vault.process` para a linha do histórico); leitura de uma nota do catálogo. |
-| `test/` | Testes de unidade (`pnpm --filter media-catalog test`): resposta do IMDb (título do país e diretores), o `author` dos filmes (formulário, frontmatter, nome e duplicatas), akas do TVmaze, localizações da IGDB, regra dos aliases e a opção do país, linha e seção do histórico, `finished_dates` e propriedades do **Novo registro** e do **Terminei**. |
+| `test/` | Testes de unidade (`pnpm --filter media-catalog test`): resposta do IMDb (título do país e diretores), o `author` dos filmes (formulário, frontmatter, nome e duplicatas), akas do TVmaze, localizações da IGDB, regra dos aliases e a opção do país, linha e seção do histórico, `finished_dates` e propriedades do **Novo registro** e do **Terminei**, pastas por tipo e de série, nome único no vault e duplicatas nas subpastas. |
 | `src/ui/` | Peças do modal: card de resultado, capa com placeholder, capa atual da nota, botões de pôster, lista com teclado, estados de carregando, vazio e erro, linhas de formulário, lista de faixas e rótulo das edições. |
 | `src/settings/` | Configurações declarativas do Obsidian 1.13, normalização do `data.json` e linhas de segredo com `SecretComponent`. |
 | `src/i18n/` | Catálogos de texto da interface (inglês e português). |

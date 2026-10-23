@@ -15,6 +15,7 @@ export const en = {
 	'command.newRun': 'New run (replay / rewatch / reread)',
 	'command.startBacklogItem': 'Start backlog item',
 	'command.updateEstimate': 'Update estimated time (HowLongToBeat)',
+	'command.moveToKindFolder': 'Move to the kind folder',
 
 	// ---- kinds and statuses (labels only; notes store the English values) --
 	'kind.movie': 'Movie',
@@ -243,13 +244,16 @@ export const en = {
 	'notice.estimateFailed': 'Media Catalog: HowLongToBeat did not answer. Try again later.',
 	'notice.estimateWriteFailed': 'Media Catalog: could not update the estimated time of "{name}".',
 	'notice.folderIsFile': 'Media Catalog: "{path}" is a file, not a folder. Check the catalog folder setting.',
+	'notice.moved': 'Media Catalog: "{name}" moved to "{path}".',
+	'notice.moveFailed': 'Media Catalog: could not move "{name}".',
+	'notice.moveNameTaken': 'Media Catalog: "{path}" already exists. Rename one of the notes and try again.',
 
 	// ---- settings -----------------------------------------------------------
 	'settings.notes.heading': 'Notes',
 	'settings.folder.name': 'Catalog folder',
-	'settings.folder.desc': 'Things you are consuming or have consumed. New notes go here unless you pick the backlog.',
+	'settings.folder.desc': 'Things you are consuming or have consumed. New notes go here unless you pick the backlog, in a folder per kind (Movies, Series/<series>, Games, Books, Albums).',
 	'settings.backlogFolder.name': 'Backlog folder',
-	'settings.backlogFolder.desc': 'Things not started yet. "Start backlog item" moves a note from here to the catalog folder. Duplicates are looked for in both folders.',
+	'settings.backlogFolder.desc': 'Things not started yet. "Start backlog item" moves a note from here to its kind folder in the catalog. Here too, each kind has its own folder. Duplicates are looked for in both folders.',
 	'settings.catalogTags.name': 'Catalog tags',
 	'settings.catalogTags.desc': 'Tags of new catalog notes, separated by commas. "Start backlog item" puts them in place of the backlog tags. Empty: entertainment.',
 	'settings.backlogTags.name': 'Backlog tags',

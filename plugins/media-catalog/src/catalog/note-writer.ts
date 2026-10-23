@@ -4,11 +4,13 @@ import { BACKLOG_TAG, CATALOG_TAG } from '../constants';
 import { t } from '../i18n';
 import { CatalogError } from '../providers/errors';
 import { tagList } from '../settings/settings';
-import type { CatalogDraft, CatalogSettings } from '../types';
+import type { CatalogDraft, CatalogSettings, MediaKind } from '../types';
+import { frontmatterOf } from './catalog-note';
 import { downloadCover } from './cover-download';
 import { todayIso } from './dates';
-import { baseName, findInCatalogOrBacklog } from './duplicates';
+import { findInCatalogOrBacklog } from './duplicates';
 import { catalogFrontmatter, tracksProperty } from './frontmatter';
+import { destinationFolder } from './kind-folders';
 import { folderPath, joinPath } from './paths';
 import { ensureReferenceNote, referenceLink } from './reference-note';
 import { bareTitle } from './series-title';
@@ -17,53 +19,86 @@ import { noteBody } from './template';
 
 export type CreateResult = { status: 'created'; file: TFile } | { status: 'duplicate'; file: TFile };
 
-/** The catalog (or backlog) folder, created when missing. A file in its place is a setting error. */
+/**
+ * A folder, created when missing with every missing folder above it (the
+ * catalog folder, a kind folder, a series folder). A file in its place is a
+ * setting error.
+ */
 export async function ensureFolder(app: App, folder: string): Promise<string> {
 	const path = folderPath(folder);
 	if (path === '/') return path;
-	const existing = app.vault.getAbstractFileByPath(path);
-	if (existing instanceof TFolder) return path;
-	if (existing) {
-		new Notice(t('notice.folderIsFile', { path }));
-		throw new CatalogError(`${path} is a file`);
+	let current = '';
+	for (const part of path.split('/')) {
+		current = current ? `${current}/${part}` : part;
+		const existing = app.vault.getAbstractFileByPath(current);
+		if (existing instanceof TFolder) continue;
+		if (existing) {
+			new Notice(t('notice.folderIsFile', { path: current }));
+			throw new CatalogError(`${current} is a file`);
+		}
+		await app.vault.createFolder(current);
 	}
-	await app.vault.createFolder(path);
 	return path;
 }
 
+/** Who already has a note name, in the whole vault: nobody, a note of the same kind, or any other note. */
+export type NameOwner = 'free' | 'same-kind' | 'other';
+
 /**
- * Note name candidates, in order: `<slug>`, then `<slug>-<year>`, then a
- * counter; series keep `-sNN` at the end (`<slug>-<year>-s01`, `<slug>-2-s01`).
- * Albums try the artist before the year: `<slug>-<artist>`, then
- * `<slug>-<artist>-<year>`; a self-titled album (artist slug = title slug)
- * skips the artist and goes on with `<slug>-<year>`. Movies and books never
- * put their directors or authors in the name.
+ * Name of a new note, unique in the whole vault (Obsidian resolves links by
+ * file name, not by folder). It starts as `<slug>` (series `<slug>-sNN`).
+ * A name a note of another kind (or any other note) has gets the kind, once:
+ * `<slug>-movie`. A name a note of the same kind has gets the year
+ * (`<slug>-<year>`), then a counter (`<slug>-<year>-2`). Albums try the
+ * artist before the year: `<slug>-<artist>`, then `<slug>-<artist>-<year>`;
+ * a self-titled album (artist slug = title slug) skips the artist. Series
+ * keep `-sNN` at the end (`<slug>-<year>-s01`, `<slug>-series-s01`). Movies
+ * and books never put their directors or authors in the name.
  */
-export function* nameCandidates(draft: CatalogDraft): Generator<string> {
+export function noteName(draft: CatalogDraft, ownerOf: (name: string) => NameOwner): string {
 	const slug = slugify(bareTitle(draft.kind, draft.title));
 	const suffix = draft.kind === 'series' && draft.season !== null ? seasonSuffix(draft.season) : '';
-	yield baseName(draft.kind, draft.title, draft.season);
-	let stem = slug;
+	// What a name taken by the same kind gets, in order.
+	const steps: string[] = [];
 	if (draft.kind === 'album' && hasSlug(draft.author)) {
 		const artist = slugify(draft.author);
-		if (artist !== slug) {
-			stem = `${slug}-${artist}`;
-			yield stem;
+		if (artist !== slug) steps.push(artist);
+	}
+	if (draft.year !== null) steps.push(String(draft.year));
+
+	let stem = slug;
+	let kindAdded = false;
+	let counter = 1;
+	for (;;) {
+		const name = `${stem}${counter > 1 ? `-${counter}` : ''}${suffix}`;
+		const owner = ownerOf(name);
+		if (owner === 'free') return name;
+		if (owner === 'other' && !kindAdded && counter === 1) {
+			stem = `${stem}-${draft.kind}`;
+			kindAdded = true;
+			continue;
 		}
+		const step = counter === 1 ? steps.shift() : undefined;
+		if (step === undefined) counter++;
+		else stem = `${stem}-${step}`;
 	}
-	if (draft.year !== null) {
-		stem = `${stem}-${draft.year}`;
-		yield `${stem}${suffix}`;
-	}
-	for (let n = 2; ; n++) yield `${stem}-${n}${suffix}`;
 }
 
-/** First free `<folder>/<name>.md`. Existing files there are not duplicates (checked before). */
-function freeName(app: App, folder: string, draft: CatalogDraft): string {
-	for (const name of nameCandidates(draft)) {
-		if (!app.vault.getAbstractFileByPath(joinPath(folder, `${name}.md`))) return name;
+/**
+ * NameOwner of every note name in the vault (names compared without case,
+ * as links resolve them). Reads the file list and the metadata cache only.
+ */
+export function nameOwners(app: App, kind: MediaKind): (name: string) => NameOwner {
+	const byName = new Map<string, TFile[]>();
+	for (const file of app.vault.getMarkdownFiles()) {
+		const key = file.basename.toLowerCase();
+		byName.set(key, [...(byName.get(key) ?? []), file]);
 	}
-	throw new CatalogError('no free note name');
+	return (name) => {
+		const files = byName.get(name.toLowerCase());
+		if (!files) return 'free';
+		return files.some((file) => frontmatterOf(app, file)?.kind === kind) ? 'same-kind' : 'other';
+	};
 }
 
 async function resolveCover(app: App, draft: CatalogDraft, name: string, path: string): Promise<string> {
@@ -101,16 +136,16 @@ async function createReference(app: App, draft: CatalogDraft, area: string, name
 }
 
 /**
- * Resolves slug/path (collision → "-<year>", albums "-<artist>" first) in the catalog or backlog folder
- * (draft.destination), re-checks duplicates in both, downloads the cover when
+ * Re-checks duplicates in the catalog and backlog folders, resolves the
+ * note name (unique in the vault, see noteName) and its kind folder in the
+ * catalog or backlog folder (draft.destination, see destinationFolder), downloads the cover when
  * draft.cover.download (failure → Notice + keeps URL), writes the note (albums: with the tracklist) with a single
- * vault.create (creating the folder when missing), then creates the reference note when
+ * vault.create (creating the folders when missing), then creates the reference note when
  * draft.referenceArea (failure → Notice + `reference: ""`). Does NOT open the note.
  * Throws on unexpected failure.
  */
 export async function createCatalogNote(app: App, settings: CatalogSettings, draft: CatalogDraft): Promise<CreateResult> {
 	const backlog = draft.destination === 'backlog';
-	const folder = await ensureFolder(app, backlog ? settings.backlogFolder : settings.folder);
 	// Both folders: an item already in the backlog is not filed again in the catalog, and the other way round.
 	const duplicate = findInCatalogOrBacklog(app, settings, {
 		kind: draft.kind,
@@ -121,7 +156,8 @@ export async function createCatalogNote(app: App, settings: CatalogSettings, dra
 	});
 	if (duplicate) return { status: 'duplicate', file: duplicate };
 
-	const name = freeName(app, folder, draft);
+	const name = noteName(draft, nameOwners(app, draft.kind));
+	const folder = await ensureFolder(app, destinationFolder(app, settings, draft.destination, draft.kind, draft.title));
 	const path = joinPath(folder, `${name}.md`);
 	// The cover value goes into the file, so the download comes first. If vault.create
 	// fails afterwards, the image stays in the attachments (files are never deleted).

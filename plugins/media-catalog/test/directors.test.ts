@@ -4,7 +4,7 @@ import { TFile, TFolder } from 'obsidian';
 import type { App } from 'obsidian';
 import { findDuplicate } from '../src/catalog/duplicates';
 import { catalogFrontmatter } from '../src/catalog/frontmatter';
-import { nameCandidates } from '../src/catalog/note-writer';
+import { noteName } from '../src/catalog/note-writer';
 import { hasAuthor, initialValues } from '../src/modal/confirm-values';
 import { withDirectors } from '../src/modal/resolve-step';
 import type { CatalogDraft, Provider, SearchResult } from '../src/types';
@@ -40,15 +40,6 @@ function draft(overrides: Partial<CatalogDraft>): CatalogDraft {
 		localizedTitle: null,
 		...overrides,
 	};
-}
-
-function take<T>(items: Iterable<T>, count: number): T[] {
-	const taken: T[] = [];
-	for (const item of items) {
-		if (taken.length === count) break;
-		taken.push(item);
-	}
-	return taken;
 }
 
 function note(path: string, frontmatter: Record<string, unknown>): { file: TFile; frontmatter: Record<string, unknown> } {
@@ -92,10 +83,11 @@ describe('Movies: directors in author', () => {
 	});
 
 	test('the directors never go into the note name', () => {
-		const names = take(nameCandidates(draft({ author: 'Ilsa Marrow, Teodoro Brann' })), 3);
-		assert.deepEqual(names, ['fern-road', 'fern-road-1984', 'fern-road-1984-2']);
-		const album = take(nameCandidates(draft({ kind: 'album', title: 'Salt Choir', year: 2019, author: 'The Lanterns' })), 2);
-		assert.deepEqual(album, ['salt-choir', 'salt-choir-the-lanterns']);
+		const taken = new Set(['fern-road', 'fern-road-1984']);
+		const name = noteName(draft({ author: 'Ilsa Marrow, Teodoro Brann' }), (candidate) => (taken.has(candidate) ? 'same-kind' : 'free'));
+		assert.equal(name, 'fern-road-1984-2');
+		const album = draft({ kind: 'album', title: 'Salt Choir', year: 2019, author: 'The Lanterns' });
+		assert.equal(noteName(album, (candidate) => (candidate === 'salt-choir' ? 'same-kind' : 'free')), 'salt-choir-the-lanterns');
 	});
 
 	test('another director does not make a new film: still a duplicate', () => {

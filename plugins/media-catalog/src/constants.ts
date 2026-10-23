@@ -58,6 +58,17 @@ export const BACKLOG_ONLY_KEYS = ['priority', 'recommended_by'] as const;
 export const DEFAULT_FOLDER = '1 - Knowledge/Entertainment/DB';
 export const DEFAULT_TEMPLATE_NAME = 'media.md';
 export const DEFAULT_BACKLOG_FOLDER = '1 - Knowledge/Entertainment/Backlog/DB';
+/**
+ * Subfolder of each kind inside the catalog and backlog folders (data, never
+ * translated). Series get one more level: a folder per series (`Series/<name>/`).
+ */
+export const KIND_FOLDERS: Readonly<Record<(typeof KINDS)[number], string>> = {
+	movie: 'Movies',
+	series: 'Series',
+	game: 'Games',
+	book: 'Books',
+	album: 'Albums',
+};
 export const DEFAULT_BACKLOG_TEMPLATE_NAME = 'backlog-item.md';
 export const REFERENCE_BOOKS_PATH = '_References/Books';
 
@@ -200,6 +211,7 @@ export const COMMAND_IDS = {
 	newRun: 'new-run',
 	startBacklogItem: 'start-backlog-item',
 	updateEstimate: 'update-estimated-time',
+	moveToKindFolder: 'move-to-kind-folder',
 } as const;
 
 export const SETTINGS_ICON = 'clapperboard';
