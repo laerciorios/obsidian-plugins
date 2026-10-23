@@ -1,6 +1,6 @@
 import { PluginSettingTab } from 'obsidian';
 import type { App, Plugin, SettingDefinitionItem } from 'obsidian';
-import type { FolderStyle, FolderStyleSettings } from '../types';
+import type { FolderStyle, FolderStyleSettings, SvgFile, SvgProblem } from '../types';
 import { FolderStyleModal } from '../ui/folder-style-modal';
 import type { ModalHost } from '../ui/folder-style-modal';
 import { key, settingDefinitions } from './definitions';
@@ -9,6 +9,7 @@ import type { DefinitionContext } from './definitions';
 export interface SettingsHost extends Plugin, ModalHost {
 	settings: FolderStyleSettings;
 	missingIcons: ReadonlySet<string>;
+	svgProblems: Readonly<Record<string, SvgProblem>>;
 	/** Settings changed: regenerate the stylesheet and save. */
 	settingsChanged(): void;
 }
@@ -59,6 +60,14 @@ export class FolderStyleSettingTab extends PluginSettingTab implements Definitio
 
 	hasMissingIcon(path: string): boolean {
 		return this.plugin.missingIcons.has(path);
+	}
+
+	svgProblem(path: string): SvgProblem | undefined {
+		return this.plugin.svgProblems[path];
+	}
+
+	svgFile(path: string): SvgFile | undefined {
+		return this.plugin.svgs.lookup(path);
 	}
 
 	folderExists(path: string): boolean {

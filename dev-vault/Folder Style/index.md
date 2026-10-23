@@ -1,6 +1,6 @@
 # Folder Style: casos de teste
 
-As pastas aqui dentro são fictícias e existem só para receber símbolo e cor no explorador. Nomes com aspas, acentos e espaços, a pasta `Notas` em três níveis diferentes (`Notas`, `Área "Citações"/Notas` e `Estudos/Livros/Notas`) e subpastas em três níveis (`Estudos/Livros/2026`).
+As pastas aqui dentro são fictícias e existem só para receber símbolo e cor no explorador. Nomes com aspas, acentos e espaços, a pasta `Notas` em três níveis diferentes (`Notas`, `Área "Citações"/Notas` e `Estudos/Livros/Notas`) e subpastas em três níveis (`Estudos/Livros/2026`). Em `Clientes/`, duas empresas fictícias recebem logos SVG de `Attachments/`: `horta-viva-logo.svg` (colorido) e `sementeira-logo.svg` (de uma cor, sem `xmlns` de propósito).
 
 ## Preparação
 
@@ -16,6 +16,8 @@ As pastas aqui dentro são fictícias e existem só para receber símbolo e cor 
 | `Folder Style/Notas` | texto `B` | hex `#d97706` |
 | `Folder Style/Projetos de horta` | ícone `sprout` | verde |
 | `Folder Style/Ícones/Sem ícone` | ícone `circle` | rosa |
+| `Folder Style/Clientes/Horta Viva` | arquivo SVG `Attachments/horta-viva-logo.svg` | nenhuma |
+| `Folder Style/Clientes/Sementeira` | arquivo SVG `Attachments/sementeira-logo.svg`, "Usar a cor da pasta" ligado | ciano |
 
 ## Explorador
 
@@ -42,6 +44,19 @@ As pastas aqui dentro são fictícias e existem só para receber símbolo e cor 
 - [ ] Hex inválido (`#12`): aparece o erro e "Salvar" fica desabilitado. Apagar o hex volta para "sem cor".
 - [ ] "Remover personalização" limpa a pasta.
 - [ ] Feche o Obsidian, edite `.obsidian/plugins/folder-style/data.json` e troque o ícone de `Folder Style/Ícones/Sem ícone` por `nao-existe`. Ao abrir de novo, a pasta fica só com a cor, e a aba de configurações e o modal avisam.
+
+## Arquivo SVG
+
+- [ ] No modal, "Arquivo SVG" → "Escolher arquivo" e busca "horta": a lista mostra `horta-viva-logo.svg` com prévia e o caminho; escolher mostra a prévia no modal e na linha de prévia do topo.
+- [ ] `Clientes/Horta Viva` mostra o logo nas cores originais antes do nome, do tamanho do ícone; `Clientes/Sementeira` mostra o logo em ciano (cor da pasta). Desligar "Usar a cor da pasta" volta para as cores do arquivo (o cinza escuro).
+- [ ] "Usar a cor da pasta" numa pasta sem cor: o logo fica na cor do texto do tema, nos temas claro e escuro.
+- [ ] Trocar o símbolo para "Ícone" e de volta para "Arquivo SVG" no mesmo modal mantém o arquivo escolhido.
+- [ ] Edite `Attachments/sementeira-logo.svg` fora do Obsidian (troque o `fill`): o explorador atualiza sozinho.
+- [ ] Renomeie `Attachments/horta-viva-logo.svg` para `horta-viva.svg` pelo Obsidian: o logo continua na pasta e o `data.json` aponta para o nome novo. Renomeie de volta.
+- [ ] Apague `sementeira-logo.svg` (vai para a lixeira): a pasta fica só com a cor, as demais continuam, e Configurações → Folder Style avisa que o arquivo não está no vault. Restaure o arquivo: o logo volta.
+- [ ] Um SVG com mais de 100 KB não aparece na busca do modal; apontado à mão no `data.json`, a pasta fica sem símbolo e a aba avisa que o arquivo é grande demais.
+- [ ] Configurações → Folder Style: as duas pastas mostram "SVG: <nome do arquivo>" com a prévia (a da Sementeira com "na cor da pasta").
+- [ ] Graph Kit com "Símbolos do Folder Style" ligado: as notas de `Clientes/` mostram o logo no nó (o da Sementeira na cor do ícone, como os ícones Lucide), e nada quebra.
 
 ## Configurações
 

@@ -4,14 +4,18 @@ import { CLS, HEX_PICKER_DEFAULT, HEX_PLACEHOLDER, PRESET_COLORS, PREVIEW_COLOR_
 import { normalizeHex, presetChannels } from '../css/color';
 import { isInside } from '../folders';
 import { t } from '../i18n';
+import type { VaultSvgs } from '../svg-files';
 import type { FolderStyle, FolderStyleSettings, PresetColor } from '../types';
 import { draftFromStyle, styleFromDraft } from './draft';
 import type { Draft } from './draft';
 import { IconPicker } from './icon-picker';
 import { FolderPreview } from './preview';
+import { SvgPicker } from './svg-picker';
 
 export interface ModalHost {
 	settings: FolderStyleSettings;
+	/** Vault SVGs read so far; the picker reads the ones it shows. */
+	svgs: VaultSvgs;
 	/** Customize one folder; null removes its customization. */
 	setFolderStyle(path: string, style: FolderStyle | null): void;
 }
@@ -24,6 +28,7 @@ export class FolderStyleModal extends Modal {
 	private preview: FolderPreview | null = null;
 	private textSetting: Setting | null = null;
 	private iconPicker: IconPicker | null = null;
+	private svgPicker: SvgPicker | null = null;
 	private readonly chips = new Map<ChipKey, HTMLButtonElement>();
 	private hexError: HTMLElement | null = null;
 	private saveButton: ButtonComponent | null = null;
@@ -44,7 +49,7 @@ export class FolderStyleModal extends Modal {
 		this.modalEl.addClass(CLS.modal);
 		const { contentEl } = this;
 
-		this.preview = new FolderPreview(contentEl, name, () => this.host.settings);
+		this.preview = new FolderPreview(contentEl, name, () => this.host.settings, this.host.svgs.lookup);
 		this.renderSymbol(contentEl);
 		this.renderColor(contentEl);
 		this.renderButtons(contentEl);
@@ -55,9 +60,15 @@ export class FolderStyleModal extends Modal {
 			if (isInside(this.path, path)) this.close();
 		};
 		this.vaultEvents.push(
-			this.app.vault.on('rename', (_file, oldPath) => closeIfAffected(oldPath)),
+			this.app.vault.on('rename', (file, oldPath) => {
+				closeIfAffected(oldPath);
+				// The chosen SVG moved: follow it, as the saved styles do.
+				if (oldPath === this.draft.svg) this.setSvg(file.path, this.draft.tint);
+			}),
 			this.app.vault.on('delete', (file) => closeIfAffected(file.path)),
 		);
+		// A saved SVG not read yet (or changed since): read it for the picker and the preview.
+		if (this.draft.svg) void this.host.svgs.load([this.draft.svg]).then(() => this.setSvg(this.draft.svg, this.draft.tint));
 	}
 
 	onClose(): void {
@@ -72,10 +83,10 @@ export class FolderStyleModal extends Modal {
 			.setDesc(t('modal.symbol.desc'))
 			.addDropdown((dropdown) =>
 				dropdown
-					.addOptions({ none: t('modal.symbol.none'), text: t('modal.symbol.text'), lucide: t('modal.symbol.lucide') })
+					.addOptions({ none: t('modal.symbol.none'), text: t('modal.symbol.text'), lucide: t('modal.symbol.lucide'), svg: t('modal.symbol.svg') })
 					.setValue(this.draft.symbolKind)
 					.onChange((value) => {
-						this.draft.symbolKind = value === 'text' || value === 'lucide' ? value : 'none';
+						this.draft.symbolKind = value === 'text' || value === 'lucide' || value === 'svg' ? value : 'none';
 						this.refresh();
 					}),
 			);
@@ -93,6 +104,18 @@ export class FolderStyleModal extends Modal {
 			this.draft.icon = icon;
 			this.refresh();
 		});
+		this.svgPicker = new SvgPicker(this.app, parent, this.host.svgs, this.draft.svg, this.draft.tint, (path, tint) => {
+			this.draft.svg = path;
+			this.draft.tint = tint;
+			this.refresh();
+		});
+	}
+
+	private setSvg(path: string, tint: boolean): void {
+		this.draft.svg = path;
+		this.draft.tint = tint;
+		this.svgPicker?.setPath(path);
+		this.refresh();
 	}
 
 	private renderColor(parent: HTMLElement): void {
@@ -163,6 +186,7 @@ export class FolderStyleModal extends Modal {
 	private refresh(): void {
 		this.textSetting?.settingEl.toggle(this.draft.symbolKind === 'text');
 		this.iconPicker?.el.toggle(this.draft.symbolKind === 'lucide');
+		this.svgPicker?.el.toggle(this.draft.symbolKind === 'svg');
 		const color = this.draft.color;
 		const activeChip = color.kind === 'preset' ? color.value : color.kind;
 		for (const [key, chip] of this.chips) {

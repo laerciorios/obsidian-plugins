@@ -1,7 +1,7 @@
 {
 	"id": "folder-style",
 	"name": "Folder Style",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"minAppVersion": "1.13.0",
 	"description": "Symbol and translucent color for folders in the file explorer, without renaming them.",
 	"author": "Laercio Rios",

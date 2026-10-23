@@ -4,7 +4,7 @@ import { folderCss } from '../css/folder-css';
 import { t } from '../i18n';
 import { lucideSvg } from '../icons';
 import { FolderStyleSheet } from '../style-sheet';
-import type { FolderStyle, FolderStyleSettings, FolderStyles } from '../types';
+import type { FolderStyle, FolderStyleSettings, FolderStyles, SvgLookup } from '../types';
 
 /** Not a possible folder path (":" is not allowed in file names), so no real folder matches. */
 const PREVIEW_PATH = 'folder-style:preview';
@@ -20,6 +20,7 @@ export class FolderPreview {
 		parent: HTMLElement,
 		name: string,
 		private readonly settings: () => FolderStyleSettings,
+		private readonly vaultSvg: SvgLookup,
 	) {
 		const container = parent.createDiv({ cls: ['nav-files-container', CLS.modalPreview] });
 		const folder = container.createDiv({ cls: 'tree-item nav-folder' });
@@ -39,7 +40,7 @@ export class FolderPreview {
 
 	show(style: FolderStyle | null): void {
 		const folders: FolderStyles = style ? { [PREVIEW_PATH]: style } : {};
-		this.sheet.update(folderCss({ ...this.settings(), folders }, lucideSvg).css);
+		this.sheet.update(folderCss({ ...this.settings(), folders }, { iconSvg: lucideSvg, vaultSvg: this.vaultSvg }).css);
 	}
 
 	remove(): void {

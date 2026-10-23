@@ -92,3 +92,63 @@
 .fs-chip.is-active {
 	box-shadow: 0 0 0 var(--border-width) var(--text-normal);
 }
+
+/* A vault SVG at icon size (--fs-svg-url holds its url()); tinted, it takes the text color. */
+.fs-svg {
+	display: inline-block;
+	flex-shrink: 0;
+	width: var(--icon-s);
+	height: var(--icon-s);
+	vertical-align: middle;
+	background-image: var(--fs-svg-url);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.fs-svg.fs-svg-tint {
+	background-image: none;
+	background-color: currentColor;
+	-webkit-mask-image: var(--fs-svg-url);
+	mask-image: var(--fs-svg-url);
+	-webkit-mask-size: contain;
+	mask-size: contain;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+	mask-position: center;
+}
+
+.fs-svg-picker {
+	padding-bottom: var(--size-4-3);
+	border-bottom: var(--border-width) solid var(--background-modifier-border);
+}
+
+.fs-svg-picker .fs-icon-selected {
+	margin-top: var(--size-4-1);
+	overflow-wrap: anywhere;
+}
+
+.fs-svg-suggestion {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-3);
+}
+
+/* The preview slot keeps its size while the file is read, so the names stay aligned. */
+.fs-svg-suggestion > :first-child {
+	display: flex;
+	flex-shrink: 0;
+	width: var(--icon-l);
+	height: var(--icon-l);
+}
+
+.fs-svg-suggestion .fs-svg {
+	width: 100%;
+	height: 100%;
+}
+
+.fs-svg-suggestion-path {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}

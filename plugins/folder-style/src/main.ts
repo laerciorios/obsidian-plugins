@@ -2,17 +2,24 @@ import { Plugin, debounce } from 'obsidian';
 import { SAVE_DEBOUNCE_MS } from './constants';
 import { folderCss } from './css/folder-css';
 import { registerFolderEvents } from './folder-events';
+import { usedSvgPaths } from './folders';
 import { lucideSvg } from './icons';
 import { defaultSettings, normalizeSettings } from './settings/settings';
 import { FolderStyleSettingTab } from './settings/settings-tab';
 import { FolderStyleSheet } from './style-sheet';
-import type { FolderStyle, FolderStyleSettings, FolderStyles } from './types';
+import { VaultSvgs } from './svg-files';
+import type { FolderStyle, FolderStyleSettings, FolderStyles, SvgProblem } from './types';
 import { registerFolderMenu } from './ui/folder-menu';
 
 export default class FolderStylePlugin extends Plugin {
 	settings: FolderStyleSettings = defaultSettings();
 	/** Folders whose Lucide icon is missing, for the settings tab to flag. */
 	missingIcons = new Set<string>();
+	/** Folders whose vault SVG cannot be drawn, and why, for the settings tab to flag. */
+	svgProblems: Record<string, SvgProblem> = {};
+	readonly svgs = new VaultSvgs(this.app.vault);
+	/** SVGs are read only once the vault has listed its files (until then `getFileByPath` may miss them). */
+	private canReadSvgs = false;
 	private readonly sheet = new FolderStyleSheet();
 	private settingTab: FolderStyleSettingTab | null = null;
 	private readonly saveSoon = debounce(() => void this.saveData(this.settings), SAVE_DEBOUNCE_MS, true);
@@ -21,6 +28,10 @@ export default class FolderStylePlugin extends Plugin {
 		this.settings = normalizeSettings(await this.loadData());
 		this.register(() => this.sheet.remove());
 		this.refresh();
+		this.app.workspace.onLayoutReady(() => {
+			this.canReadSvgs = true;
+			this.refresh();
+		});
 
 		this.sheet.attach(document);
 		// The explorer can live in a popout window: already open ones, and those opened later.
@@ -67,10 +78,29 @@ export default class FolderStylePlugin extends Plugin {
 		this.settingTab?.update();
 	}
 
-	/** Regenerate the whole stylesheet from the settings. */
+	forgetSvg(path: string): void {
+		this.svgs.forget(path);
+	}
+
+	/**
+	 * Regenerate the whole stylesheet from the settings. SVGs not read yet are left out, then
+	 * read, and the stylesheet (and the warnings of the settings tab) generated again.
+	 */
 	refresh(): void {
-		const { css, missingIcons } = folderCss(this.settings, lucideSvg);
+		this.render();
+		if (!this.canReadSvgs) return;
+		const paths = [...usedSvgPaths(this.settings.folders)];
+		if (paths.every((path) => this.svgs.lookup(path))) return;
+		void this.svgs.load(paths).then(() => {
+			this.render();
+			this.refreshSettingTab();
+		});
+	}
+
+	private render(): void {
+		const { css, missingIcons, svgProblems } = folderCss(this.settings, { iconSvg: lucideSvg, vaultSvg: this.svgs.lookup });
 		this.missingIcons = new Set(missingIcons);
+		this.svgProblems = svgProblems;
 		this.sheet.update(css);
 	}
 }

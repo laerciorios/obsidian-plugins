@@ -53,6 +53,24 @@ describe('loading data.json', () => {
 		});
 	});
 
+	test('an SVG symbol keeps its path and tint; a wrong tint or an empty path drops the symbol', () => {
+		const settings = normalizeSettings({
+			folders: {
+				Plain: { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg' } },
+				Tinted: { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg', tint: true } },
+				Untinted: { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg', tint: false } },
+				BadTint: { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg', tint: 'yes' }, color: { kind: 'preset', value: 'red' } },
+				Empty: { symbol: { kind: 'svg', value: ' ' } },
+			},
+		});
+		assert.deepEqual(settings.folders, {
+			Plain: { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg' } },
+			Tinted: { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg', tint: true } },
+			Untinted: { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg', tint: false } },
+			BadTint: { color: { kind: 'preset', value: 'red' } },
+		});
+	});
+
 	test('the vault root and empty entries are dropped', () => {
 		const settings = normalizeSettings({
 			folders: { '/': { symbol: { kind: 'text', value: '★' } }, '': { symbol: { kind: 'text', value: '★' } }, Empty: {}, Bad: 'x' },

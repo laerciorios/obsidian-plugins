@@ -1,26 +1,31 @@
 import { ACTIVE_OPACITY_STEP, HOVER_OPACITY_STEP } from '../constants';
-import type { FolderStyle, FolderStyleSettings, IconLookup } from '../types';
+import type { FolderStyle, FolderStyleSettings, SvgProblem } from '../types';
 import { colorChannels, cssAlpha } from './color';
 import { cssString } from './escape';
 import { symbolDeclarations } from './symbol';
+import type { SymbolSources } from './symbol';
 
 export interface FolderCss {
 	css: string;
 	/** Folders whose Lucide icon Obsidian does not have (any more): their symbol is skipped. */
 	missingIcons: string[];
+	/** Folders whose vault SVG cannot be drawn, and why: their symbol is skipped. */
+	svgProblems: Record<string, SvgProblem>;
 }
 
-/** Settings → the whole stylesheet. Pure: Obsidian's icons come in through `iconSvg`. */
-export function folderCss(settings: FolderStyleSettings, iconSvg: IconLookup): FolderCss {
+/** Settings → the whole stylesheet. Pure: Obsidian's icons and the vault's SVGs come in through `sources`. */
+export function folderCss(settings: FolderStyleSettings, sources: SymbolSources): FolderCss {
 	const rules: string[] = [];
 	const missingIcons: string[] = [];
+	const svgProblems: Record<string, SvgProblem> = {};
 	for (const [path, style] of Object.entries(settings.folders)) {
 		if (isRoot(path)) continue;
-		const folder = folderRules(path, style, settings, iconSvg);
+		const folder = folderRules(path, style, settings, sources);
 		rules.push(...folder.rules);
-		if (folder.missingIcon) missingIcons.push(path);
+		if (folder.symbol === 'missing-icon') missingIcons.push(path);
+		else if (folder.symbol !== 'ok') svgProblems[path] = folder.symbol;
 	}
-	return { css: rules.join('\n'), missingIcons };
+	return { css: rules.join('\n'), missingIcons, svgProblems };
 }
 
 function isRoot(path: string): boolean {
@@ -31,8 +36,8 @@ function folderRules(
 	path: string,
 	style: FolderStyle,
 	settings: FolderStyleSettings,
-	iconSvg: IconLookup,
-): { rules: string[]; missingIcon: boolean } {
+	sources: SymbolSources,
+): { rules: string[]; symbol: 'ok' | 'missing-icon' | SvgProblem } {
 	// `.nav-files-container` keeps it to the file explorer and outweighs the core
 	// `body:not(.is-grabbing) .tree-item-self.is-clickable:hover` (0,4,1).
 	const title = `.nav-files-container .nav-folder-title[data-path=${cssString(path)}]`;
@@ -49,11 +54,12 @@ function folderRules(
 		if (settings.tintChildren) rules.push(`${title} + .nav-folder-children { ${tint(settings.opacity / 2)} }`);
 	}
 
-	const symbol = symbolDeclarations(style.symbol, channels, settings.symbolSize, iconSvg);
+	const symbol = symbolDeclarations(style.symbol, channels, settings.symbolSize, sources);
 	if (symbol.kind === 'ok') {
 		// Hidden while the name is being edited, like the core rule for the title content.
 		const name = `${title} > .nav-folder-title-content:not([contenteditable="true"])`;
 		rules.push(`${name}::before { ${symbol.declarations} }`);
 	}
-	return { rules, missingIcon: symbol.kind === 'missing-icon' };
+	if (symbol.kind === 'missing-icon') return { rules, symbol: 'missing-icon' };
+	return { rules, symbol: symbol.kind === 'missing-svg' ? symbol.problem : 'ok' };
 }

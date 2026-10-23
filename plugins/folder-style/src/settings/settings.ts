@@ -42,7 +42,10 @@ function folderStyle(entry: unknown): FolderStyle | null {
 function folderSymbol(value: unknown): FolderSymbol | null {
 	if (!isRecord(value) || typeof value.value !== 'string' || !value.value.trim()) return null;
 	if (value.kind === 'text' || value.kind === 'lucide') return { kind: value.kind, value: value.value };
-	return null;
+	if (value.kind !== 'svg') return null;
+	// `tint` other than a boolean is dropped with the symbol, not guessed.
+	if (value.tint === undefined) return { kind: 'svg', value: value.value };
+	return typeof value.tint === 'boolean' ? { kind: 'svg', value: value.value, tint: value.tint } : null;
 }
 
 function folderColor(value: unknown): FolderColor | null {

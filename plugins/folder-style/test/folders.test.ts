@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { foldersAfterDelete, foldersAfterRename } from '../src/folders';
+import { foldersAfterDelete, foldersAfterRename, foldersAfterSvgRename, usedSvgPaths } from '../src/folders';
 import type { FolderStyle } from '../src/types';
 
 const star: FolderStyle = { symbol: { kind: 'text', value: '★' } };
@@ -49,5 +49,34 @@ describe('deleting a folder', () => {
 
 	test('nothing to remove gives null', () => {
 		assert.equal(foldersAfterDelete({ Work: red }, 'Reading'), null);
+	});
+});
+
+describe('renaming or moving an SVG file', () => {
+	const logo: FolderStyle = { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg' }, color: { kind: 'preset', value: 'blue' } };
+	const tinted: FolderStyle = { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg', tint: true } };
+	const other: FolderStyle = { symbol: { kind: 'svg', value: 'Attachments/other.svg' } };
+
+	test('every folder that used it points to the new path and keeps the rest of its style', () => {
+		const folders = { 'Clients/Acme': logo, 'Clients/Acme/Archive': tinted, Work: other, Reading: star };
+		assert.deepEqual(foldersAfterSvgRename(folders, 'Attachments/acme-logo.svg', 'Attachments/Logos/acme.svg'), {
+			'Clients/Acme': { symbol: { kind: 'svg', value: 'Attachments/Logos/acme.svg' }, color: { kind: 'preset', value: 'blue' } },
+			'Clients/Acme/Archive': { symbol: { kind: 'svg', value: 'Attachments/Logos/acme.svg', tint: true } },
+			Work: other,
+			Reading: star,
+		});
+	});
+
+	test('a file no folder uses gives null, so nothing is saved', () => {
+		assert.equal(foldersAfterSvgRename({ Work: other, Reading: star }, 'Attachments/acme-logo.svg', 'Attachments/acme.svg'), null);
+	});
+
+	test('a text symbol equal to the path is not an SVG', () => {
+		const text: FolderStyle = { symbol: { kind: 'text', value: 'a.svg' } };
+		assert.equal(foldersAfterSvgRename({ Odd: text }, 'a.svg', 'b.svg'), null);
+	});
+
+	test('the SVG files in use are listed once each', () => {
+		assert.deepEqual([...usedSvgPaths({ A: logo, B: tinted, C: other, D: star, E: blue })], ['Attachments/acme-logo.svg', 'Attachments/other.svg']);
 	});
 });

@@ -1,19 +1,29 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { folderCss } from '../src/css/folder-css';
+import { withSvgNamespace } from '../src/css/symbol';
 import { defaultSettings } from '../src/settings/settings';
-import type { FolderStyle, FolderStyleSettings } from '../src/types';
+import type { FolderStyle, FolderStyleSettings, SvgFile } from '../src/types';
 
 const BOOK_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 3h6"/></svg>';
 const icons: Record<string, string> = { 'book-open': BOOK_SVG };
 const iconSvg = (id: string): string | null => icons[id] ?? null;
+const LOGO_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#e11d48"/></svg>';
+const vaultFiles: Record<string, SvgFile> = {
+	'Attachments/acme-logo.svg': { ok: true, svg: LOGO_SVG },
+	'Attachments/empty.svg': { ok: false, problem: 'empty' },
+	'Attachments/huge.svg': { ok: false, problem: 'too-large' },
+};
+/** Paths not listed were never read; `Attachments/gone.svg` was read and is not in the vault. */
+const vaultSvg = (path: string): SvgFile | undefined => (path === 'Attachments/gone.svg' ? { ok: false, problem: 'missing' } : vaultFiles[path]);
+const sources = { iconSvg, vaultSvg };
 
 function settings(folders: Record<string, FolderStyle>, overrides: Partial<FolderStyleSettings> = {}): FolderStyleSettings {
 	return { ...defaultSettings(), folders, ...overrides };
 }
 
 function cssFor(folders: Record<string, FolderStyle>, overrides?: Partial<FolderStyleSettings>): string {
-	return folderCss(settings(folders, overrides), iconSvg).css;
+	return folderCss(settings(folders, overrides), sources).css;
 }
 
 describe('text symbol', () => {
@@ -129,7 +139,7 @@ describe('lucide symbol', () => {
 				Library: { symbol: { kind: 'lucide', value: 'gone-icon' }, color: { kind: 'preset', value: 'blue' } },
 				Reading: { symbol: { kind: 'lucide', value: 'book-open' } },
 			}),
-			iconSvg,
+			sources,
 		);
 		assert.deepEqual(result.missingIcons, ['Library']);
 		assert.doesNotMatch(result.css, before);
@@ -138,8 +148,73 @@ describe('lucide symbol', () => {
 	});
 
 	test('nothing is reported when every icon exists', () => {
-		const result = folderCss(settings({ Reading: { symbol: { kind: 'lucide', value: 'book-open' } } }), iconSvg);
+		const result = folderCss(settings({ Reading: { symbol: { kind: 'lucide', value: 'book-open' } } }), sources);
 		assert.deepEqual(result.missingIcons, []);
+	});
+});
+
+describe('vault SVG symbol', () => {
+	const before = /\[data-path="Clients\/Acme"\] > \.nav-folder-title-content:not\(\[contenteditable="true"\]\)::before/;
+	const logoUrl = `url("data:image/svg+xml,${encodeURIComponent(LOGO_SVG)}")`;
+
+	test('keeps its own colors as a background image in the icon box', () => {
+		const css = cssFor({ 'Clients/Acme': { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg' }, color: { kind: 'preset', value: 'blue' } } });
+		const symbol = block(css, before);
+		assert.ok(symbol.includes(`background-image: ${logoUrl};`), symbol);
+		assert.match(symbol, /content: ""; display: inline-block; width: 1em; height: 1em;/);
+		assert.match(symbol, /background-size: contain; background-repeat: no-repeat; background-position: center;/);
+		assert.doesNotMatch(symbol, /mask|background-color/);
+	});
+
+	test('with tint, is a mask painted in the folder color, like a Lucide icon', () => {
+		const css = cssFor({ 'Clients/Acme': { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg', tint: true }, color: { kind: 'hex', value: '#00ff00' } } });
+		const symbol = block(css, before);
+		assert.ok(symbol.includes(`mask-image: ${logoUrl};`), symbol);
+		assert.match(symbol, /background-color: rgb\(0, 255, 0\);/);
+		assert.doesNotMatch(symbol, /background-image/);
+	});
+
+	test('with tint and no folder color, takes the theme text color', () => {
+		const css = cssFor({ 'Clients/Acme': { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg', tint: true } } });
+		assert.match(block(css, before), /background-color: currentColor;/);
+	});
+
+	test('follows the symbol size', () => {
+		const css = cssFor({ 'Clients/Acme': { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg' } } }, { symbolSize: 1.25 });
+		assert.match(block(css, before), /width: 1\.25em; height: 1\.25em;/);
+	});
+
+	test('a missing, empty or too large file is skipped and reported, the rest still applies', () => {
+		const result = folderCss(
+			settings({
+				Gone: { symbol: { kind: 'svg', value: 'Attachments/gone.svg' }, color: { kind: 'preset', value: 'red' } },
+				Empty: { symbol: { kind: 'svg', value: 'Attachments/empty.svg' } },
+				Huge: { symbol: { kind: 'svg', value: 'Attachments/huge.svg', tint: true } },
+				'Clients/Acme': { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg' } },
+			}),
+			sources,
+		);
+		assert.deepEqual(result.svgProblems, { Gone: 'missing', Empty: 'empty', Huge: 'too-large' });
+		assert.deepEqual(result.missingIcons, []);
+		assert.doesNotMatch(result.css, /"(Gone|Empty|Huge)"\] > /);
+		assert.match(result.css, /\[data-path="Gone"\]:not\(\.is-being-dragged, \.is-being-dragged-over\) \{/);
+		assert.match(result.css, before);
+	});
+
+	test('a file not read yet draws nothing and is not reported', () => {
+		const result = folderCss(settings({ Later: { symbol: { kind: 'svg', value: 'Attachments/later.svg' } } }), sources);
+		assert.equal(result.css, '');
+		assert.deepEqual(result.svgProblems, {});
+	});
+
+	test('the SVG namespace is added when the file leaves it out, so the data URL draws', () => {
+		assert.equal(withSvgNamespace('<svg viewBox="0 0 1 1"><path/></svg>'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path/></svg>');
+		assert.equal(
+			withSvgNamespace('<?xml version="1.0"?>\n<!-- logo -->\n<SVG width="1">'),
+			'<?xml version="1.0"?>\n<!-- logo -->\n<SVG xmlns="http://www.w3.org/2000/svg" width="1">',
+		);
+		assert.equal(withSvgNamespace(LOGO_SVG), LOGO_SVG);
+		assert.equal(withSvgNamespace('not svg'), 'not svg');
 	});
 });
 

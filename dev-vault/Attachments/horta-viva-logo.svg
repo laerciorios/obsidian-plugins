@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Horta Viva (empresa fictícia do dev-vault): logo colorido -->
+  <circle cx="32" cy="32" r="30" fill="#fde68a"/>
+  <path d="M32 54V30" stroke="#15803d" stroke-width="4" stroke-linecap="round"/>
+  <path d="M32 34C20 34 14 26 14 16c10 0 18 6 18 18z" fill="#22c55e"/>
+  <path d="M32 30c0-12 7-18 18-18 0 11-7 18-18 18z" fill="#16a34a"/>
+  <circle cx="44" cy="44" r="7" fill="#ea580c"/>
+</svg>

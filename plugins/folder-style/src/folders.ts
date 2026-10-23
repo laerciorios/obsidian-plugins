@@ -27,3 +27,26 @@ export function foldersAfterDelete(folders: FolderStyles, deletedPath: string): 
 	const next = Object.fromEntries(Object.entries(folders).filter(([path]) => !isInside(path, deletedPath)));
 	return Object.keys(next).length === Object.keys(folders).length ? null : next;
 }
+
+/** Vault SVG files used as symbols, by path. */
+export function usedSvgPaths(folders: FolderStyles): Set<string> {
+	const paths = new Set<string>();
+	for (const style of Object.values(folders)) if (style.symbol?.kind === 'svg') paths.add(style.symbol.value);
+	return paths;
+}
+
+/**
+ * Styles after an SVG file is renamed or moved: every folder that used it points to the new
+ * path (and keeps `tint`). Null when no folder used it.
+ */
+export function foldersAfterSvgRename(folders: FolderStyles, oldPath: string, newPath: string): FolderStyles | null {
+	let changed = false;
+	const next: FolderStyles = {};
+	for (const [path, style] of Object.entries(folders)) {
+		if (style.symbol?.kind === 'svg' && style.symbol.value === oldPath) {
+			next[path] = { ...style, symbol: { ...style.symbol, value: newPath } };
+			changed = true;
+		} else next[path] = style;
+	}
+	return changed ? next : null;
+}

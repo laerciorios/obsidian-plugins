@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { draftFromStyle, styleFromDraft } from '../src/ui/draft';
 import type { Draft } from '../src/ui/draft';
 
-const empty: Draft = { symbolKind: 'none', text: '', icon: '', color: { kind: 'none' }, hex: '' };
+const empty: Draft = { symbolKind: 'none', text: '', icon: '', svg: '', tint: false, color: { kind: 'none' }, hex: '' };
 
 describe('opening the modal', () => {
 	test('a folder without style starts empty', () => {
@@ -27,6 +27,8 @@ describe('opening the modal', () => {
 	});
 });
 
+const draftSaved = { ok: true, style: { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg', tint: true } } };
+
 describe('saving the modal', () => {
 	test('the chosen symbol and color become the style', () => {
 		assert.deepEqual(styleFromDraft({ ...empty, symbolKind: 'lucide', icon: 'book-open', color: { kind: 'preset', value: 'blue' } }), {
@@ -39,6 +41,20 @@ describe('saving the modal', () => {
 		const draft: Draft = { ...empty, symbolKind: 'text', text: ' ★ ', icon: 'book-open' };
 		assert.deepEqual(styleFromDraft(draft), { ok: true, style: { symbol: { kind: 'text', value: '★' } } });
 		assert.deepEqual(styleFromDraft({ ...draft, symbolKind: 'none' }), { ok: true, style: null });
+	});
+
+	test('an SVG file is saved with tint only when on', () => {
+		const draft: Draft = { ...empty, symbolKind: 'svg', svg: 'Attachments/acme-logo.svg' };
+		assert.deepEqual(styleFromDraft(draft), { ok: true, style: { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg' } } });
+		assert.deepEqual(styleFromDraft({ ...draft, tint: true }), { ok: true, style: { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg', tint: true } } });
+		assert.deepEqual(styleFromDraft({ ...draft, svg: '' }), { ok: true, style: null });
+	});
+
+	test('switching kinds keeps the chosen SVG file for when it is selected again', () => {
+		const draft = draftFromStyle({ symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg', tint: true } });
+		assert.deepEqual(draft, { ...empty, symbolKind: 'svg', svg: 'Attachments/acme-logo.svg', tint: true });
+		assert.deepEqual(styleFromDraft({ ...draft, symbolKind: 'lucide', icon: 'book-open' }), { ok: true, style: { symbol: { kind: 'lucide', value: 'book-open' } } });
+		assert.deepEqual(styleFromDraft({ ...draft, symbolKind: 'svg', icon: 'book-open' }), draftSaved);
 	});
 
 	test('an empty text or no icon chosen is no symbol', () => {
