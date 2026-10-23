@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { Reader } from '../src/config/reader';
 import { defaultIcons, readIcons } from '../src/features/icons/config';
 import type { IconsConfig } from '../src/features/icons/config';
-import { folderSymbol, graphemes, iconFor, iconFromValue, readFolderStyleSymbols } from '../src/features/icons/resolve';
+import { folderSvgPaths, folderSymbol, graphemes, iconFor, iconFromValue, readFolderStyleSymbols, svgIconMarkup } from '../src/features/icons/resolve';
 import type { NoteFacts } from '../src/rules/types';
 
 const lucide = (id: string) => ['book-open', 'sprout', 'users'].includes(id);
@@ -55,6 +55,37 @@ describe('Folder Style symbols', () => {
 		assert.deepEqual(readFolderStyleSymbols(data), { Work: { kind: 'text', value: '💼' }, Study: { kind: 'lucide', value: 'book-open' } });
 		assert.equal(readFolderStyleSymbols({ version: 1 }), null);
 		assert.equal(readFolderStyleSymbols('x'), null);
+	});
+
+	test('SVG files from the vault, with tint when on; an empty path is skipped', () => {
+		const symbols = readFolderStyleSymbols({
+			folders: {
+				'Work/Acme': { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg' } },
+				'Work/Globex': { symbol: { kind: 'svg', value: 'Attachments/globex-logo.svg', tint: true } },
+				'Work/Initech': { symbol: { kind: 'svg', value: 'Attachments/acme-logo.svg', tint: 'yes' } },
+				Empty: { symbol: { kind: 'svg', value: ' ' } },
+			},
+		});
+		// Before deepEqual, which narrows `symbols` to the plain object it is compared with.
+		assert.deepEqual(folderSvgPaths({ ...symbols, Work: { kind: 'text', value: '💼' } }), ['Attachments/acme-logo.svg', 'Attachments/globex-logo.svg']);
+		assert.deepEqual(folderSymbol('Work/Acme/Docs', symbols ?? {}), { kind: 'svg', value: 'Attachments/acme-logo.svg', tint: false });
+		assert.deepEqual(symbols, {
+			'Work/Acme': { kind: 'svg', value: 'Attachments/acme-logo.svg', tint: false },
+			'Work/Globex': { kind: 'svg', value: 'Attachments/globex-logo.svg', tint: true },
+			'Work/Initech': { kind: 'svg', value: 'Attachments/acme-logo.svg', tint: false },
+		});
+	});
+
+	test('an SVG becomes a square image of the texture size; tint turns it white for the sprite to color', () => {
+		const logo = '<svg viewBox="0 0 20 10"><rect width="20" height="10" fill="#e11d48"/></svg>';
+		const plain = svgIconMarkup(logo, 64, false);
+		assert.match(plain, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" width="64" height="64" viewBox="0 0 64 64"><image href="data:image\/svg\+xml;charset=utf-8,[^"]+" width="64" height="64" preserveAspectRatio="xMidYMid meet"\/><\/svg>$/);
+		const href = /href="data:image\/svg\+xml;charset=utf-8,([^"]+)"/.exec(plain)?.[1] ?? '';
+		// The file gets the namespace it left out (without it the image draws nothing).
+		assert.equal(decodeURIComponent(href), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 10"><rect width="20" height="10" fill="#e11d48"/></svg>');
+		const tinted = svgIconMarkup(logo, 64, true);
+		assert.match(tinted, /<filter id="white"><feFlood flood-color="#ffffff"\/><feComposite in2="SourceAlpha" operator="in"\/><\/filter>/);
+		assert.match(tinted, /filter="url\(#white\)"/);
 	});
 
 	test('the nearest folder with a symbol wins', () => {

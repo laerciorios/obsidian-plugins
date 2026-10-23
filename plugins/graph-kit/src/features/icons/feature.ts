@@ -8,31 +8,40 @@ import type { PixiSprite, PixiText, PixiTexture } from '../../pixi';
 import { GraphFeature } from '../feature';
 import { PerNote } from '../per-note';
 import { RebuildGate } from '../rebuild-gate';
-import type { IconSpec, IconsConfig } from './config';
-import { iconFor, readFolderStyleSymbols } from './resolve';
-import type { FolderSymbols } from './resolve';
+import type { IconsConfig } from './config';
+import { folderSvgPaths, iconFor, readFolderStyleSymbols, svgIconMarkup } from './resolve';
+import type { FolderSymbols, NodeIconSpec } from './resolve';
 
 /** Icon size relative to the node's diameter. */
 const ICON_SCALE = 0.62;
 /** Pixels the icon texture or font is drawn at before scaling down. */
 const ICON_PX = 64;
+/** Largest Folder Style SVG drawn in nodes, as Folder Style itself accepts. */
+const SVG_MAX_BYTES = 100 * 1024;
 
 export type FolderStyleState = 'off' | 'loaded' | 'missing' | 'unknown';
 
 interface NodeIcon {
 	display: PixiSprite | PixiText;
-	/** Text icons own their texture; Lucide ones share it. */
+	/** Text icons own their texture; Lucide and SVG ones share it. */
 	ownsTexture: boolean;
 }
 
-/** An emoji, a character or a Lucide icon in the middle of note nodes, by rule or from a property. */
+/**
+ * An emoji, a character or a Lucide icon in the middle of note nodes, by rule or from a property;
+ * or the folder's Folder Style symbol, which can also be an SVG file of the vault.
+ */
 export class IconsFeature extends GraphFeature {
 	readonly id = 'icons';
 	readonly requires = ['nodeGraphics', 'pixi'] as const;
 	readonly hooks = ['nodeInit', 'nodeRender', 'nodeClear'] as const;
-	private readonly icons: PerNote<IconSpec | null>;
+	private readonly icons: PerNote<NodeIconSpec | null>;
 	private readonly drawn = new Map<NodeRef, NodeIcon>();
 	private readonly lucideTextures = new Map<string, PixiTexture>();
+	/** Folder Style SVGs by `tint|path`, built from `folderSvgs`. */
+	private readonly svgTextures = new Map<string, PixiTexture>();
+	/** Markup of the SVG files Folder Style's symbols use, read with its data.json; unreadable ones are left out. */
+	private folderSvgs = new Map<string, string>();
 	private readonly gate = new RebuildGate();
 	private lucideIds: Set<string> | null = null;
 	private folders: FolderSymbols | null = null;
@@ -68,6 +77,12 @@ export class IconsFeature extends GraphFeature {
 		this.drawn.clear();
 		for (const texture of this.lucideTextures.values()) texture.destroy(true);
 		this.lucideTextures.clear();
+		this.clearSvgTextures();
+	}
+
+	private clearSvgTextures(): void {
+		for (const texture of this.svgTextures.values()) texture.destroy(true);
+		this.svgTextures.clear();
 	}
 
 	invalidate(paths: ReadonlySet<string> | null): void {
@@ -93,11 +108,18 @@ export class IconsFeature extends GraphFeature {
 		if (spec.kind === 'text') {
 			const text = new lib.Text(spec.value, { fontSize: ICON_PX, fill: this.color() });
 			icon = { display: text, ownsTexture: true };
-		} else {
+		} else if (spec.kind === 'lucide') {
 			const texture = this.lucideTexture(spec.value);
 			if (!texture) return;
 			const sprite = new lib.Sprite(texture);
 			sprite.tint = this.color();
+			icon = { display: sprite, ownsTexture: false };
+		} else {
+			// A file that could not be read is no icon (the node stays plain).
+			const texture = this.svgTexture(spec.value, spec.tint);
+			if (!texture) return;
+			const sprite = new lib.Sprite(texture);
+			if (spec.tint) sprite.tint = this.color();
 			icon = { display: sprite, ownsTexture: false };
 		}
 		const { display } = icon;
@@ -160,6 +182,35 @@ export class IconsFeature extends GraphFeature {
 		return texture;
 	}
 
+	/** A Folder Style SVG as a texture: its own colors, or white (tinted per sprite) with `tint`. Shared by file and tint. */
+	private svgTexture(path: string, tint: boolean): PixiTexture | null {
+		const key = `${tint ? 'tint' : 'color'}|${path}`;
+		const cached = this.svgTextures.get(key);
+		if (cached) return cached;
+		const lib = pixi();
+		const svg = this.folderSvgs.get(path);
+		if (!lib || svg === undefined) return null;
+		const texture = lib.Texture.from(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgIconMarkup(svg, ICON_PX, tint))}`);
+		this.svgTextures.set(key, texture);
+		return texture;
+	}
+
+	/** The SVG files the symbols use, read now (the vault only; nothing is written). Unreadable, empty or large files are skipped. */
+	private async readFolderSvgs(symbols: FolderSymbols | null): Promise<Map<string, string>> {
+		const svgs = new Map<string, string>();
+		for (const path of symbols ? folderSvgPaths(symbols) : []) {
+			const file = this.app.vault.getFileByPath(path);
+			if (!file || file.stat.size > SVG_MAX_BYTES) continue;
+			try {
+				const svg = await this.app.vault.cachedRead(file);
+				if (svg.trim() !== '') svgs.set(path, svg);
+			} catch {
+				// Left out: the node shows no icon.
+			}
+		}
+		return svgs;
+	}
+
 	/** Folder Style's data.json, read (not imported): its folders' symbols by path. */
 	private async loadFolderStyle(): Promise<void> {
 		if (!this.config().useFolderStyle) {
@@ -176,7 +227,10 @@ export class IconsFeature extends GraphFeature {
 			this.folders = null;
 			this.foldersState = 'missing';
 		}
+		this.folderSvgs = await this.readFolderSvgs(this.folders);
 		if (!this.running) return;
+		// The files may have changed: rebuilt nodes make new textures from what was just read.
+		this.clearSvgTextures();
 		this.icons.invalidate(null);
 		this.gate.reset();
 		for (const graph of openGraphs(this.app)) rebuildNodes(graph.renderer, null);
